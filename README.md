@@ -1,0 +1,2 @@
+# we-group
+Solo Project
