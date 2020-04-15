@@ -1,5 +1,30 @@
 <ion-app>
 
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu side="start" menuId="m1">
+
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>WeGroup</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle
+          *ngFor="let link of menuLinks"
+          menu="m1">
+          <ion-item
+            lines="none"
+            [routerLink]="link.rLink">
+            <ion-icon [name]="link.icon" slot="start"></ion-icon>
+            <ion-label>{{ link.title }}</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+
+  </ion-menu>
+
+  <ion-router-outlet main></ion-router-outlet>
 
 </ion-app>

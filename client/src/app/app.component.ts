@@ -13,6 +13,12 @@ import { MenuMainLink } from './models/menu-main-link';
 })
 export class AppComponent {
 
+  private menuLinks: MenuMainLink[] = [
+    { title: 'My Groups', icon: 'business', rLink: '/' },
+    { title: 'Dashboard', icon: 'checkbox-outline', rLink: '/' },
+    { title: 'Logout', icon: 'exit', rLink: '/' },
+  ];
+
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
