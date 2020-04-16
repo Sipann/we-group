@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ isLogin ? 'Login' : 'Signup' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-signup
+    *ngIf="!isLogin"
+    (switch)="onSwitchToLogin(true)"></app-signup>
+  <app-login
+    *ngIf="isLogin"
+    (switch)="onSwitchToLogin(false)"></app-login>
+</ion-content>

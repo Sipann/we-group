@@ -1,0 +1,54 @@
+<!-- [disabled]="!f.valid || !datesValid()" -->
+
+<form #f="ngForm" (ngSubmit)="onSaveChanges()">
+
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-button
+          color="secondary"
+          type="button"
+          (click)="onCancel()">Cancel</ion-button>
+        <ion-button
+          color="primary"
+          type="submit">Save</ion-button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Group's Name</ion-label>
+          <ion-input
+            type="text"
+            [ngModel]="groupName"
+            name="group-name"
+            required></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Group's Description</ion-label>
+          <ion-textarea
+            rows="3"
+            [ngModel]="groupDesc"
+            name="group-description"
+            required></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Group's Manager</ion-label>
+          <ion-input
+            type="text"
+            [ngModel]="groupManager"
+            name="manager-name"
+            required></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</form>

@@ -14,8 +14,8 @@ import { MenuMainLink } from './models/menu-main-link';
 export class AppComponent {
 
   private menuLinks: MenuMainLink[] = [
-    { title: 'My Groups', icon: 'business', rLink: '/' },
-    { title: 'Dashboard', icon: 'checkbox-outline', rLink: '/' },
+    { title: 'Dashboard', icon: 'checkbox-outline', rLink: '/groups' },
+    { title: 'Profile', icon: 'person-outline', rLink: '/auth/profile' },
     { title: 'Logout', icon: 'exit', rLink: '/' },
   ];
 
