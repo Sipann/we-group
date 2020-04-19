@@ -4,7 +4,7 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
-import { MenuMainLink } from './models/menu-main-link';
+import { MenuMainLink } from './models/menu-main-link.model';
 
 @Component({
   selector: 'app-root',
@@ -14,9 +14,8 @@ import { MenuMainLink } from './models/menu-main-link';
 export class AppComponent {
 
   private menuLinks: MenuMainLink[] = [
-    { title: 'Dashboard', icon: 'checkbox-outline', rLink: '/groups' },
+    { title: 'My Groups', icon: 'people-outline', rLink: '/groups' },
     { title: 'Profile', icon: 'person-outline', rLink: '/auth/profile' },
-    { title: 'Logout', icon: 'exit', rLink: '/' },
   ];
 
   constructor(
@@ -32,5 +31,9 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+  }
+
+  logout() {
+    console.log('logout');
   }
 }

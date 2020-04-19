@@ -10,6 +10,7 @@ import { GroupManagePage } from './group-manage.page';
 import { GroupInfosComponent } from './group-infos/group-infos.component';
 import { GroupProductsComponent } from './group-products/group-products.component';
 import { GroupUsersComponent } from './group-users/group-users.component';
+import { GroupSummaryComponent } from './group-summary/group-summary.component';
 
 @NgModule({
   imports: [
@@ -19,7 +20,18 @@ import { GroupUsersComponent } from './group-users/group-users.component';
     GroupManagePageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [GroupManagePage, GroupInfosComponent, GroupProductsComponent, GroupUsersComponent],
-  entryComponents: [GroupInfosComponent, GroupProductsComponent, GroupUsersComponent]
+  declarations: [
+    GroupManagePage,
+    GroupInfosComponent,
+    GroupProductsComponent,
+    GroupUsersComponent,
+    GroupSummaryComponent
+  ],
+  entryComponents: [
+    GroupInfosComponent,
+    GroupProductsComponent,
+    GroupUsersComponent,
+    GroupSummaryComponent
+  ]
 })
 export class GroupManagePageModule { }

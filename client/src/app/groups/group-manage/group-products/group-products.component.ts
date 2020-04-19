@@ -2,7 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angu
 import { NgForm, FormBuilder, FormGroup } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 
+import { ApiClientService } from 'src/app/services/api-client.service';
 import { Group } from 'src/app/models/group.model';
+import { Item } from '../../../models/item.model';
 import { NewProductModalComponent } from './new-product-modal/new-product-modal.component';
 
 @Component({
@@ -12,75 +14,82 @@ import { NewProductModalComponent } from './new-product-modal/new-product-modal.
 })
 export class GroupProductsComponent implements OnInit {
 
+  @Input() items: Item[];
   @Input() group: Group;
+
   @Output() cancelled = new EventEmitter();
+  @Output() done = new EventEmitter<Group>();
+  @Output() updated = new EventEmitter();
+
   @ViewChild('f', { static: true }) newProductform: NgForm;
-  // @ViewChild('timeform', { static: true }) deadlineForm: NgForm;
 
-  products: { name: string, description: string, price: number, currency: string, initial_qty: number }[] = [
-    { name: 'baguette', description: 'baguette traditionnelle', price: 450, currency: 'rup', initial_qty: 50 },
-    { name: 'banette', description: 'banette 250g', price: 500, currency: 'rup', initial_qty: 50 },
-    { name: 'pain au chocolat', description: 'ou chocolatine', price: 700, currency: 'rup', initial_qty: 40 },
+  itemAmount: number;
+  itemsForm: FormGroup;
+  itemName: string;
+  itemPrice: number;
 
-  ];
-  productsForm: FormGroup;
-
-  productName: string;
-  productPrice: number;
-  productAmount: number;
-
-
-  constructor(private fb: FormBuilder, private modalCtrl: ModalController) { }
+  constructor(
+    private apiClientService: ApiClientService,
+    private fb: FormBuilder,
+    private modalCtrl: ModalController) { }
 
   ngOnInit() {
+    this.createDynamicItemsList();
+  }
+
+  ngOnChanges() { this.createDynamicItemsList(); }
+
+  createDynamicItemsList() {
     const itemsGroup = {};
-    this.products.forEach(product => {
-      const groupName = product.name;
+    this.items.forEach(item => {
+      const groupName = item.name;
       itemsGroup[groupName] = this.fb.group({
         'selected': [false],
-        'amount': [product.initial_qty],
-        'name': [product.name],
-        'price': [product.price],
-        'currency': [product.currency]
+        'amount': [item.initial_qty],
+        'name': [item.name],
+        'price': [item.price],
+        'currency': [item.currency]
       });
-      console.log('itemsGroup', itemsGroup);
-
-      itemsGroup['deadline'] = this.fb.group({
-        'deadlineDate': []
-      });
-      this.productsForm = new FormGroup(itemsGroup);
-      console.log('this.productsForm', this.productsForm);
     });
-
+    itemsGroup['deadline'] = this.fb.group({
+      'deadlineDate': []
+    });
+    this.itemsForm = new FormGroup(itemsGroup);
   }
 
   onCancel() { this.cancelled.emit(); }
-
-  onSaveChanges() {
-    console.log('save changes with values');
-    this.cancelled.emit();
-  }
-
-  onSaveChangesAndInform() {
-    console.log('save changes with values and inform other users');
-    this.onSaveChanges();
-    // + inform other users
-  }
 
   onCreateNewProduct() {
     this.modalCtrl
       .create({
         component: NewProductModalComponent,
-        componentProps: {},
+        componentProps: { group: this.group },
       })
       .then(modalEl => {
         modalEl.present();
         return modalEl.onDidDismiss();
       })
-      .then(result => {
-        console.log('result', result);
-        // add new product to list of products
+      .then(_ => {
+        this.updated.emit(true);
+        this.createDynamicItemsList();
       });
   }
+
+  onDeleteItem(itemid: number) {
+    this.apiClientService.deleteItem(itemid)
+      .subscribe(_ => {
+        this.updated.emit(true);
+        this.createDynamicItemsList();
+      });
+  }
+
+  onSaveChanges() {
+    this.apiClientService.updateGroupDeadline(this.itemsForm.value['deadline'], this.group.id)
+      .subscribe(data => {
+        this.done.emit(data);
+      })
+  }
+
+  onSaveChangesAndInform() { }
 
 }

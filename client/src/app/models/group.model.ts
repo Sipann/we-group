@@ -1,9 +1,16 @@
 export class Group {
-  constructor(
-    public id: number,
-    public name: string,
-    public description: string,
-    public image: string,
-    public manager_id: string,
-  ) { }
+  id: number;
+  name: string;
+  description: string;
+  currency: string;
+  manager_id: string;
+  // image?: string;
+  deadline?: string;
+
+  static parse(data) {
+    const group = Object.assign(new Group(), data);
+
+    return group;
+  }
+
 }

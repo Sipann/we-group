@@ -1,6 +1,6 @@
 <!-- [disabled]="!f.valid || !datesValid()" -->
 
-<form #f="ngForm" (ngSubmit)="onSaveChanges()">
+<form #f="ngForm" (ngSubmit)="onUpdateGroup()">
 
   <ion-grid>
     <ion-row>
@@ -8,10 +8,14 @@
         <ion-button
           color="secondary"
           type="button"
-          (click)="onCancel()">Cancel</ion-button>
+          (click)="onCancel()">Cancel Changes</ion-button>
         <ion-button
           color="primary"
-          type="submit">Save</ion-button>
+          type="submit">Save Changes</ion-button>
+        <ion-button
+          color="danger"
+          type="button"
+          (click)="onDeleteGroup()">Delete Group</ion-button>
       </ion-col>
     </ion-row>
     <ion-row>
@@ -44,6 +48,7 @@
           <ion-label position="floating">Group's Manager</ion-label>
           <ion-input
             type="text"
+            disabled="true"
             [ngModel]="groupManager"
             name="manager-name"
             required></ion-input>

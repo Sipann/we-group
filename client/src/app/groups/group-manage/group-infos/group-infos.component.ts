@@ -1,6 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Group } from 'src/app/models/group.model';
+import { ApiClientService } from 'src/app/services/api-client.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-group-infos',
@@ -10,28 +12,59 @@ import { Group } from 'src/app/models/group.model';
 export class GroupInfosComponent implements OnInit {
 
   @Input() group: Group;
+  @Output() done = new EventEmitter<Group>();
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
-  groupName: string;
+
   groupDesc: string;
+  groupName: string;
   groupManager: string;
 
-  constructor() { }
+  constructor(
+    private alertCtrl: AlertController,
+    private apiClientService: ApiClientService,
+  ) { }
 
   ngOnInit() {
-    this.groupName = this.group.name;
     this.groupDesc = this.group.description;
+    this.groupName = this.group.name;
     this.groupManager = this.group.manager_id;
-    console.log('this.form', this.form);
   }
 
-  onCancel() {
-    console.log('canceling modifications');
-    this.cancelled.emit();
+  onCancel() { this.cancelled.emit(); }
+
+  deleteGroup(groupid: number) {
+
   }
 
-  onSaveChanges() {
-    console.log('save changes with values', this.form.value['group-name'], this.form.value['group-description'], this.form.value['manager-name']);
+  onDeleteGroup() {
+    const message = `This will permanently delete the ${ this.group.name } group. If you don't want to manage this group anymore, you can ask another member to be in charge of it.`;
+    this.alertCtrl.create({
+      header: 'Are You Sure?',
+      message: message,
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        {
+          text: 'Delete It!',
+          role: 'confirm',
+          handler: () => this.deleteGroup(this.group.id)
+        }
+      ]
+    })
+      .then(alertEl => alertEl.present());
+  }
+
+  onUpdateGroup() {
+    const updatedValues = {
+      name: this.form.value['group-name'],
+      description: this.form.value['group-description']
+    };
+
+    this.apiClientService.updateGroupInfos(updatedValues, this.group.id)
+      .subscribe(data => {
+        this.done.emit(data);
+      });
+
   }
 
 }

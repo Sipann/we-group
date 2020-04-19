@@ -1,8 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ModalController } from '@ionic/angular';
 
-import { GroupsService } from '../services/groups.service';
+import { ApiClientService } from '../services/api-client.service';
 import { Group } from '../models/group.model';
+import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
 
 @Component({
@@ -15,19 +17,37 @@ export class GroupsPage implements OnInit, OnDestroy {
   groups: Group[];
   private groupsSub: Subscription;
 
-  constructor(private groupsService: GroupsService) { }
+  constructor(
+    private apiClientService: ApiClientService,
+    private modalCtrl: ModalController) { }
 
   ngOnInit() {
-    this.groupsSub = this.groupsService.groups.subscribe(groups => {
-      this.groups = groups;
-    });
+    this.fetchAllGroups();
   }
 
   ngOnDestroy() {
     if (this.groupsSub) this.groupsSub.unsubscribe();
   }
 
+  fetchAllGroups() {
+    this.apiClientService.getGroups()
+      .subscribe((data: Group[]) => {
+        this.groups = data;
+      });
+  }
+
   onCreateGroup() {
-    console.log('create new group');
+    this.modalCtrl
+      .create({
+        component: NewGroupModalComponent,
+        componentProps: {},
+      })
+      .then(modalEl => {
+        modalEl.present();
+        return modalEl.onDidDismiss();
+      })
+      .then(_ => {
+        this.fetchAllGroups();
+      });
   }
 }

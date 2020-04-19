@@ -1,0 +1,42 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Order Summary for 2020-17-04 (TBU)</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content *ngIf="empty">
+    <ion-label>No order yet!</ion-label>
+  </ion-card-content>
+
+  <ion-card-content *ngIf="!empty">
+    <ion-segment
+      (ionChange)="summaryDisplayChanged($event)"
+      value="items">
+      <ion-segment-button value="items">
+        <ion-label>By Item</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="users">
+        <ion-label>By User</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-list *ngIf="display === 'items'">
+      <ion-item *ngFor="let summary of summaryByItem">
+        <ion-label>{{ summary.itemname }}</ion-label>
+        <ion-thumbnail slot="end">
+          <ion-text>{{ summary.quantity }}</ion-text>
+        </ion-thumbnail>
+      </ion-item>
+    </ion-list>
+
+    <ion-list *ngIf="display === 'users'">
+      <ion-card *ngFor="let summary of summaryByUser">
+        <ion-card-title>{{ summary.username }}</ion-card-title>
+        <ion-card-content *ngFor="let s of summary.items">
+          <ion-label>{{ s.itemname }}</ion-label>
+          <ion-thumbnail>{{ s.orderedquantity }}</ion-thumbnail>
+        </ion-card-content>
+      </ion-card>
+    </ion-list>
+
+  </ion-card-content>
+</ion-card>

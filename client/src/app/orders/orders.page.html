@@ -1,56 +1,86 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/groups"></ion-back-button>
+      <ion-back-button defaultHref="/groups/detail/{{ groupId }}"></ion-back-button>
     </ion-buttons>
-    <ion-title>Group Name Order</ion-title>
+    <ion-title>{{ group ? group.name : null }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="show">
 
   <ion-card>
     <ion-card-content>
-      Deadline set to:
+      Deadline set to: {{ group.deadline }}
     </ion-card-content>
   </ion-card>
 
-  <form [formGroup]="orderForm">
-    <ion-grid>
-      <ion-row
-        *ngFor="let product of products"
-        [formGroupName]="product.name">
-        <ion-col size="12" size-sm="6" offset-sm="3">
-          <ion-item-sliding #slidingItem>
-            <ion-item>
-              <!-- <ion-checkbox formControlName="selected"></ion-checkbox> -->
-              <ion-text>{{product.name}} - {{product.currency}} {{ product.currency}} (available: {{product.initial_qty}})</ion-text>
-              <ion-input
-                type="number"
-                formControlName="amount"></ion-input>
-            </ion-item>
-            <ion-item-options>
-              <ion-item-option color="danger" (click)="onDeleteItem(product.name, slidingItem)">Delete</ion-item-option>
-              <ion-item-option color="success" (click)="onAddItem(product.name, slidingItem)">Add</ion-item-option>
-            </ion-item-options>
-          </ion-item-sliding>
-        </ion-col>
-      </ion-row>
+  <ion-grid *ngIf="empty">
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-card>
+          <ion-card-header>
+            Oops, it seems this group has no offer at this time.
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-      <ion-row>
-        <ion-col size="12" size-sm="6" offset-sm="3">
-          <ion-button
-            color="secondary"
-            type="button"
-            (click)="onCancel()">Cancel</ion-button>
-          <ion-button
-            color="primary"
-            type="submit"
-            (click)="onOrder()">Order</ion-button>
-        </ion-col>
-      </ion-row>
+  <ion-grid *ngIf="!empty">
+    <ion-row
+      *ngFor="let item of availableItems">
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-card>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="8">
+                  <h2>{{ item.name }}</h2>
+                </ion-col>
+                <ion-col size="4" class="ion-text-right">
+                  <ion-badge>{{ ordered[item.id] }}</ion-badge>
+                </ion-col>
+              </ion-row>
 
-    </ion-grid>
-  </form>
+              <ion-row>
+                <ion-col size="8">
+                  <p>{{ item.description }}</p>
+                  <p>{{item.currency}} {{ item.price }}</p>
+                  <p>Available: {{ item.remaining_qty }}</p>
+                </ion-col>
+                <ion-col size="4" class="ion-text-right">
+                  <div>
+                    <ion-icon
+                      name="caret-up-outline"
+                      (click)="onAddToBasket(item.id, item.remaining_qty)"></ion-icon>
+                  </div>
+                  <div>
+                    <ion-icon
+                      name="caret-down-outline"
+                      (click)="onRemoveFromBasket(item.id)"></ion-icon>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-button
+          color="secondary"
+          type="button"
+          (click)="onCancel()">Cancel</ion-button>
+        <ion-button
+          color="primary"
+          type="button"
+          (click)="onOrder()">Order</ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
 
 </ion-content>

@@ -1,12 +1,10 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/groups"></ion-back-button>
+      <ion-back-button defaultHref="/orders/all/{{ orderId }}"></ion-back-button>
     </ion-buttons>
-    <!-- <ion-title>{{ group.name }}</ion-title> -->
-    <ion-title>Boulangerie</ion-title>
-    <!-- <ion-title size="small">2020-01-20</ion-title> -->
-    <ion-title size="small">{{ order.date }}</ion-title>
+    <ion-title>{{ order.groupname }}</ion-title>
+    <ion-title size="small">{{ order.deadline }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -19,13 +17,6 @@
             {{ item.name }} - {{ item.quantity }}
           </ion-item>
         </ion-list>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-item>
-          TOTAL: RUP {{ order.total }}
-        </ion-item>
       </ion-col>
     </ion-row>
   </ion-grid>

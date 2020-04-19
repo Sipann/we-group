@@ -1,10 +1,13 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Group } from '../../models/group.model';
-import { GroupsService } from '../../services/groups.service';
+import { ApiClientService } from 'src/app/services/api-client.service';
+
+import { OrderSummary } from '../../models/ordersummary.model';
+import { OrderOutput } from 'src/app/models/order-output.model';
 
 @Component({
   selector: 'app-orders-list',
@@ -14,55 +17,134 @@ import { GroupsService } from '../../services/groups.service';
 export class OrdersListPage implements OnInit, OnDestroy {
 
   private ordersSub: Subscription;
-  private groupSub: Subscription;
 
   group: Group;
+  groupId: number;
+  loadingOrders = true;
   orders: {
-    id: string,
-    items: { name: string, quantity: number, 'price/u': number }[],
-    date: string
-  }[] = [
-      {
-        id: '1',
-        items: [
-          { name: 'baguette', quantity: 2, 'price/u': 400 },
-          { name: 'pain au chocolat', quantity: 4, 'price/u': 500 }
-        ],
-        date: '2020-1-20',
-      },
-      {
-        id: '2',
-        items: [{ name: 'baguette', quantity: 3, 'price/u': 400 },],
-        date: '2020-1-22',
-      },
-    ];
+    groupname: string,
+    orderid: number,
+    deadline: string,
+    items: { name: string, quantity: number }[]
+  }[];
+  reduced;
 
-  constructor(private navCtrl: NavController, private route: ActivatedRoute, private groupsService: GroupsService) { }
+
+  constructor(
+    private route: ActivatedRoute,
+    private apiClientService: ApiClientService,
+    private navCtrl: NavController,
+    private router: Router) { }
+
 
   ngOnInit() {
-    this.route.paramMap.subscribe(paramMap => {
-      if (!paramMap.has('groupid')) {
-        // show all orders for this user
-        // this.orders ...
-        return;
-      }
-      // else, filter order for this user for this group
-      // this.orders ...
-      // this.ordersSub = this.ordersService.groups.subscribe(orders => {
-      //   this.orders = orders;
-      // });
-
-      // and get group
-      this.groupSub = this.groupsService.getGroup(parseInt(paramMap.get('groupid'))).subscribe(group => {
-        this.group = group;
-      });
-
-    });
+    this.initialize();
   }
 
   ngOnDestroy() {
     if (this.ordersSub) this.ordersSub.unsubscribe();
-    if (this.groupSub) this.groupSub.unsubscribe();
+  }
+
+
+  async initialize() {
+    this.route.paramMap.subscribe(paramMap => {
+      if (!paramMap.has('groupid')) {
+        this.navCtrl.navigateBack('/groups');
+        return;
+      }
+      this.groupId = parseInt(paramMap.get('groupid'));
+
+      if (this.router.getCurrentNavigation().extras.state || this.group) {
+        const group = this.router.getCurrentNavigation().extras.state;
+        this.group = Group.parse(group);
+
+        this.ordersSub = this.apiClientService.getUserOrders()
+          .subscribe(data => {
+            this.reduced = this.reduceData(data);
+            const all: {
+              groupname: string,
+              orderid: number,
+              deadline: string,
+              items: { name: string, quantity: number }[]
+            }[] = [];
+            let key = this.groupId;
+            let groupname = this.reduced[key].groupname;
+            for (let prop in this.reduced[key]) {
+              if (this.reduced[key].hasOwnProperty(prop) && prop !== 'groupname') {
+                all.push({
+                  groupname: groupname,
+                  orderid: +prop,
+                  deadline: this.reduced[key][prop].orderdeadline,
+                  items: this.reduced[key][prop].items,
+                });
+              }
+            }
+            this.orders = all;
+            this.loadingOrders = false;
+          })
+      }
+
+      else {
+        this.navCtrl.navigateBack(`/groups/detail/${ this.groupId }`);
+        return;
+      }
+    });
+  }
+
+
+  onNavigateToOrderDetails(order: {
+    groupname: string,
+    orderid: number,
+    deadline: string,
+    items: { name: string, quantity: number }[]
+  }) {
+    let navigationExtras = {
+      state: { order }
+    };
+    this.router.navigate(['/', 'orders', 'all', this.group.id, 'archive', order.orderid], navigationExtras);
+  }
+
+
+  reduceData(data: OrderOutput[]) {
+    return data.reduce((acc: {}, curr: OrderSummary) => {
+      const currentGroup = curr.ordergroup;
+      if (acc[currentGroup]) {
+        if (acc[currentGroup][curr.orderid]) {
+          acc[currentGroup][curr.orderid].items = [
+            ...acc[currentGroup][curr.orderid].items,
+            { name: curr.itemname, quantity: curr.orderedqty }
+          ]
+        }
+        else {
+          let newOrder = {
+            [curr.orderid]: {
+              orderdeadline: curr.orderdeadline,
+              items: [{ name: curr.itemname, quantity: curr.orderedqty }]
+            }
+          };
+          acc = {
+            ...acc,
+            [currentGroup]: {
+              ...acc[currentGroup],
+              ...newOrder
+            }
+          }
+        }
+      }
+      else {
+        acc = {
+          ...acc,
+          [currentGroup]: {
+            groupname: curr.groupname,
+            [curr.orderid]: {
+              orderdeadline: curr.orderdeadline,
+              items: [{ name: curr.itemname, quantity: curr.orderedqty }]
+            }
+          }
+        }
+      }
+      return acc;
+    }, {});
   }
 
 }

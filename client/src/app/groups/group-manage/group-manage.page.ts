@@ -1,10 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { GroupsService } from 'src/app/services/groups.service';
+import { ApiClientService } from 'src/app/services/api-client.service';
 import { Group } from 'src/app/models/group.model';
+import { Item } from '../../models/item.model';
+import { OrderSumup } from 'src/app/models/order-sumup.model';
+import { User } from '../../models/user.model';
+
 
 @Component({
   selector: 'app-group-manage',
@@ -13,11 +17,31 @@ import { Group } from 'src/app/models/group.model';
 })
 export class GroupManagePage implements OnInit, OnDestroy {
 
-  managing: string = '';
-  group: Group;
-  private groupSub: Subscription;
+  loading_infos = true;
+  loading_items = true;
+  loading_members = true;
+  loading_summary = true;
 
-  constructor(private navCtrl: NavController, private route: ActivatedRoute, private groupsService: GroupsService) { }
+  groupId: number;
+  managing: '' | 'info' | 'products' | 'summary' | 'users';
+  members: User[];
+  summaryByItem: {}[];
+  summaryByUser: {}[];
+
+  items: Item[];
+  group: Group;
+
+  private infosSub: Subscription;
+  private itemsSub: Subscription;
+  private membersSub: Subscription;
+  private summarySub: Subscription;
+
+  constructor(
+    private route: ActivatedRoute,
+    private apiClientService: ApiClientService,
+    private navCtrl: NavController,
+    private router: Router) { }
+
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -25,19 +49,116 @@ export class GroupManagePage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupSub = this.groupsService.getGroup(parseInt(paramMap.get('groupid'))).subscribe(group => {
-        this.group = group;
-      });
+      this.groupId = parseInt(paramMap.get('groupid'));
+
+      if (this.router.getCurrentNavigation().extras.state) {
+        const group = this.router.getCurrentNavigation().extras.state;
+        this.group = Group.parse(group);
+
+        this.loading_infos = false;
+        this.fetchItems();
+        this.fetchMembers();
+        this.fetchSummary();
+      }
+      else {
+        this.router.navigate(['/', 'groups', 'detail', this.groupId]);
+        return;
+      }
+
     });
   }
 
   ngOnDestroy() {
-    if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.infosSub) this.infosSub.unsubscribe();
+    if (this.itemsSub) this.itemsSub.unsubscribe();
+    if (this.membersSub) this.membersSub.unsubscribe();
+    if (this.summarySub) this.summarySub.unsubscribe();
   }
 
-  onSelect(managing: string) {
-    this.managing = managing;
+
+  fetchGroupInfos() {
+    this.infosSub = this.apiClientService.getGroup(this.group.id)
+      .subscribe(data => {
+        this.group = data;
+      });
+  }
+
+  fetchItems() {
+    this.itemsSub = this.apiClientService.getGroupItems(this.group.id)
+      .subscribe(data => {
+        this.items = data;
+        this.loading_items = false;
+      });
+  }
+
+  fetchMembers() {
+    this.membersSub = this.apiClientService.getGroupMembers(this.group.id)
+      .subscribe(data => {
+        this.members = data;
+        this.loading_members = false;
+      });
+  }
+
+  fetchSummary() {
+    if (this.group.deadline) {
+      this.summarySub = this.apiClientService.getGroupOrder(this.group.id, this.group.deadline)
+        .subscribe(data => {
+          this.summaryByUser = this.reduceByUser(data);
+          this.summaryByItem = this.reduceByItem(data);
+          this.loading_summary = false;
+        });
+    }
+
   }
 
   onCancel() { this.managing = ''; }
+
+  onDone(group: Group) {
+    this.managing = '';
+    this.group = group;
+    this.fetchSummary();
+  }
+
+  onItemsUpdated() { this.fetchItems(); }
+
+  onSelect(managing: '' | 'info' | 'products' | 'summary' | 'users') { this.managing = managing; }
+
+  reduceByUser(data: OrderSumup[]): {}[] {
+    const result = [];
+    const reduced = data.reduce((acc, current) => {
+      const currentUsername = current.username;
+      const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
+      return acc[currentUsername]
+        ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
+        : acc = { ...acc, [currentUsername]: [item] }
+    }, {});
+
+    for (let prop in reduced) {
+      if (reduced.hasOwnProperty(prop)) {
+        result.push({ username: prop, items: reduced[prop] });
+      }
+    }
+    return result;
+  }
+
+  reduceByItem(data: OrderSumup[]): {}[] {
+    const result = [];
+    const reduced = data.reduce((acc, current) => {
+      const currentItemname = current.itemname;
+      const currentQuantity = current.orderedquantity;
+      return acc[currentItemname]
+        ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
+        : acc = { ...acc, [currentItemname]: currentQuantity }
+    }, {});
+
+    for (let prop in reduced) {
+      if (reduced.hasOwnProperty(prop)) {
+        result.push({
+          itemname: prop,
+          quantity: reduced[prop]
+        });
+      }
+    }
+    return result;
+  }
 }

@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/groups"></ion-back-button>
+      <ion-back-button defaultHref="/groups/detail/{{ groupId }}"></ion-back-button>
     </ion-buttons>
     <ion-title>My Orders</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="!loadingOrders">
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-sm="8" offset-sm="2">
@@ -15,14 +15,13 @@
           <ion-item
             *ngFor="let order of orders"
             detail
-            [routerLink]="['/', 'orders', 'all', group.id ,'archive', order.id]">
+            (click)="onNavigateToOrderDetails(order)">
             <ion-label>
-              <ion-text>{{ group.name }} - {{ order.date }} </ion-text>
+              <ion-text>{{ order.groupname }} - {{ order.deadline }}</ion-text>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-col>
     </ion-row>
   </ion-grid>
-
 </ion-content>

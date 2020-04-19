@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -11,21 +11,19 @@ import { Subscription } from 'rxjs';
 export class OrderArchivePage implements OnInit, OnDestroy {
 
   order: {
-    id: number,
-    items: { name: string, quantity: number, 'price/u': number }[],
-    date: string,
-    total: number
-  } = {
-      id: 2,
-      items: [{ name: 'baguette', quantity: 3, 'price/u': 400 }, { name: 'croissant', quantity: 5, 'price/u': 410 }],
-      date: '2020-1-22',
-      total: 1200
-    };
+    groupname: string,
+    orderid: number,
+    deadline: string,
+    items: { name: string, quantity: number }[]
+  };
+  orderId: number;
+
   private orderSub: Subscription;
 
   constructor(
     private navCtrl: NavController,
     private route: ActivatedRoute,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -34,8 +32,11 @@ export class OrderArchivePage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      // this.orderSub = ...
-      // this.order = order
+      this.orderId = parseInt(paramMap.get('orderid'));
+
+      if (this.router.getCurrentNavigation().extras.state) {
+        this.order = this.router.getCurrentNavigation().extras.state.order;
+      }
     })
   }
 

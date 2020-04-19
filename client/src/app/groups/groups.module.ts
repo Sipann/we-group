@@ -8,6 +8,7 @@ import { GroupsPageRoutingModule } from './groups-routing.module';
 
 import { GroupsPage } from './groups.page';
 import { NewProductModalComponent } from './group-manage/group-products/new-product-modal/new-product-modal.component';
+import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import { NewProductModalComponent } from './group-manage/group-products/new-prod
     IonicModule,
     GroupsPageRoutingModule
   ],
-  declarations: [GroupsPage, NewProductModalComponent],
-  entryComponents: [NewProductModalComponent]
+  declarations: [GroupsPage, NewProductModalComponent, NewGroupModalComponent],
+  entryComponents: [NewProductModalComponent, NewGroupModalComponent]
 })
 export class GroupsPageModule { }

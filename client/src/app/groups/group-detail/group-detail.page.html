@@ -3,12 +3,11 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/groups"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ group.name }}</ion-title>
-
+    <ion-title class="ion-text-center">{{ loading ? null : group.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="!loading">
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="8" offset-md="2">
@@ -19,23 +18,25 @@
       <ion-col size="12">
         <ion-list>
           <ion-item
+            *ngIf="currentUserIsManager"
             detail
-            [routerLink]="['/', 'groups', 'manage', group.id]">
+            (click)="onNavigateToManageGroup()">
             <ion-label>Manage Group</ion-label>
           </ion-item>
+
           <ion-item
-            detail
-            [routerLink]="['/', 'orders', 'new', group.id]">
-            <ion-label>Passer une Commande</ion-label>
+            [detail]="orderIsAllowed"
+            (click)="orderIsAllowed ? onNavigateToPlaceOrder() : null">
+            <ion-label>Place an Order</ion-label>
           </ion-item>
+
           <ion-item
             detail
-            [routerLink]="['/', 'orders', 'all', group.id]">
-            <ion-label>Voir mes commandes précédentes</ion-label>
+            (click)="onNavigateToOrdersArchives()">
+            <ion-label>My Previous Orders</ion-label>
           </ion-item>
         </ion-list>
       </ion-col>
     </ion-row>
   </ion-grid>
-
 </ion-content>

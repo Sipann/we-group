@@ -8,10 +8,6 @@ const routes: Routes = [
     path: '',
     component: OrdersListPage
   },
-  // {
-  //   path: 'order-archive',
-  //   loadChildren: () => import('./order-archive/order-archive.module').then( m => m.OrderArchivePageModule)
-  // },
   {
     path: 'archive',
     loadChildren: () => import('./order-archive/order-archive.module').then(m => m.OrderArchivePageModule)

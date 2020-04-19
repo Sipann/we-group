@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GroupsService } from './groups.service';
+import { ApiClientService } from './api-client.service';
 
-describe('GroupsService', () => {
+describe('ApiClientService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: GroupsService = TestBed.get(GroupsService);
+    const service: ApiClientService = TestBed.get(ApiClientService);
     expect(service).toBeTruthy();
   });
 });
