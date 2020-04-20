@@ -27,11 +27,11 @@ export class NewGroupModalComponent implements OnInit {
   onCancel() { this.modalCtrl.dismiss(null, 'cancel'); }
 
   onAddGroup() {
-    const group = new GroupInput(
-      this.form.value['group-name'],
-      this.form.value['group-description'],
-      this.form.value['group-currency']
-    );
+    const group: GroupInput = {
+      name: this.form.value['group-name'],
+      description: this.form.value['group-description'],
+      currency: this.form.value['group-currency']
+    };
 
     this.apiClientService.createGroup(group)
       .subscribe(() => {

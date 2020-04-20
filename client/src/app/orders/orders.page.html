@@ -31,7 +31,7 @@
     <ion-row
       *ngFor="let item of availableItems">
       <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-card>
+        <ion-card [ngClass]="item.remaining_qty < 1 ? 'soldout' : ''">
           <ion-card-content>
             <ion-grid>
               <ion-row>
@@ -39,7 +39,8 @@
                   <h2>{{ item.name }}</h2>
                 </ion-col>
                 <ion-col size="4" class="ion-text-right">
-                  <ion-badge>{{ ordered[item.id] }}</ion-badge>
+                  <ion-text *ngIf="item.remaining_qty < 1">Sold Out</ion-text>
+                  <ion-badge *ngIf="item.remaining_qty > 0">{{ ordered[item.id] }}</ion-badge>
                 </ion-col>
               </ion-row>
 

@@ -26,6 +26,7 @@
 
           <ion-item
             [detail]="orderIsAllowed"
+            [ngClass]="orderIsAllowed ? '' : 'noorder'"
             (click)="orderIsAllowed ? onNavigateToPlaceOrder() : null">
             <ion-label>Place an Order</ion-label>
           </ion-item>

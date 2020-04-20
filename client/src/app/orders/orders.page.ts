@@ -19,6 +19,7 @@ export class OrdersPage implements OnInit, OnDestroy {
   empty = true;
   group: Group;
   groupId: number;
+  loadingCtrl;
   ordered: {} = {};
   show = false;
 
@@ -28,14 +29,13 @@ export class OrdersPage implements OnInit, OnDestroy {
   constructor(
     private alertCtrl: AlertController,
     private apiClientService: ApiClientService,
-    private loadingCtrl: LoadingController,
+    private loadingController: LoadingController,
     private navCtrl: NavController,
     private route: ActivatedRoute,
     private router: Router,
   ) { }
 
   ngOnInit() {
-    this.presentLoading();
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/groups');
@@ -47,6 +47,8 @@ export class OrdersPage implements OnInit, OnDestroy {
       if (this.router.getCurrentNavigation().extras.state) {
         const group = this.router.getCurrentNavigation().extras.state;
         this.group = Group.parse(group);
+        this.presentLoading();
+
 
         this.itemsSub = this.apiClientService.getGroupItems(this.groupId)
           .subscribe(data => {
@@ -107,13 +109,13 @@ export class OrdersPage implements OnInit, OnDestroy {
   }
 
   async presentLoading() {
-    const loading = await this.loadingCtrl.create({
+    this.loadingCtrl = await this.loadingController.create({
       spinner: 'crescent',
       translucent: true,
       cssClass: 'loading-spinner',
       backdropDismiss: false,
     });
-    return loading.present();
+    return this.loadingCtrl.present();
   }
 
 }

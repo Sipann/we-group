@@ -11,6 +11,7 @@
           (click)="onCancel()">Cancel Changes</ion-button>
         <ion-button
           color="primary"
+          [disabled]="!f.valid || !f.touched || !formIsValid"
           type="submit">Save Changes</ion-button>
         <ion-button
           color="danger"
@@ -26,6 +27,7 @@
             type="text"
             [ngModel]="groupName"
             name="group-name"
+            minlength="3"
             required></ion-input>
         </ion-item>
       </ion-col>
@@ -38,6 +40,7 @@
             rows="3"
             [ngModel]="groupDesc"
             name="group-description"
+            minlength="10"
             required></ion-textarea>
         </ion-item>
       </ion-col>

@@ -25,7 +25,10 @@ export class NewProductModalComponent implements OnInit {
     private apiClientService: ApiClientService,
     private modalCtrl: ModalController) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.productCurrency = this.group.currency;
+  }
+
 
   onAddProduct() {
     const item = {

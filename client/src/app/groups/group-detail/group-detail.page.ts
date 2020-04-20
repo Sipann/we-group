@@ -17,6 +17,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   currentUserIsManager = true;
   group: Group;
   loading = true;
+  loadingCtrl;
   navigationExtras;
   orderIsAllowed = false;
 
@@ -34,10 +35,11 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   }
 
   async initialize() {
+    await this.presentLoading();
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/groups');
-        this.loadingController.dismiss();
+        this.loadingCtrl.dismiss();
         return;
       }
       this.groupSub = this.apiClientService.getGroup(parseInt(paramMap.get('groupid')))
@@ -48,23 +50,20 @@ export class GroupDetailPage implements OnInit, OnDestroy {
           };
           this.loading = false;
           this.orderIsAllowed = this.group.deadline && new Date(this.group.deadline) >= new Date();
-          this.loadingController.dismiss();
+          this.loadingCtrl.dismiss();
         });
     });
   }
 
-  ionViewWillEnter() {
-    this.loadingController.dismiss();
-  }
 
   async presentLoading() {
-    const loading = await this.loadingController.create({
-      spinner: 'crescent',
+    this.loadingCtrl = await this.loadingController.create({
+      spinner: 'bubbles',
       translucent: true,
       cssClass: 'loading-spinner',
       backdropDismiss: false,
     });
-    return loading.present();
+    return this.loadingCtrl.present();
   }
 
   onNavigateToManageGroup() {
