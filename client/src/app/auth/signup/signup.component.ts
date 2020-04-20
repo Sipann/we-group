@@ -1,4 +1,8 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+
+
+
 
 @Component({
   selector: 'app-signup',
@@ -7,7 +11,12 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class SignupComponent implements OnInit {
 
+
+
   @Output() switch = new EventEmitter();
+  @Output() signup = new EventEmitter<{ email: string, name: string, password: string }>();
+
+  @ViewChild('f', { static: true }) form: NgForm;
 
   constructor() { }
 
@@ -16,7 +25,10 @@ export class SignupComponent implements OnInit {
   onSwitchToLogin() { this.switch.emit(); }
 
   onSignup() {
-    console.log('signup');
+    const email: string = this.form.value['email'];
+    const name: string = this.form.value['name'];
+    const password: string = this.form.value['password'];
+    this.signup.emit({ name, email, password });
   }
 
 

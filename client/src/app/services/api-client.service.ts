@@ -9,6 +9,7 @@ import { GroupInput } from '../models/group-input.model';
 import { Item } from '../models/item.model';
 import { ItemInput } from '../models/item-input.model';
 import { User } from '../models/user.model';
+import { UserInput } from '../models/user-input.model';
 import { Order } from '../models/order.model';
 import { OrderOutput } from '../models/order-output.model';
 import { OrderSumup } from '../models/order-sumup.model';
@@ -30,6 +31,16 @@ export class ApiClientService {
     };
     return this.http.get(`${ this.baseUrl }/groups`, httpOptions)
       .pipe(map((obj: any) => obj.map(group => group)));
+  }
+
+  createUser(user: UserInput): Observable<User> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      })
+    };
+    return this.http.post(`${ this.baseUrl }/users`, user, httpOptions)
+      .pipe(map(user => User.parse(user)));
   }
 
   createGroup(group: GroupInput): Observable<{}> {

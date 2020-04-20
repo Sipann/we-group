@@ -7,8 +7,10 @@
 <ion-content>
   <app-signup
     *ngIf="!isLogin"
+    (signup)="onAuthenticate($event)"
     (switch)="onSwitchToLogin(true)"></app-signup>
   <app-login
     *ngIf="isLogin"
+    (login)="onAuthenticate($event)"
     (switch)="onSwitchToLogin(false)"></app-login>
 </ion-content>
