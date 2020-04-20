@@ -1,65 +1,108 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button menu="m1"></ion-menu-button>
+    </ion-buttons>
     <ion-title>My Profile</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-list>
+
+  <ion-segment
+    (ionChange)="profileDisplayChanged($event)"
+    value="userdata">
+    <ion-segment-button value="userdata">
+      <ion-label>My Personal Infos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="usergroups">
+      <ion-label>My Groups</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+
+  <form #f="ngForm" (ngSubmit)="onSubmitChanges()"
+    *ngIf="display === 'userdata' && !loadingInfos">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <h3>Username</h3>
           <ion-item>
             <ion-input
-              #username
               type="text"
-              disabled>{{ user.username }}</ion-input>
-            <ion-buttons slot="end">
-              <ion-button (click)="enableInput('username', $event)">
-                <ion-icon name="pencil-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
+              [ngModel]="userName"
+              name="user-name"
+              required></ion-input>
           </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <h3>Email</h3>
           <ion-item>
             <ion-input
-              #email
-              type="text"
-              disabled>{{ user.email }}</ion-input>
-            <ion-buttons slot="end">
-              <ion-button (click)="enableInput('email', $event)">
-                <ion-icon name="pencil-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
+              type="email"
+              [ngModel]="userEmail"
+              name="user-email"
+              required></ion-input>
           </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <h3>Phone</h3>
           <ion-item>
             <ion-input
-              #phone
-              type="text"
-              disabled>{{ user.phone }}</ion-input>
-            <ion-buttons slot="end">
-              <ion-button (click)="enableInput('phone', $event)">
-                <ion-icon name="pencil-outline"></ion-icon>
-              </ion-button>
-            </ion-buttons>
+              type="phone"
+              [ngModel]="userPhone"
+              name="user-phone"
+              required></ion-input>
           </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <h3>Contact Me By</h3>
           <ion-item>
-            <ion-label>Contact Me By</ion-label>
-            <ion-select [value]="user.preferred_contact_mode">
+            <ion-select
+              [(ngModel)]="userPreferredMode"
+              name="user-preferred-mode"
+              multiple="false"
+              okText="OK"
+              cancelText="Cancel">
               <ion-select-option value="email">Email</ion-select-option>
               <ion-select-option value="phone">Phone</ion-select-option>
-              <ion-select-option value="both">Phone and Email</ion-select-option>
             </ion-select>
           </ion-item>
-        </ion-list>
+        </ion-col>
+      </ion-row>
 
-      </ion-col>
-    </ion-row>
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <ion-button
+            color="primary"
+            type="submit">Save</ion-button>
+        </ion-col>
+      </ion-row>
 
-    <ion-title>My Groups</ion-title>
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <ion-button
+            color="danger"
+            type="button"
+            (click)="unRegister()">Unregister</ion-button>
+        </ion-col>
+      </ion-row>
 
-    <ion-row *ngFor="let group of user.groups">
+    </ion-grid>
+  </form>
+
+  <ion-card *ngIf="display === 'usergroups' && !loadingGroups">
+    <ion-row *ngFor="let group of userGroups">
       <ion-col size="12" size-sm="6" offset-sm="3">
-        <!-- <ion-list> -->
         <ion-item-sliding #slidingItem>
           <ion-item>
             <ion-label>
@@ -69,14 +112,14 @@
           <ion-item-options>
             <ion-item-option
               color="danger"
-              (click)="onLeaveGroup(group.id, slidingItem)">
-              Leave
+              (click)="onLeaveGroup(group, slidingItem)">
+              Leave Group
             </ion-item-option>
           </ion-item-options>
         </ion-item-sliding>
-        <!-- </ion-list> -->
       </ion-col>
     </ion-row>
+  </ion-card>
 
-  </ion-grid>
+
 </ion-content>

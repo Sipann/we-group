@@ -14,14 +14,27 @@ import { Order } from '../models/order.model';
 import { OrderOutput } from '../models/order-output.model';
 import { OrderSumup } from '../models/order-sumup.model';
 
+import { AuthService } from './auth.service';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiClientService {
   private baseUrl = 'http://localhost:3000';
-  private userid = 'user3';
 
-  constructor(public http: HttpClient) { }
+  private userid: string;
+
+  constructor(
+    public authService: AuthService,
+    public http: HttpClient) {
+    this.authService.getUserUid().subscribe(auth => {
+      if (auth) {
+        this.userid = auth.uid;
+      } else {
+        this.userid = null;
+      }
+    })
+  }
 
   getGroups(): Observable<Group[]> {
     const httpOptions = {
@@ -54,6 +67,15 @@ export class ApiClientService {
       .pipe(map(created => created));
   }
 
+  getUser(): Observable<User> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'userid': this.userid,
+      })
+    };
+    return this.http.get(`${ this.baseUrl }/users`, httpOptions)
+      .pipe(map(user => User.parse(user)));
+  }
 
   getGroup(groupid: number): Observable<Group> {
     const httpOptions = {
@@ -148,6 +170,17 @@ export class ApiClientService {
     };
     return this.http.get(`${ this.baseUrl }/orders`, httpOptions)
       .pipe(map((obj: any) => obj.map(order => order)));
+  }
+
+  updateUser(user: { name: string, email: string, phone: string, preferred_contact_mode: string }): Observable<User> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'userid': this.userid,
+        'Content-Type': 'application/json',
+      })
+    };
+    return this.http.put(`${ this.baseUrl }/users`, user, httpOptions)
+      .pipe(map(user => User.parse(user)));
   }
 
   updateGroupInfos(data: { name: string, description: string }, groupid: number): Observable<Group> {

@@ -6,7 +6,7 @@ import { GroupManagePage } from './group-manage.page';
 const routes: Routes = [
   {
     path: '',
-    component: GroupManagePage
+    component: GroupManagePage,
   }
 ];
 
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class GroupManagePageRoutingModule {}
+export class GroupManagePageRoutingModule { }

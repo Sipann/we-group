@@ -18,6 +18,7 @@ export class OrdersListPage implements OnInit, OnDestroy {
 
   private ordersSub: Subscription;
 
+  archiveIsEmpty = true;
   group: Group;
   groupId: number;
   loadingOrders = true;
@@ -60,26 +61,29 @@ export class OrdersListPage implements OnInit, OnDestroy {
 
         this.ordersSub = this.apiClientService.getUserOrders()
           .subscribe(data => {
-            this.reduced = this.reduceData(data);
-            const all: {
-              groupname: string,
-              orderid: number,
-              deadline: string,
-              items: { name: string, quantity: number }[]
-            }[] = [];
-            let key = this.groupId;
-            let groupname = this.reduced[key].groupname;
-            for (let prop in this.reduced[key]) {
-              if (this.reduced[key].hasOwnProperty(prop) && prop !== 'groupname') {
-                all.push({
-                  groupname: groupname,
-                  orderid: +prop,
-                  deadline: this.reduced[key][prop].orderdeadline,
-                  items: this.reduced[key][prop].items,
-                });
+            if (data.length) {
+              this.archiveIsEmpty = false;
+              this.reduced = this.reduceData(data);
+              const all: {
+                groupname: string,
+                orderid: number,
+                deadline: string,
+                items: { name: string, quantity: number }[]
+              }[] = [];
+              let key = this.groupId;
+              let groupname = this.reduced[key].groupname;
+              for (let prop in this.reduced[key]) {
+                if (this.reduced[key].hasOwnProperty(prop) && prop !== 'groupname') {
+                  all.push({
+                    groupname: groupname,
+                    orderid: +prop,
+                    deadline: this.reduced[key][prop].orderdeadline,
+                    items: this.reduced[key][prop].items,
+                  });
+                }
               }
+              this.orders = all;
             }
-            this.orders = all;
             this.loadingOrders = false;
           })
       }

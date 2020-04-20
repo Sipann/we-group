@@ -18,6 +18,8 @@ router.delete('/groups/items/:itemid', controllers.itemCtrl.deleteItem);
 router.post('/orders/:groupid', controllers.orderCtrl.createOrder);
 router.get('/orders', controllers.orderCtrl.getAllOrdersForUser);
 router.post('/users', controllers.userCtrl.createUser);
-
+router.get('/users', controllers.userCtrl.getUser);
+router.put('/users', controllers.userCtrl.updateUser);
+router.delete('/users', controllers.userCtrl.deleteUser);
 
 module.exports = router;

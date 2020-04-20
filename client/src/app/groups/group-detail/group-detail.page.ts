@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { ApiClientService } from 'src/app/services/api-client.service';
+import { AuthService } from '../../services/auth.service';
 import { Group } from '../../models/group.model';
 
 @Component({
@@ -13,8 +14,7 @@ import { Group } from '../../models/group.model';
 })
 export class GroupDetailPage implements OnInit, OnDestroy {
 
-  // currentUserIsManager = false;
-  currentUserIsManager = true;
+  currentUserIsManager = false;
   group: Group;
   loading = true;
   loadingCtrl;
@@ -22,10 +22,12 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   orderIsAllowed = false;
 
   private groupSub: Subscription;
+  private authSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private apiClientService: ApiClientService,
+    private authService: AuthService,
     private loadingController: LoadingController,
     private navCtrl: NavController,
     private router: Router) { }
@@ -51,7 +53,16 @@ export class GroupDetailPage implements OnInit, OnDestroy {
           this.loading = false;
           this.orderIsAllowed = this.group.deadline && new Date(this.group.deadline) >= new Date();
           this.loadingCtrl.dismiss();
+
+          this.authSub = this.authService.getUserUid().subscribe(auth => {
+            if (auth && auth.uid === this.group.manager_id) {
+              this.currentUserIsManager = true;
+            } else {
+              this.currentUserIsManager = false;
+            }
+          });
         });
+
     });
   }
 
@@ -67,7 +78,9 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   }
 
   onNavigateToManageGroup() {
-    this.router.navigate(['/', 'groups', 'manage', this.group.id], this.navigationExtras);
+    if (this.currentUserIsManager) {
+      this.router.navigate(['/', 'groups', 'manage', this.group.id], this.navigationExtras);
+    }
   }
 
   onNavigateToPlaceOrder() {
@@ -80,6 +93,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.authSub) this.authSub.unsubscribe();
   }
 
 }

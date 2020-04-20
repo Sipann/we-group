@@ -61,6 +61,7 @@ export class GroupManagePage implements OnInit, OnDestroy {
         this.fetchSummary();
       }
       else {
+        console.log('navigating back from group-manage');
         this.router.navigate(['/', 'groups', 'detail', this.groupId]);
         return;
       }
