@@ -26,7 +26,8 @@ export class OrdersListPage implements OnInit, OnDestroy {
     groupname: string,
     orderid: number,
     deadline: string,
-    items: { name: string, quantity: number }[]
+    items: { id?: number, name: string, quantity: number }[]
+    // items: { name: string, quantity: number }[]
   }[];
   reduced;
 
@@ -68,7 +69,8 @@ export class OrdersListPage implements OnInit, OnDestroy {
                 groupname: string,
                 orderid: number,
                 deadline: string,
-                items: { name: string, quantity: number }[]
+                items: { id?: number, name: string, quantity: number }[]
+                // items: { name: string, quantity: number }[]
               }[] = [];
               let key = this.groupId;
               let groupname = this.reduced[key].groupname;
@@ -100,7 +102,8 @@ export class OrdersListPage implements OnInit, OnDestroy {
     groupname: string,
     orderid: number,
     deadline: string,
-    items: { name: string, quantity: number }[]
+    items: { id?: number, name: string, quantity: number }[]
+    // items: { name: string, quantity: number }[]
   }) {
     let navigationExtras = {
       state: { order }
@@ -116,14 +119,14 @@ export class OrdersListPage implements OnInit, OnDestroy {
         if (acc[currentGroup][curr.orderid]) {
           acc[currentGroup][curr.orderid].items = [
             ...acc[currentGroup][curr.orderid].items,
-            { name: curr.itemname, quantity: curr.orderedqty }
+            { itemid: curr.itemid, orderedid: curr.orderedid, name: curr.itemname, quantity: curr.orderedqty }
           ]
         }
         else {
           let newOrder = {
             [curr.orderid]: {
               orderdeadline: curr.orderdeadline,
-              items: [{ name: curr.itemname, quantity: curr.orderedqty }]
+              items: [{ itemid: curr.itemid, orderedid: curr.orderedid, name: curr.itemname, quantity: curr.orderedqty }]
             }
           };
           acc = {
@@ -142,7 +145,7 @@ export class OrdersListPage implements OnInit, OnDestroy {
             groupname: curr.groupname,
             [curr.orderid]: {
               orderdeadline: curr.orderdeadline,
-              items: [{ name: curr.itemname, quantity: curr.orderedqty }]
+              items: [{ itemid: curr.itemid, orderedid: curr.orderedid, name: curr.itemname, quantity: curr.orderedqty }]
             }
           }
         }

@@ -205,5 +205,16 @@ export class ApiClientService {
       .pipe(map(group => Group.parse(group)));
   }
 
+  updateOrder(updatedOrder: { orderedid: number, quantityChange: number }[]): Observable<{}[]> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'userid': this.userid,
+        'Content-Type': 'application/json',
+      })
+    };
+    return this.http.put(`${ this.baseUrl }/orders`, updatedOrder, httpOptions)
+      .pipe(map((obj: any) => obj.map(ordered => ordered)));
+  }
+
 
 }

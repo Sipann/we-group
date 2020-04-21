@@ -42,7 +42,9 @@ exports.getAllOrdersForUser = async (userid) => {
         orders.id as orderid,
         orders.date as orderdeadline,
         orders.group_id as ordergroup,
+        ordered_items.id as orderedid,
         ordered_items.quantity as orderedqty,
+        items.id as itemid,
         items.name as itemname,
         items.price as itemprice,
         groups.name as groupname
@@ -60,4 +62,32 @@ exports.getAllOrdersForUser = async (userid) => {
   } catch (error) {
     console.log('[order model - getAllOrdersForUser] error', error.message);
   }
-}
+};
+
+exports.updateOrder = async (updatedOrder) => {
+  try {
+    const response = [];
+    // console.log('updatedOrder', updatedOrder);
+    for (let item of updatedOrder) {
+      const values = [item.orderedid, item.quantityChange];
+      const queryStr = `
+        UPDATE ordered_items
+          SET quantity = quantity + $2
+        WHERE id = $1
+        RETURNING *;`;
+      const res = await pool.query(queryStr, values);
+
+      const valuesItems = [item.itemid, item.quantityChange];
+      const queryStrItems = `
+        UPDATE items
+          SET remaining_qty = remaining_qty - $2
+        WHERE id = $1;`;
+      await pool.query(queryStrItems, valuesItems);
+
+      response.push(res.rows[0]);
+    }
+    return response;
+  } catch (error) {
+    console.log('[order model - updateOrder] error', error.message);
+  }
+};

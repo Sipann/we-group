@@ -17,6 +17,7 @@ router.post('/groups/items', controllers.itemCtrl.addItemToGroup);
 router.delete('/groups/items/:itemid', controllers.itemCtrl.deleteItem);
 router.post('/orders/:groupid', controllers.orderCtrl.createOrder);
 router.get('/orders', controllers.orderCtrl.getAllOrdersForUser);
+router.put('/orders', controllers.orderCtrl.updateOrder);
 router.post('/users', controllers.userCtrl.createUser);
 router.get('/users', controllers.userCtrl.getUser);
 router.put('/users', controllers.userCtrl.updateUser);

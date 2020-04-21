@@ -8,6 +8,9 @@ export class OrderOutput {
     orderedqty: number,
     ordergroup: number,
     orderid: number,
+
+    itemid?: number,
+    orderedid?: number
   ) { }
 
 }

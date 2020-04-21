@@ -10,13 +10,48 @@
 
 <ion-content>
   <ion-grid>
-    <ion-row>
+    <ion-row *ngFor="let item of order.items">
       <ion-col size="12" size-sm="6" offset-sm="3">
         <ion-list>
-          <ion-item *ngFor="let item of order.items">
-            {{ item.name }} - {{ item.quantity }}
+          <ion-item
+            *ngIf="!isEditable">
+            {{ item.name }} - {{ item.orderedqty }}
           </ion-item>
+          <ion-card
+            *ngIf="isEditable"
+            [ngClass]="item.remaining_qty < 1 ? 'soldout' : ''">
+            <ion-card-content>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="8">
+                    <h2>{{ item.name }}</h2>
+                  </ion-col>
+                  <ion-col size="2" class="ion-text-right">
+                    <ion-badge>{{ ordered[item.orderedid] }}</ion-badge>
+                  </ion-col>
+                  <ion-col size="2">
+                    <div>
+                      <ion-icon
+                        name="caret-down-outline"
+                        (click)="onRemoveFromBasket(item)"></ion-icon>
+                    </div>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
         </ion-list>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button
+          color="light"
+          (click)="onCancel()">Cancel</ion-button>
+        <ion-button
+          color="primary"
+          (click)="onSave()">Save</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

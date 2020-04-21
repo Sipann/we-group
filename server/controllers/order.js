@@ -25,3 +25,15 @@ exports.getAllOrdersForUser = async ctx => {
     console.log('[orderCtrl getAllOrdersForUser] error', error.message);
   }
 };
+
+exports.updateOrder = async ctx => {
+  try {
+    console.log('updateOrder entering with body', ctx.request.body);
+    const updatedOrder = ctx.request.body;
+    const res = await db.updateOrder(updatedOrder);
+    ctx.body = res;
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[orderCtrl updateOrder] error', error.message);
+  }
+};
