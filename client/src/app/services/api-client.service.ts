@@ -36,6 +36,12 @@ export class ApiClientService {
     })
   }
 
+  getAllGroups(): Observable<Group[]> {
+    console.log('fetching all groups');
+    return this.http.get(`${ this.baseUrl }/groups/search`)
+      .pipe(map((obj: any) => obj.map(group => Group.parse(group))));
+  }
+
   getGroups(): Observable<Group[]> {
     const httpOptions = {
       headers: new HttpHeaders({
@@ -44,6 +50,18 @@ export class ApiClientService {
     };
     return this.http.get(`${ this.baseUrl }/groups`, httpOptions)
       .pipe(map((obj: any) => obj.map(group => group)));
+  }
+
+  addUserToGroup(groupid: number): Observable<{}> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'userid': this.userid,
+        'Content-Type': 'application/json',
+      })
+    };
+    console.log('userid', this.userid);
+    return this.http.post(`${ this.baseUrl }/groups/user/${ groupid }`, null, httpOptions)
+      .pipe(map(created => created));
   }
 
   createUser(user: UserInput): Observable<User> {

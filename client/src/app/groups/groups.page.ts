@@ -27,6 +27,19 @@ export class GroupsPage implements OnInit, OnDestroy {
     private modalCtrl: ModalController) { }
 
   ngOnInit() {
+    // this.authSub = this.authService.getUserUid().subscribe(auth => {
+    //   if (auth) {
+    //     this.userId = auth.uid;
+    //     this.fetchAllGroups();
+
+    //   } else {
+    //     console.log('logged out');
+    //   }
+    // });
+  }
+
+  ionViewWillEnter() {
+    console.log('ionViewWillEnter');
     this.authSub = this.authService.getUserUid().subscribe(auth => {
       if (auth) {
         this.userId = auth.uid;
@@ -37,6 +50,7 @@ export class GroupsPage implements OnInit, OnDestroy {
       }
     });
   }
+
 
   ngOnDestroy() {
     if (this.authSub) this.authSub.unsubscribe();
@@ -69,7 +83,7 @@ export class GroupsPage implements OnInit, OnDestroy {
   }
 
   randomBgThumbnail(): string {
-    const rand = Math.floor(Math.random() * 7);  // 7 => number of available bg images in assets/bgThumbnail
+    const rand = Math.floor((Math.random() * 7) + 1);  // 7 => number of available bg images in assets/bgThumbnail
     return `assets/bgThumbnail/${ rand }.png`;
   }
 }

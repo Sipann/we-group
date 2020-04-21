@@ -170,4 +170,34 @@ exports.updateGroupDeadline = async (deadline, groupid) => {
   } catch (error) {
     console.log('[group model - updateGroupDeadline db] error', error.message);
   }
+};
+
+exports.searchGroups = async userid => {
+  try {
+    const values = [userid];
+    const queryStr = `
+       SELECT
+        groups.id as id,
+        groups.name as name,
+        groups.description as description,
+        groups.manager_id as manager_id
+      FROM groups;`;
+    const res = await pool.query(queryStr);
+    return res.rows;
+  } catch (error) {
+    console.log('[group model - updateGroupDeadline db] error', error.message);
+  }
+};
+
+exports.addUserToGroup = async (userid, groupid) => {
+  try {
+    const values = [userid, groupid];
+    const queryStr = `
+      INSERT INTO groupsusers (user_id, group_id)
+      VALUES ($1, $2);`;
+    const res = await pool.query(queryStr, values);
+    return res.rowCount;
+  } catch (error) {
+    console.log('[group model - addUserToGroup db] error', error.message);
+  }
 }

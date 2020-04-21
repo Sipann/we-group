@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: 'manage/:groupid',
     loadChildren: () => import('./group-manage/group-manage.module').then(m => m.GroupManagePageModule)
+  },
+  {
+    path: 'search',
+    loadChildren: () => import('./groups-search/groups-search.module').then(m => m.GroupsSearchPageModule)
   }
 ];
 

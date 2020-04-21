@@ -105,4 +105,27 @@ exports.updateGroupDeadline = async ctx => {
     ctx.status = 500;
     console.log('[groupCtrl updateGroupDeadline] error', error.message);
   }
+};
+
+exports.searchGroups = async ctx => {
+  try {
+    const { userid } = ctx.request.header;
+    const res = await db.searchGroups(userid);
+    ctx.body = res;
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[groupCtrl searchGroups] error', error.message);
+  }
+};
+
+exports.addUserToGroup = async ctx => {
+  try {
+    const { userid } = ctx.request.header;
+    const { groupid } = ctx.params;
+    const res = await db.addUserToGroup(userid, groupid);
+    ctx.body = res;
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[groupCtrl addUserToGroup] error', error.message);
+  }
 }
