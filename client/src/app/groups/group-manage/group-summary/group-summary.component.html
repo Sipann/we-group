@@ -1,6 +1,6 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title>Order Summary for 2020-17-04 (TBU)</ion-card-title>
+    <ion-card-title>Order Summary for {{ formatDate(group.deadline) }}</ion-card-title>
   </ion-card-header>
 
   <ion-card-content *ngIf="empty">

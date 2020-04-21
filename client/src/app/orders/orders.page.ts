@@ -7,6 +7,8 @@ import { ApiClientService } from '../services/api-client.service';
 import { Group } from '../models/group.model';
 import { Item } from '../models/item.model';
 
+import * as moment from 'moment';
+
 
 @Component({
   selector: 'app-orders',
@@ -73,6 +75,10 @@ export class OrdersPage implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.orderSub) this.orderSub.unsubscribe();
     if (this.itemsSub) this.itemsSub.unsubscribe();
+  }
+
+  formatDate(deadline) {
+    return moment(new Date(deadline)).format('Do MMM YYYY - hh:mm a');
   }
 
   onAddToBasket(itemid: number, available: number) {

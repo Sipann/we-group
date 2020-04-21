@@ -94,6 +94,7 @@
               (cancelled)="onCancel()"></app-group-users>
             <app-group-summary
               *ngSwitchCase="'summary'"
+              [group]="group"
               [summaryByUser]="summaryByUser"
               [summaryByItem]="summaryByItem"
               (cancelled)="onCancel()"></app-group-summary>

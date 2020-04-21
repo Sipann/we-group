@@ -9,6 +9,8 @@ import { ApiClientService } from 'src/app/services/api-client.service';
 import { OrderSummary } from '../../models/ordersummary.model';
 import { OrderOutput } from 'src/app/models/order-output.model';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-orders-list',
   templateUrl: './orders-list.page.html',
@@ -97,6 +99,9 @@ export class OrdersListPage implements OnInit, OnDestroy {
     });
   }
 
+  formatDate(deadline) {
+    return moment(new Date(deadline)).format('Do MMM YYYY');
+  }
 
   onNavigateToOrderDetails(order: {
     groupname: string,

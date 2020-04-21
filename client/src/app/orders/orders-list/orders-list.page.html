@@ -25,7 +25,7 @@
             detail
             (click)="onNavigateToOrderDetails(order)">
             <ion-label>
-              <ion-text>{{ order.groupname }} - {{ order.deadline }}</ion-text>
+              <ion-text>{{ order.groupname }} - {{ formatDate(order.deadline) }}</ion-text>
             </ion-label>
           </ion-item>
         </ion-list>

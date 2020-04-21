@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiClientService } from 'src/app/services/api-client.service';
 
+import * as moment from 'moment';
+
 @Component({
   selector: 'app-order-archive',
   templateUrl: './order-archive.page.html',
@@ -56,6 +58,10 @@ export class OrderArchivePage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.orderSub) this.orderSub.unsubscribe();
+  }
+
+  formatDate(deadline) {
+    return moment(new Date(deadline)).format('Do MMM YYYY');
   }
 
   onRemoveFromBasket(item: { itemid: number, orderedid: number, name: string, quantity: number }) {

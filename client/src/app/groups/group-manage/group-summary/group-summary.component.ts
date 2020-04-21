@@ -2,6 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { SegmentChangeEventDetail } from '@ionic/core';
 
 import { Order } from '../../../models/order.model';
+import { Group } from 'src/app/models/group.model';
+
+import * as moment from 'moment';
+
 
 @Component({
   selector: 'app-group-summary',
@@ -10,6 +14,7 @@ import { Order } from '../../../models/order.model';
 })
 export class GroupSummaryComponent implements OnInit {
 
+  @Input() group: Group;
   @Input() summaryByUser: [];
   @Input() summaryByItem: [];
   empty = true;
@@ -27,6 +32,10 @@ export class GroupSummaryComponent implements OnInit {
 
   summaryDisplayChanged(e: CustomEvent<SegmentChangeEventDetail>) {
     this.display = e.detail.value;
+  }
+
+  formatDate(deadline) {
+    return moment(new Date(deadline)).format('Do MMM YYYY - hh:mm a');
   }
 
 }

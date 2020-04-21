@@ -4,7 +4,7 @@
       <ion-back-button defaultHref="/orders/all/{{ orderId }}"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ order.groupname }}</ion-title>
-    <ion-title size="small">{{ order.deadline }}</ion-title>
+    <ion-title size="small">{{ formatDate(order.deadline) }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
