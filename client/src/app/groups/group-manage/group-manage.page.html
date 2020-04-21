@@ -14,13 +14,14 @@
       <ion-col size="12">
         <ion-card
           *ngIf="!loading_items"
+          [ngClass]="managing && managing.length && managing !== 'products' ? 'inactive' : 'active'"
           color="primary"
           (click)="onSelect('products')">
           <ion-card-header class="ion-text-center">
-            <ion-card-title>Manage Available Products</ion-card-title>
+            <ion-card-title>Available Items</ion-card-title>
           </ion-card-header>
           <ion-card-content class="ion-text-center">
-            Update available products and deadline for the {{ group.name }} group.
+            Update available items and deadline for the {{ group.name }} group.
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -30,10 +31,11 @@
       <ion-col size="12">
         <ion-card
           *ngIf="!loading_summary"
+          [ngClass]="managing && managing.length && managing !== 'summary' ? 'inactive' : 'active'"
           color="primary"
           (click)="onSelect('summary')">
           <ion-card-header class="ion-text-center">
-            <ion-card-title>Get Summary</ion-card-title>
+            <ion-card-title>Orders Summary</ion-card-title>
           </ion-card-header>
           <ion-card-content class="ion-text-center">
             Check Summary of Last Order
@@ -46,10 +48,11 @@
       <ion-col size="6">
         <ion-card
           *ngIf="!loading_members"
+          [ngClass]="managing && managing.length && managing !== 'users' ? 'inactive' : 'active'"
           color="secondary"
           (click)="onSelect('users')">
           <ion-card-header>
-            <ion-card-title class="ion-text-center">Manage Group Members</ion-card-title>
+            <ion-card-title class="ion-text-center">Members</ion-card-title>
           </ion-card-header>
           <ion-card-content class="ion-text-center">
             View and manage your group's members.
@@ -57,16 +60,17 @@
         </ion-card>
       </ion-col>
 
-      <ion-col size="6">
+      <ion-col size="6" class="ion-align-self-stretch flex">
         <ion-card
           *ngIf="!loading_infos"
+          [ngClass]="managing && managing.length && managing !== 'infos' ? 'inactive' : 'active'"
           color="light"
           (click)="onSelect('infos')">
           <ion-card-header>
-            <ion-card-title class="ion-text-center">Manage Group Details</ion-card-title>
+            <ion-card-title class="ion-text-center">Group Details</ion-card-title>
           </ion-card-header>
           <ion-card-content class="ion-text-center">
-            View and manage your group's detail (name, manager).
+            View and manage your group's detail.
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -74,11 +78,14 @@
 
     <ion-row>
       <ion-col size="12">
-        <ion-card *ngIf="managing">
-          <ion-card-content [ngSwitch]="managing">
+        <ion-card
+          *ngIf="managing"
+          class="ion-padding-top component">
+          <ion-card-content [ngSwitch]="managing" class="ion-no-padding">
             <app-group-infos
               *ngSwitchCase="'infos'"
               [group]="group"
+              [managerName]="managerName"
               (done)="onDone($event)"
               (cancelled)="onCancel()"></app-group-infos>
             <app-group-products

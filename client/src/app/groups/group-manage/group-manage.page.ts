@@ -23,6 +23,7 @@ export class GroupManagePage implements OnInit, OnDestroy {
   loading_summary = true;
 
   groupId: number;
+  managerName: string;
   managing: '' | 'info' | 'products' | 'summary' | 'users';
   members: User[];
   summaryByItem: {}[];
@@ -59,9 +60,10 @@ export class GroupManagePage implements OnInit, OnDestroy {
         this.fetchItems();
         this.fetchMembers();
         this.fetchSummary();
+
+
       }
       else {
-        console.log('navigating back from group-manage');
         this.router.navigate(['/', 'groups', 'detail', this.groupId]);
         return;
       }
@@ -97,6 +99,8 @@ export class GroupManagePage implements OnInit, OnDestroy {
       .subscribe(data => {
         this.members = data;
         this.loading_members = false;
+        const manager = data.find(member => member.id === this.group.manager_id);
+        this.managerName = manager.name;
       });
   }
 

@@ -12,6 +12,7 @@ import { AlertController } from '@ionic/angular';
 export class GroupInfosComponent implements OnInit {
 
   @Input() group: Group;
+  @Input() managerName: string;
   @Output() done = new EventEmitter<Group>();
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
@@ -29,6 +30,7 @@ export class GroupInfosComponent implements OnInit {
     this.groupDesc = this.group.description;
     this.groupName = this.group.name;
     this.groupManager = this.group.manager_id;
+    console.log('managerName from group-infos', this.managerName);
   }
 
   onCancel() { this.cancelled.emit(); }
@@ -64,7 +66,6 @@ export class GroupInfosComponent implements OnInit {
       .subscribe(data => {
         this.done.emit(data);
       });
-
   }
 
 

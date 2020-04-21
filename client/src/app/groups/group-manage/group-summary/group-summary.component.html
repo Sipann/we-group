@@ -1,6 +1,7 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title>Order Summary for {{ formatDate(group.deadline) }}</ion-card-title>
+    <ion-card-title class="ion-text-center">Order Summary</ion-card-title>
+    <ion-card-subtitle class="ion-text-center">{{ formatDate(group.deadline) }}</ion-card-subtitle>
   </ion-card-header>
 
   <ion-card-content *ngIf="empty">
@@ -19,24 +20,32 @@
       </ion-segment-button>
     </ion-segment>
 
-    <ion-list *ngIf="display === 'items'">
-      <ion-item *ngFor="let summary of summaryByItem">
-        <ion-label>{{ summary.itemname }}</ion-label>
-        <ion-thumbnail slot="end">
+    <ion-grid *ngIf="display === 'items'">
+      <ion-row *ngFor="let summary of summaryByItem">
+        <ion-col size="8" class="ion-text-start">
+          <ion-text>{{ summary.itemname }}</ion-text>
+        </ion-col>
+        <ion-col size="4" class="ion-text-end">
           <ion-text>{{ summary.quantity }}</ion-text>
-        </ion-thumbnail>
-      </ion-item>
-    </ion-list>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
 
-    <ion-list *ngIf="display === 'users'">
-      <ion-card *ngFor="let summary of summaryByUser">
-        <ion-card-title>{{ summary.username }}</ion-card-title>
-        <ion-card-content *ngFor="let s of summary.items">
-          <ion-label>{{ s.itemname }}</ion-label>
-          <ion-thumbnail>{{ s.orderedquantity }}</ion-thumbnail>
-        </ion-card-content>
-      </ion-card>
-    </ion-list>
+    <div *ngIf="display === 'users'">
+      <ion-grid *ngFor="let summary of summaryByUser">
+        <ion-row>
+          <ion-col>{{ summary.username }}</ion-col>
+        </ion-row>
+        <ion-row *ngFor="let item of summary.items">
+          <ion-col size="8" class="ion-text-start">
+            <ion-text>{{ item.itemname }}</ion-text>
+          </ion-col>
+          <ion-col size="4" class="ion-text-end">
+            <ion-text>{{ item.orderedquantity }}</ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
 
   </ion-card-content>
 </ion-card>

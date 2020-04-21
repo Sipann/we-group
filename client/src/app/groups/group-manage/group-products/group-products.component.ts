@@ -45,7 +45,7 @@ export class GroupProductsComponent implements OnInit {
       const groupName = item.name;
       itemsGroup[groupName] = this.fb.group({
         'selected': [false],
-        'amount': [item.initial_qty],
+        'amount': [item.remaining_qty],
         'name': [item.name],
         'price': [item.price],
         'currency': [item.currency]
@@ -55,6 +55,7 @@ export class GroupProductsComponent implements OnInit {
       'deadlineDate': []
     });
     this.itemsForm = new FormGroup(itemsGroup);
+    console.log('this.itemsForm', this.itemsForm);
   }
 
   onCancel() { this.cancelled.emit(); }
@@ -90,6 +91,5 @@ export class GroupProductsComponent implements OnInit {
       })
   }
 
-  onSaveChangesAndInform() { }
 
 }
