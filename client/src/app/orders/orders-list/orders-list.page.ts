@@ -103,12 +103,11 @@ export class OrdersListPage implements OnInit, OnDestroy {
     orderid: number,
     deadline: string,
     items: { id?: number, name: string, quantity: number }[]
-    // items: { name: string, quantity: number }[]
   }) {
     let navigationExtras = {
       state: { order }
     };
-    this.router.navigate(['/', 'orders', 'all', this.group.id, 'archive', order.orderid], navigationExtras);
+    this.router.navigate(['/', 'orders', 'all', this.groupId, 'archive', order.orderid], navigationExtras);
   }
 
 
