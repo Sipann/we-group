@@ -4,7 +4,7 @@ export class Group {
   description: string;
   currency: string;
   manager_id: string;
-  // image?: string;
+  image?: string;
   deadline?: string;
 
   static parse(data) {

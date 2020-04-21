@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 
 import { ApiClientService } from '../services/api-client.service';
@@ -7,7 +7,6 @@ import { Group } from '../models/group.model';
 import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
 import { AuthService } from '../services/auth.service';
-import { take, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-groups',
@@ -32,6 +31,7 @@ export class GroupsPage implements OnInit, OnDestroy {
       if (auth) {
         this.userId = auth.uid;
         this.fetchAllGroups();
+
       } else {
         console.log('logged out');
       }
@@ -39,6 +39,7 @@ export class GroupsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.authSub) this.authSub.unsubscribe();
     if (this.groupsSub) this.groupsSub.unsubscribe();
   }
 
@@ -46,6 +47,9 @@ export class GroupsPage implements OnInit, OnDestroy {
     this.apiClientService.getGroups()
       .subscribe((data: Group[]) => {
         this.groups = data;
+        this.groups.forEach(group => {
+          group.image = this.randomBgThumbnail();
+        });
       });
   }
 
@@ -62,5 +66,10 @@ export class GroupsPage implements OnInit, OnDestroy {
       .then(_ => {
         this.fetchAllGroups();
       });
+  }
+
+  randomBgThumbnail(): string {
+    const rand = Math.floor(Math.random() * 7);  // 7 => number of available bg images in assets/bgThumbnail
+    return `assets/bgThumbnail/${ rand }.png`;
   }
 }
