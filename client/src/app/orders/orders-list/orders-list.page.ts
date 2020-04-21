@@ -57,6 +57,7 @@ export class OrdersListPage implements OnInit, OnDestroy {
         return;
       }
       this.groupId = parseInt(paramMap.get('groupid'));
+      console.log('this.groupId', this.groupId);
 
       if (this.router.getCurrentNavigation().extras.state || this.group) {
         const group = this.router.getCurrentNavigation().extras.state;
@@ -64,8 +65,9 @@ export class OrdersListPage implements OnInit, OnDestroy {
 
         this.ordersSub = this.apiClientService.getUserOrders()
           .subscribe(data => {
+            console.log('orders-list data', data);
             if (data.length) {
-              this.archiveIsEmpty = false;
+              // this.archiveIsEmpty = false;
               this.reduced = this.reduceData(data);
               const all: {
                 groupname: string,
@@ -75,18 +77,22 @@ export class OrdersListPage implements OnInit, OnDestroy {
                 // items: { name: string, quantity: number }[]
               }[] = [];
               let key = this.groupId;
-              let groupname = this.reduced[key].groupname;
-              for (let prop in this.reduced[key]) {
-                if (this.reduced[key].hasOwnProperty(prop) && prop !== 'groupname') {
-                  all.push({
-                    groupname: groupname,
-                    orderid: +prop,
-                    deadline: this.reduced[key][prop].orderdeadline,
-                    items: this.reduced[key][prop].items,
-                  });
+
+              if (this.reduced[key]) {
+                let groupname = this.reduced[key].groupname;
+                for (let prop in this.reduced[key]) {
+                  if (this.reduced[key].hasOwnProperty(prop) && prop !== 'groupname') {
+                    all.push({
+                      groupname: groupname,
+                      orderid: +prop,
+                      deadline: this.reduced[key][prop].orderdeadline,
+                      items: this.reduced[key][prop].items,
+                    });
+                  }
                 }
+                this.orders = all;
+                this.archiveIsEmpty = false;
               }
-              this.orders = all;
             }
             this.loadingOrders = false;
           })

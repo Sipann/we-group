@@ -28,15 +28,15 @@
         <ion-col size="12" size-sm="6" offset-sm="3">
           <ion-button
             color="primary"
+            type="submit"
+            expand="block"
+            [disabled]="!f.valid">Login</ion-button>
+          <ion-button
+            color="primary"
             type="button"
             fill="clear"
             expand="block"
             (click)="onSwitchToSignup()">Switch to Signup</ion-button>
-          <ion-button
-            color="primary"
-            type="submit"
-            expand="block"
-            [disabled]="!f.valid">Login</ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
