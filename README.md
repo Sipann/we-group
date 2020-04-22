@@ -5,6 +5,8 @@ WeGroup is an app allowing people to group their commodities orders. It has been
 
 To run the app, you must:
 * clone the repo
+* create a postgreSQL database
+* create tables by running the dbSetup_readme.js file
 * provide back-up info as detailed in the config-example.js file (server)
 * provide your firebase info as detailed in the environment-example.js file (client)
 
