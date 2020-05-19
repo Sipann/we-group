@@ -71,3 +71,7 @@ Manage members of his/her group:
 And have a recap of what to order to the supplier:
 
 ![group-manage-summary](./rd_images/group-manage-summary.png)
+
+## Forwards
+Add Tests
+Set up State Management
