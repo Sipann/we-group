@@ -97,7 +97,7 @@ export class GroupsPage implements OnInit, OnDestroy {
   //     });
   // }
 
-  onCreateGroup() {
+  onLaunchCreateGroupModal() {
     this.modalCtrl
       .create({
         component: NewGroupModalComponent,
