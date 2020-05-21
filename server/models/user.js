@@ -2,6 +2,34 @@
 
 const pool = require('../models');
 
+exports.fetchUserData = async userid => {
+  //TODO transaction
+  try {
+    const values = [userid];
+    const userDetailsQueryStr = `
+      SELECT * FROM users
+      WHERE id = $1;`;
+    const userDetails = await pool.query(userDetailsQueryStr, values);
+
+    const userGroupsQueryStr = `
+      SELECT
+        groups.id as id,
+        groups.name as name,
+        groups.description as description,
+        groups.manager_id as manager_id
+      FROM groups
+      INNER JOIN groupsusers ON groups.id = groupsusers.group_id AND groupsusers.user_id = $1;
+    `;
+    const userGroups = await pool.query(userGroupsQueryStr, values);
+
+    return { userDetails: userDetails.rows[0], userGroups: userGroups.rows };
+
+  } catch (error) {
+    console.log('[user model - fetchUserData] error', error.message);
+  }
+};
+
+
 exports.createUser = async user => {
   try {
     const { id, name, email } = user;

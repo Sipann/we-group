@@ -16,7 +16,19 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
+
+
+import { GroupsPageModule } from './groups/groups.module';
+import { GroupsEffects } from './store/effects/groups.effects';
+import { UserEffects } from './store/effects/user.effects';
+
 import { AuthService } from './services/auth.service';
+import { EffectsModule } from '@ngrx/effects';
+
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { reducers } from './store/reducers/index';
+
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,7 +41,12 @@ import { AuthService } from './services/auth.service';
     ReactiveFormsModule,
     HttpClientModule,
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    GroupsPageModule,
+
+    StoreModule.forRoot(reducers),
+    StoreDevtoolsModule.instrument({ maxAge: 10 }),
+    EffectsModule.forRoot([GroupsEffects, UserEffects])
   ],
   providers: [
     AuthService,

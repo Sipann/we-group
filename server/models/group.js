@@ -173,6 +173,7 @@ exports.updateGroupDeadline = async (deadline, groupid) => {
 };
 
 exports.searchGroups = async userid => {
+  console.log('[models - searchGroups] entering');
   try {
     const values = [userid];
     const queryStr = `
@@ -183,6 +184,7 @@ exports.searchGroups = async userid => {
         groups.manager_id as manager_id
       FROM groups;`;
     const res = await pool.query(queryStr);
+    console.log('[models - searchGroups] res', res);
     return res.rows;
   } catch (error) {
     console.log('[group model - updateGroupDeadline db] error', error.message);

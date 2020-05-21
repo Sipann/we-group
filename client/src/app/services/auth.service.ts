@@ -14,6 +14,13 @@ import { ApiClientService } from './api-client.service';
 import { UserInput } from '../models/user-input.model';
 import { map } from 'rxjs/operators';
 
+import { Store } from '@ngrx/store';
+import { AppState } from '../store/reducers/index';
+import * as fromUserActions from '../store/actions/user.actions';
+import * as fromGroupsActions from '../store/actions/groups.actions';
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -25,11 +32,13 @@ export class AuthService {
   constructor(
     private afAuth: AngularFireAuth,
     private http: HttpClient,
+    private store: Store<AppState>,
     private router: Router) {
 
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this._user = user;
+        this.store.dispatch(new fromUserActions.LoadUserData(user.uid));
         this.router.navigate(['groups']);
       }
       else {

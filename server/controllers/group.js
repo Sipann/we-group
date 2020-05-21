@@ -13,7 +13,6 @@ exports.getUserGroups = async ctx => {
 };
 
 exports.getGroup = async ctx => {
-  console.log('[groupCtrl getGroup] entering');
   try {
     const res = await db.getGroup(ctx.params.groupid);
     ctx.body = res.rows[0];
@@ -108,15 +107,21 @@ exports.updateGroupDeadline = async ctx => {
 };
 
 exports.searchGroups = async ctx => {
+  console.log('entering searchGroups with header', ctx.request.header);
   try {
     const { userid } = ctx.request.header;
     const res = await db.searchGroups(userid);
+    console.log('[searchGroups] res', res);
     ctx.body = res;
   } catch (error) {
     ctx.status = 500;
     console.log('[groupCtrl searchGroups] error', error.message);
   }
 };
+
+// export.searchGroupsForUser = async ctx => {}
+
+
 
 exports.addUserToGroup = async ctx => {
   try {

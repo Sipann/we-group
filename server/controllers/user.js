@@ -2,6 +2,18 @@
 
 const db = require('../models/user');
 
+exports.fetchUserData = async ctx => {
+  try {
+    const { userid } = ctx.request.header;
+    const res = await db.fetchUserData(userid);
+    ctx.body = res;
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[userCtrl fetchUserData] error', error.message);
+  }
+};
+
+
 exports.createUser = async ctx => {
   try {
     const user = ctx.request.body;

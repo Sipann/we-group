@@ -52,7 +52,7 @@ export class GroupProductsComponent implements OnInit {
       });
     });
     itemsGroup['deadline'] = this.fb.group({
-      'deadlineDate': []
+      'deadlineDate': [this.group.deadline]
     });
     this.itemsForm = new FormGroup(itemsGroup);
     console.log('this.itemsForm', this.itemsForm);

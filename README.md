@@ -72,6 +72,17 @@ And have a recap of what to order to the supplier:
 
 ![group-manage-summary](./rd_images/group-manage-summary.png)
 
-## Forwards
-Add Tests
-Set up State Management
+
+## What's next
+* Implement NgRx state management
+* Revamp database:
+  * replace successive operations with transactions
+  * date with timestamps
+  * deal with users and groups deletions
+
+* Revamp UI
+
+
+# Credits
+Background images for groups list items created by
+<a href="https://fr.freepik.com/photos-vecteurs-libre/fond">freepik - fr.freepik.com</a>

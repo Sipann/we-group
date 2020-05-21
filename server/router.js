@@ -6,7 +6,10 @@ const router = new Router();
 const controllers = require('./controllers');
 
 router.get('/groups', controllers.groupCtrl.getUserGroups);
+
 router.get('/groups/search', controllers.groupCtrl.searchGroups);
+// router.get('/groups/search/:userid', controllers.groupCtrl.searchGroupsForUser);
+
 router.put('/groups/infos/:groupid', controllers.groupCtrl.updateGroupInfos);
 router.put('/groups/deadline/:groupid', controllers.groupCtrl.updateGroupDeadline);
 router.get('/groups/detail/:groupid', controllers.groupCtrl.getGroup);
@@ -29,5 +32,8 @@ router.post('/users', controllers.userCtrl.createUser);
 router.get('/users', controllers.userCtrl.getUser);
 router.put('/users', controllers.userCtrl.updateUser);
 router.delete('/users', controllers.userCtrl.deleteUser);
+
+
+router.get('/user', controllers.userCtrl.fetchUserData);
 
 module.exports = router;

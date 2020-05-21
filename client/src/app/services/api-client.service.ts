@@ -37,7 +37,6 @@ export class ApiClientService {
   }
 
   getAllGroups(): Observable<Group[]> {
-    console.log('fetching all groups');
     return this.http.get(`${ this.baseUrl }/groups/search`)
       .pipe(map((obj: any) => obj.map(group => Group.parse(group))));
   }

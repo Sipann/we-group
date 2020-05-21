@@ -16,20 +16,26 @@
   </ion-fab>
 
   <ion-grid class="ion-margin-top">
-    <ion-row class="ion-margin-top">
-      <ion-col size="12" size-sm="8" offset-sm="2">
-        <ion-card *ngIf="groups && !groups.length">
-          <ion-card-header>
-            Oops!
-          </ion-card-header>
+
+    <ion-row>
+      <ion-col>
+        <ion-card>
           <ion-card-content>
-            It seems you are not a member of any group;
+            <pre>{{ user$ | async | json }}</pre>
           </ion-card-content>
         </ion-card>
-        <ion-list *ngIf="groups && groups.length">
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row class="ion-margin-top">
+
+      <ion-col size="12" size-sm="8" offset-sm="2">
+
+        <ion-list *ngIf="(groups$ | async).length; else noGroupsBlock">
           <ion-item
             class="item"
-            *ngFor="let group of groups"
+            *ngFor="let group of (groups$ | async)"
             detail
             [routerLink]="['/', 'groups', 'detail', group.id]">
             <ion-thumbnail slot="start">
@@ -41,6 +47,18 @@
             </ion-label>
           </ion-item>
         </ion-list>
+
+        <ng-template #noGroupsBlock>
+          <ion-card>
+            <ion-card-header>
+              Oops!
+            </ion-card-header>
+            <ion-card-content>
+              It seems you are not a member of any group;
+            </ion-card-content>
+          </ion-card>
+        </ng-template>
+
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -1,9 +1,9 @@
 export class Group {
-  id: number;
-  name: string;
-  description: string;
-  currency: string;
-  manager_id: string;
+  id?: number;
+  name?: string;
+  description?: string;
+  currency?: string;
+  manager_id?: string;
   image?: string;
   deadline?: string;
 
