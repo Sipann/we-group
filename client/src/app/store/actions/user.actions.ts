@@ -28,7 +28,7 @@ export class UserLoaded implements Action {
 
 export class LoadUserData implements Action {
   readonly type = UserActionsTypes.LoadUserData;
-  constructor(private payload: string) { }
+  constructor(public payload: string) { }
 };
 
 export class UserDataLoaded implements Action {
@@ -36,4 +36,4 @@ export class UserDataLoaded implements Action {
   constructor(private payload: UserData) { }
 };
 
-export type UserActions = LoadUser | UserLoaded | UserDataLoaded;
+export type UserActions = LoadUser | UserLoaded | LoadUserData | UserDataLoaded;
