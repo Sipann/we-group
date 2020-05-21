@@ -35,11 +35,12 @@
         <ion-list *ngIf="(groups$ | async).length; else noGroupsBlock">
           <ion-item
             class="item"
-            *ngFor="let group of (groups$ | async)"
+            *ngFor="let group of (groups$ | async); let i = index;"
             detail
             [routerLink]="['/', 'groups', 'detail', group.id]">
             <ion-thumbnail slot="start">
-              <ion-img [src]="group.image"></ion-img>
+              <!-- <ion-img [src]="group.image"></ion-img> -->
+              <ion-img [src]="tempBgThumbnail(i)"></ion-img>
             </ion-thumbnail>
             <ion-label>
               <h2>{{ group.name }}</h2>
