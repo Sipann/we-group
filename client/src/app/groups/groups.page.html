@@ -37,6 +37,7 @@
             class="item"
             *ngFor="let group of (groups$ | async); let i = index;"
             detail
+            (click)="onNavigateToGroup(group.id)"
             [routerLink]="['/', 'groups', 'detail', group.id]">
             <ion-thumbnail slot="start">
               <!-- <ion-img [src]="group.image"></ion-img> -->

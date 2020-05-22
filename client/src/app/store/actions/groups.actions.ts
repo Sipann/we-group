@@ -37,7 +37,7 @@ export class GroupsLoaded implements Action {
 
 export class SelectGroup implements Action {
   readonly type = GroupsActionsTypes.SelectGroup;
-  constructor(private payload: Group) { }        // Group or GroupInput?
+  constructor(private payload: number) { }        // Group or GroupInput?
 };
 
 export class CreateGroup implements Action {

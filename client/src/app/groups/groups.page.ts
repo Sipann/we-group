@@ -112,6 +112,11 @@ export class GroupsPage implements OnInit, OnDestroy {
       });
   }
 
+  onNavigateToGroup(id: number) {
+    console.log('navigate to group with id', id);
+    this.store.dispatch(new fromGroupsActions.SelectGroup(id));
+  }
+
   tempBgThumbnail(i: number): string {
     return `assets/bgThumbnail/${ i % 7 }.png`;  // 7 => number of available bg images in assets/bgThumbnail
   }

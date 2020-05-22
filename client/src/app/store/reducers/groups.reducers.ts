@@ -13,10 +13,12 @@ const updateGroup = (groups, group) => groups.map(g => {
 });
 const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
 
+const findGroup = (groups, groupid) => groups.find(g => g.id === groupid);
 
 export interface GroupsState {
   groups: Group[],
-  selectedGroup: number,
+  // selectedGroup: number,
+  selectedGroup: Group,
   loaded: boolean,
   loading: boolean,
   groupCreated: boolean,
@@ -24,7 +26,7 @@ export interface GroupsState {
 
 export const initialState: GroupsState = {
   groups: [],
-  selectedGroup: 1,
+  selectedGroup: null,
   loaded: false,
   loading: false,
   groupCreated: false,
@@ -38,6 +40,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
       return {
         ...state,
         groupCreated: false,
+      };
+
+    case fromGroupsActions.GroupsActionsTypes.SelectGroup:
+      return {
+        ...state,
+        selectedGroup: findGroup(state.groups, action.payload),
       };
 
     case fromGroupsActions.GroupsActionsTypes.GroupsLoaded:
