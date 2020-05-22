@@ -16,8 +16,14 @@ export enum GroupsActionsTypes {
 
   UpdateGroup = '[Groups] Update',
   GroupUpdated = '[Groups] Group Updated',
+
+  ResetCreateGroup = '[Groups] Reset Create Group Modal'
 };
 
+
+export class ResetCreateGroup implements Action {
+  readonly type = GroupsActionsTypes.ResetCreateGroup;
+};
 
 export class LoadGroups implements Action {
   readonly type = GroupsActionsTypes.LoadGroups;
@@ -64,4 +70,4 @@ export class GroupUpdated implements Action {
   constructor(private payload: Group) { }
 }
 
-export type GroupsActions = LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated;
+export type GroupsActions = LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup;

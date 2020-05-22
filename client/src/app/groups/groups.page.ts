@@ -108,7 +108,7 @@ export class GroupsPage implements OnInit, OnDestroy {
         return modalEl.onDidDismiss();
       })
       .then(_ => {
-        // this.fetchAllGroups();
+        this.store.dispatch(new fromGroupsActions.ResetCreateGroup);
       });
   }
 

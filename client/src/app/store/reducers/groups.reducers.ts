@@ -19,6 +19,7 @@ export interface GroupsState {
   selectedGroup: number,
   loaded: boolean,
   loading: boolean,
+  groupCreated: boolean,
 };
 
 export const initialState: GroupsState = {
@@ -26,17 +27,26 @@ export const initialState: GroupsState = {
   selectedGroup: 1,
   loaded: false,
   loading: false,
+  groupCreated: false,
 };
 
 
 export const GroupsReducer = (state = initialState, action): GroupsState => {
   switch (action.type) {
+
+    case fromGroupsActions.GroupsActionsTypes.ResetCreateGroup:
+      return {
+        ...state,
+        groupCreated: false,
+      };
+
     case fromGroupsActions.GroupsActionsTypes.GroupsLoaded:
       return {
         selectedGroup: state.selectedGroup,
         groups: action.payload,
         loaded: state.loaded,
         loading: state.loading,
+        groupCreated: state.groupCreated,
       };
     case fromGroupsActions.GroupsActionsTypes.SelectGroup:
       return {
@@ -44,6 +54,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: state.groups,  // not spread ?
         loaded: state.loaded,
         loading: state.loading,
+        groupCreated: state.groupCreated,
       };
     // case fromGroupsActions.GroupsActionsTypes.CreateGroup:
     //   return {
@@ -58,7 +69,8 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
         loading: state.loading,
-        groups: createGroup(state.groups, action.payload)
+        groups: createGroup(state.groups, action.payload),
+        groupCreated: true,
       };
 
     case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
@@ -66,14 +78,16 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
         loading: state.loading,
-        groups: updateGroup(state.groups, action.payload)
+        groups: updateGroup(state.groups, action.payload),
+        groupCreated: state.groupCreated,
       };
     case fromGroupsActions.GroupsActionsTypes.GroupDeleted:
       return {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
         loading: state.loading,
-        groups: deleteGroup(state.groups, action.payload)
+        groups: deleteGroup(state.groups, action.payload),
+        groupCreated: state.groupCreated,
       };
     default:
       return state;
