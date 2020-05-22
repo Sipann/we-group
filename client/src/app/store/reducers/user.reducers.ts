@@ -1,6 +1,7 @@
 import * as fromUserActions from '../actions/user.actions';
 import { User } from 'src/app/models/user.model';
 
+
 export interface UserState {
   currentUser: User,
   loaded: boolean,
@@ -12,6 +13,8 @@ export const initialState: UserState = {
   loaded: false,
   loading: false,
 };
+
+
 
 export const UserReducer = (state = initialState, action): UserState => {
   switch (action.type) {
@@ -31,3 +34,7 @@ export const UserReducer = (state = initialState, action): UserState => {
       return state;
   }
 };
+
+//
+export const getCurrentUser = (state: UserState) => state.currentUser;
+//

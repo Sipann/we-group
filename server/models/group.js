@@ -59,7 +59,7 @@ exports.createGroup = async (group, manager_id) => {
     const queryGroupStr = `
       INSERT INTO groups (name, description, currency, manager_id)
       VALUES ($1, $2, $3, $4)
-      RETURNING id;`;
+      RETURNING *;`;
     const newGroup = await pool.query(queryGroupStr, valuesGroup);
 
     const groupid = +newGroup.rows[0].id;
@@ -68,6 +68,8 @@ exports.createGroup = async (group, manager_id) => {
       INSERT INTO groupsusers (group_id, user_id)
       VALUES ($1, $2);`;
     await pool.query(queryBridgeStr, valuesBridge);
+
+    return newGroup.rows[0];
 
   } catch (error) {
     console.log('[group model - createGroup db err]', error.message);

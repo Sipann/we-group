@@ -7,10 +7,15 @@ export enum GroupsActionsTypes {
   LoadGroups = '[Groups] Load',
   GroupsLoaded = '[Groups] Data Loaded',
   SelectGroup = '[Groups] Select',
+
   CreateGroup = '[Groups] Create',
   GroupCreated = '[Groups] Group Created',
+
   DeleteGroup = '[Groups] Delete',
+  GroupDeleted = '[Groups] Group Deleted',
+
   UpdateGroup = '[Groups] Update',
+  GroupUpdated = '[Groups] Group Updated',
 };
 
 
@@ -31,22 +36,32 @@ export class SelectGroup implements Action {
 
 export class CreateGroup implements Action {
   readonly type = GroupsActionsTypes.CreateGroup;
-  constructor(private payload: Group) { }        // Group or GroupInput?
+  constructor(public payload: Group) { }        // Group or GroupInput?
 };
 
 export class GroupCreated implements Action {
   readonly type = GroupsActionsTypes.GroupCreated;
-  constructor(private payload: Group) { }        // Group or GroupInput?
+  constructor(private payload: Group) { }
 }
 
 export class DeleteGroup implements Action {
   readonly type = GroupsActionsTypes.DeleteGroup;
-  constructor(private payload: Group) { }        // Group or GroupInput?
+  constructor(public payload: Group) { }        // Group or GroupInput?
 };
+
+export class GroupDeleted implements Action {
+  readonly type = GroupsActionsTypes.GroupDeleted;
+  constructor(private payload: Group) { }
+}
 
 export class UpdateGroup implements Action {
   readonly type = GroupsActionsTypes.UpdateGroup;
-  constructor(private payload: Group) { }        // Group or GroupInput?
+  constructor(public payload: Group) { }        // Group or GroupInput?
 };
 
-export type GroupsActions = LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | UpdateGroup;
+export class GroupUpdated implements Action {
+  readonly type = GroupsActionsTypes.GroupUpdated;
+  constructor(private payload: Group) { }
+}
+
+export type GroupsActions = LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated;

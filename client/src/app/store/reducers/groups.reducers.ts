@@ -45,21 +45,30 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         loaded: state.loaded,
         loading: state.loading,
       };
-    case fromGroupsActions.GroupsActionsTypes.CreateGroup:
+    // case fromGroupsActions.GroupsActionsTypes.CreateGroup:
+    //   return {
+    //     selectedGroup: state.selectedGroup,
+    //     loaded: state.loaded,
+    //     loading: state.loading,
+    //     groups: createGroup(state.groups, action.payload)
+    //   };
+
+    case fromGroupsActions.GroupsActionsTypes.GroupCreated:
       return {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
         loading: state.loading,
         groups: createGroup(state.groups, action.payload)
       };
-    case fromGroupsActions.GroupsActionsTypes.UpdateGroup:
+
+    case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
       return {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
         loading: state.loading,
         groups: updateGroup(state.groups, action.payload)
       };
-    case fromGroupsActions.GroupsActionsTypes.DeleteGroup:
+    case fromGroupsActions.GroupsActionsTypes.GroupDeleted:
       return {
         selectedGroup: state.selectedGroup,
         loaded: state.loaded,
