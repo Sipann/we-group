@@ -1,9 +1,21 @@
 import { Action, createAction, props } from '@ngrx/store';
 
 import { Group } from '../../models/group.model';
+import { Item } from '../../models/item.model';
+import { ItemInput } from '../../models/item-input.model';
 
 
 export enum GroupsActionsTypes {
+
+  AddItem = '[Groups] Add Item',
+  ItemAdded = '[Groups] Item Added',
+
+  DeleteItem = '[Groups] Delete Item',
+  ItemDeleted = '[Groups] Item Deleted',
+
+  FetchGroupItems = '[Groups] Fetch Group Items',
+  GroupItemsFetched = '[Groups] Group Items Fetched',
+
   LoadGroups = '[Groups] Load',
   GroupsLoaded = '[Groups] Data Loaded',
   SelectGroup = '[Groups] Select',
@@ -17,7 +29,44 @@ export enum GroupsActionsTypes {
   UpdateGroup = '[Groups] Update',
   GroupUpdated = '[Groups] Group Updated',
 
-  ResetCreateGroup = '[Groups] Reset Create Group Modal'
+  ResetCreateGroup = '[Groups] Reset Create Group Modal',
+  ResetAddItemModal = '[Groups] Reset Add Item Modal',
+};
+
+
+export class DeleteItem implements Action {
+  readonly type = GroupsActionsTypes.DeleteItem;
+  constructor(public payload: { itemid: number, groupid: number }) { }
+};
+
+export class ItemDeleted implements Action {
+  readonly type = GroupsActionsTypes.ItemDeleted;
+  constructor(private payload: { itemid: number, groupid: number }) { }
+};
+
+export class AddItem implements Action {
+  readonly type = GroupsActionsTypes.AddItem;
+  constructor(public payload: { item: ItemInput, groupid: number }) { }
+};
+
+export class ItemAdded implements Action {
+  readonly type = GroupsActionsTypes.ItemAdded;
+  constructor(private payload: { item: Item, groupid: number }) { }
+};
+
+
+export class FetchGroupItems implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupItems;
+  constructor(public payload: number) { }
+};
+
+export class GroupItemsFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupItemsFetched;
+  constructor(private payload: { groupid: number, items: Item[] }) { }
+};
+
+export class ResetAddItemModal implements Action {
+  readonly type = GroupsActionsTypes.ResetAddItemModal;
 };
 
 
@@ -65,9 +114,10 @@ export class UpdateGroup implements Action {
   constructor(public payload: Group) { }        // Group or GroupInput?
 };
 
+
 export class GroupUpdated implements Action {
   readonly type = GroupsActionsTypes.GroupUpdated;
   constructor(private payload: Group) { }
 }
 
-export type GroupsActions = LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup;
+export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted;

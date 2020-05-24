@@ -13,7 +13,6 @@
     <ion-row>
       <ion-col size="12">
         <ion-card
-          *ngIf="!loading_items"
           [ngClass]="managing && managing.length && managing !== 'products' ? 'inactive' : 'active'"
           color="primary"
           (click)="onSelect('products')">
@@ -24,10 +23,22 @@
             Update available items and deadline for the {{ group.name }} group.
           </ion-card-content>
         </ion-card>
+        <!-- <ion-card
+          *ngIf="!loading_items"
+          [ngClass]="managing && managing.length && managing !== 'products' ? 'inactive' : 'active'"
+          color="primary"
+          (click)="onSelect('products')">
+          <ion-card-header class="ion-text-center">
+            <ion-card-title>Available Items</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="ion-text-center">
+            Update available items and deadline for the {{ group.name }} group.
+          </ion-card-content>
+        </ion-card> -->
       </ion-col>
     </ion-row>
 
-    <ion-row>
+    <!-- <ion-row>
       <ion-col size="12">
         <ion-card
           *ngIf="!loading_summary"
@@ -42,10 +53,10 @@
           </ion-card-content>
         </ion-card>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
 
     <ion-row>
-      <ion-col size="6">
+      <!-- <ion-col size="6">
         <ion-card
           *ngIf="!loading_members"
           [ngClass]="managing && managing.length && managing !== 'users' ? 'inactive' : 'active'"
@@ -58,9 +69,9 @@
             View and manage your group's members.
           </ion-card-content>
         </ion-card>
-      </ion-col>
+      </ion-col> -->
 
-      <ion-col size="6" class="ion-align-self-stretch flex">
+      <!-- <ion-col size="6" class="ion-align-self-stretch flex">
         <ion-card
           *ngIf="!loading_infos"
           [ngClass]="managing && managing.length && managing !== 'infos' ? 'inactive' : 'active'"
@@ -73,7 +84,7 @@
             View and manage your group's detail.
           </ion-card-content>
         </ion-card>
-      </ion-col>
+      </ion-col> -->
     </ion-row>
 
     <ion-row>
@@ -88,13 +99,9 @@
               [managerName]="managerName"
               (done)="onDone($event)"
               (cancelled)="onCancel()"></app-group-infos>
-            <app-group-products
-              *ngSwitchCase="'products'"
-              [group]="group"
-              [items]="items"
-              (done)="onDone($event)"
-              (updated)="onItemsUpdated()"
-              (cancelled)="onCancel()"></app-group-products>
+
+            <app-group-products *ngSwitchCase="'products'"></app-group-products>
+
             <app-group-users
               *ngSwitchCase="'users'"
               [members]="members"

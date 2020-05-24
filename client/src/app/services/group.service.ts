@@ -8,12 +8,14 @@ import { environment } from '../../environments/environment';
 import { GroupInput } from '../models/group-input.model';
 
 import { User } from '../models/user.model';
+import { Item } from '../models/item.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
 import { GroupsState } from '../store/reducers/groups.reducers';
 import { UserState } from '../store/reducers/user.reducers';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+import { ItemInput } from '../models/item-input.model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +39,47 @@ export class GroupService {
     const fullUrl = `${ this.baseUrl }/groups`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
+  }
+
+  fetchItems(groupid: number): Observable<Item[]> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Item[]>(fullUrl, { headers })
+      .pipe(
+        // tap(obj => console.log('obj', obj)),
+        map(obj => obj.map(item => Item.parse(item)))   // ?
+      );
+  }
+
+
+  addItem(payload): Observable<Item> {
+    const { groupid, item } = payload;
+    const fullUrl = `${ this.baseUrl }/groups/items`;
+    const body = { groupid, item };
+    // const body = {...payload}        //?
+    console.log('BODY', body);
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Item>(fullUrl, body, { headers })
+      .pipe(
+        tap(obj => console.log('ADD ITEM HTTPCLIENT RES', obj)),
+        map(item => Item.parse(item))   // ?
+      );
+  }
+
+  deleteItem(itemid: number): Observable<number> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.delete<number>(fullUrl, { headers });
+  }
+
+  updateGroup(group: Group): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.put<Group>(fullUrl, group, { headers })
+      .pipe(
+        tap(obj => console.log('UPDATE GROUP HTTPCLIENT RES', obj)),
+        map(group => Group.parse(group))
+      );
   }
 
 

@@ -53,7 +53,6 @@ export class GroupDetailPage implements OnInit, OnDestroy {
           this.group = selectedGroupData;
           this.loadingPage = false;
           this.orderIsAllowed = this.group.deadline && new Date(this.group.deadline) >= new Date();
-
           this.authSub = this.store.select('user')
             .pipe(map(u => u.currentUser))
             .subscribe(currentUserData => {
@@ -77,7 +76,9 @@ export class GroupDetailPage implements OnInit, OnDestroy {
 
   onNavigateToManageGroup() {
     if (this.currentUserIsManager) {
-      // this.router.navigate(['/', 'groups', 'manage', this.group.id], this.navigationExtras);
+      this.router.navigate(['/', 'groups', 'manage', this.group.id], {
+        state: { ...this.group }
+      });
     }
   }
 

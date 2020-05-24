@@ -1,3 +1,5 @@
+import { Item } from './item.model';
+
 export class Group {
   id?: number;
   name?: string;
@@ -6,6 +8,7 @@ export class Group {
   manager_id?: string;
   image?: string;
   deadline?: string;
+  items?: Item[];
 
   static parse(data) {
     const group = Object.assign(new Group(), data);

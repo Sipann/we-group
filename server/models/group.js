@@ -1,6 +1,29 @@
 'use strict';
 
 const pool = require('../models');
+const { isUserGroupManager } = require('./utils');
+
+
+exports.updateGroup = async (group, userid) => {
+  try {
+    if (isUserGroupManager(userid, group.id)) {
+      const values = [group.id, group.name, group.description, group.deadline];
+      const queryStr = `
+        UPDATE groups
+          SET name = $2, description = $3, deadline = $4
+          WHERE id = $1
+        RETURNING *;`;
+      const res = await pool.query(queryStr, values);
+      return { ok: true, payload: res.rows[0] };
+    }
+    else {
+      return { ok: false, payload: 'not allowed' };
+    }
+  } catch (error) {
+    console.log('[group model - updateGroup] error', error.message);
+  }
+}
+
 
 exports.getUserGroups = async (userid) => {
   try {
@@ -186,7 +209,6 @@ exports.searchGroups = async userid => {
         groups.manager_id as manager_id
       FROM groups;`;
     const res = await pool.query(queryStr);
-    console.log('[models - searchGroups] res', res);
     return res.rows;
   } catch (error) {
     console.log('[group model - updateGroupDeadline db] error', error.message);
