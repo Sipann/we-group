@@ -2,6 +2,7 @@ import * as fromGroupsActions from '../actions/groups.actions';
 
 import { Group } from 'src/app/models/group.model';
 import { Item } from 'src/app/models/item.model';
+import { Order } from 'src/app/models/order.model';
 
 const createGroup = (groups, group) => [...groups, group];
 
@@ -82,6 +83,65 @@ const addMembersPropToGroup = (
   })
 };
 
+const reduceByUser = (data: { username: string, itemname: string, orderedquantity: number }[]) => {
+  const result = [];
+  const reduced = data.reduce((acc, current) => {
+    const currentUsername = current.username;
+    const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
+    return acc[currentUsername]
+      ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
+      : acc = { ...acc, [currentUsername]: [item] }
+  }, {});
+
+  for (let prop in reduced) {
+    if (reduced.hasOwnProperty(prop)) {
+      result.push({ username: prop, items: reduced[prop] });
+    }
+  }
+  return result;
+};
+
+const reduceByItem = (data: { username: string, itemname: string, orderedquantity: number }[]) => {
+  const result = [];
+  const reduced = data.reduce((acc, current) => {
+    const currentItemname = current.itemname;
+    const currentQuantity = current.orderedquantity;
+    return acc[currentItemname]
+      ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
+      : acc = { ...acc, [currentItemname]: currentQuantity }
+  }, {});
+
+  for (let prop in reduced) {
+    if (reduced.hasOwnProperty(prop)) {
+      result.push({
+        itemname: prop,
+        quantity: reduced[prop]
+      });
+    }
+  }
+  return result;
+}
+
+const addSummaryPropToGroup = (
+  groups: Group[],
+  payload: {
+    groupid: number,
+    orders: { username: string, itemname: string, orderedquantity: number }[]
+  }) => {
+  return groups.map(g => {
+    if (g.id == payload.groupid) {
+      return {
+        ...g,
+        order: {
+          byItem: reduceByItem(payload.orders),
+          byUser: reduceByUser(payload.orders),
+        }
+      }
+    }
+    return g;
+  })
+};
+
 
 export interface GroupsState {
   groups: Group[],
@@ -107,6 +167,13 @@ export const initialState: GroupsState = {
 export const GroupsReducer = (state = initialState, action): GroupsState => {
 
   switch (action.type) {
+
+
+    case fromGroupsActions.GroupsActionsTypes.GroupSummaryFetched:
+      return {
+        ...state,
+        groups: addSummaryPropToGroup(state.groups, action.payload),
+      }
 
     case fromGroupsActions.GroupsActionsTypes.GroupMembersFetched:
       return {

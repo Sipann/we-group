@@ -19,7 +19,6 @@ exports.fetchGroupMembers = async ctx => {
     const { userid } = ctx.request.header;
     const { groupid } = ctx.params;
     const response = await db.fetchGroupMembers(userid, groupid);
-    console.log('CTRL fetchGroupMembers response', response);
     if (response.ok) ctx.body = response.payload;
     else throw new Error(response.payload);
   } catch (error) {

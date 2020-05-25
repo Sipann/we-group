@@ -4,6 +4,48 @@ const pool = require('../models');
 const { isUserGroupManager } = require('./utils');
 
 
+exports.fetchGroupOrder = async (userid, groupid) => {
+  try {
+    if (isUserGroupManager(userid, groupid)) {
+      // get group deadline
+      const valuesDeadline = [groupid];
+      const queryStrDeadline = `
+        SELECT deadline FROM groups
+          WHERE id = $1;
+      `;
+      const deadline = await pool.query(queryStrDeadline, valuesDeadline);
+
+      const values = [groupid, deadline.rows[0].deadline];
+      const queryStr = `
+      SELECT
+        users.name as userName,
+        items.name as itemName,
+        ordered_items.quantity as orderedQuantity
+
+      FROM orders
+
+      JOIN ordered_items
+        ON ordered_items.order_id = orders.id
+        AND orders.group_id = $1 AND orders.date = $2
+
+      LEFT JOIN users
+        ON orders.user_id = users.id
+
+      LEFT JOIN items
+        ON ordered_items.item_id = items.id;
+      `;
+
+      const res = await pool.query(queryStr, values);
+      return { ok: true, payload: res.rows }
+    }
+    else {
+      return { ok: false, payload: 'not allowed' };
+    }
+  } catch (error) {
+    console.log('[group model - fetchGroupOrders] error', error.message);
+  }
+};
+
 exports.updateGroup = async (group, userid) => {
   try {
     if (isUserGroupManager(userid, group.id)) {
@@ -120,6 +162,7 @@ exports.getGroupOrder = async (groupid, deadline) => {
         ON ordered_items.item_id = items.id
     ;`;
     const res = await pool.query(queryStr, values);
+
     return res;
   } catch (error) {
     console.log('[group model - getGroupOrder] error', error.message)

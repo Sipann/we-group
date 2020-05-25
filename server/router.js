@@ -22,10 +22,14 @@ router.get('/groups/manage/:groupid/items', controllers.groupCtrl.getGroupItems)
 // router.get('/groups/manage/:groupid/items', controllers.itemCtrl.fetchGroupItems);
 //
 router.get('/groups/manage/:groupid/members', controllers.groupCtrl.getGroupUsers);
+
+
 router.get('/groups/manage/:groupid/order/:deadline', controllers.groupCtrl.getGroupOrder);
+
 
 router.post('/groups/user/:groupid', controllers.groupCtrl.addUserToGroup);
 //
+router.get('/groups/orders/:groupid', controllers.groupCtrl.fetchGroupOrder);
 router.get('/groups/members/:groupid', controllers.userCtrl.fetchGroupMembers);
 router.get('/groups/items/:groupid', controllers.itemCtrl.fetchGroupItems);
 //

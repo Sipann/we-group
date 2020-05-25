@@ -3,6 +3,7 @@ import { Action, createAction, props } from '@ngrx/store';
 import { Group } from '../../models/group.model';
 import { Item } from '../../models/item.model';
 import { User } from '../../models/user.model';
+import { Order } from '../../models/order.model';
 import { ItemInput } from '../../models/item-input.model';
 
 
@@ -13,6 +14,9 @@ export enum GroupsActionsTypes {
 
   DeleteItem = '[Groups] Delete Item',
   ItemDeleted = '[Groups] Item Deleted',
+
+  FetchGroupSummary = '[Groups] Fetch Group Summary',
+  GroupSummaryFetched = '[Groups] Group Summary Fetched',
 
   FetchGroupMembers = '[Groups] Fetch Group Members',
   GroupMembersFetched = '[Groups] Group Members Fetched',
@@ -37,6 +41,19 @@ export enum GroupsActionsTypes {
   ResetAddItemModal = '[Groups] Reset Add Item Modal',
 };
 
+
+export class FetchGroupSummary implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupSummary;
+  constructor(public payload: number) { }
+};
+
+export class GroupSummaryFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupSummaryFetched;
+  constructor(private payload: {
+    groupid: number,
+    orders: { username: string, itemname: string, orderedquantity: number }[]
+  }) { }
+}
 
 export class FetchGroupMembers implements Action {
   readonly type = GroupsActionsTypes.FetchGroupMembers;
@@ -135,4 +152,4 @@ export class GroupUpdated implements Action {
   constructor(private payload: Group) { }
 }
 
-export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted | FetchGroupMembers | GroupMembersFetched;
+export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted | FetchGroupMembers | GroupMembersFetched | FetchGroupSummary | GroupSummaryFetched;

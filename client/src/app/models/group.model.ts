@@ -10,6 +10,7 @@ export class Group {
   deadline?: string;
   items?: Item[];
   members?: { name: string, id: string }[];
+  order?: { byItem, byUser };
 
   static parse(data) {
     const group = Object.assign(new Group(), data);

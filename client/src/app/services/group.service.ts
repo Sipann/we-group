@@ -9,6 +9,7 @@ import { GroupInput } from '../models/group-input.model';
 
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
+import { Order } from '../models/order.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
@@ -60,6 +61,15 @@ export class GroupService {
       );
   }
 
+  fetchSummary(groupid: number): Observable<{ username: string, itemname: string, orderedquantity: number }[]> {
+    console.log('ENTERING fetchSummary Service');
+    const fullUrl = `${ this.baseUrl }/groups/orders/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<{ username: string, itemname: string, orderedquantity: number }[]>(fullUrl, { headers })
+      .pipe(
+        tap(obj => console.log('FETCH SUMMARY RES', obj)),
+      );
+  }
 
   addItem(payload): Observable<Item> {
     const { groupid, item } = payload;

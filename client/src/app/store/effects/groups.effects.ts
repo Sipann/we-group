@@ -61,6 +61,23 @@ export class GroupsEffects {
     )
   );
 
+  fetchGroupSummaries$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.FetchGroupSummary),
+      mergeMap(action => this.groupService.fetchSummary(action.payload)
+        .pipe(
+          map(orders => {
+            console.log('fetchGroupSummaries$ orders', orders);
+            const args = { groupid: action.payload, orders };
+            return new fromGroups.GroupSummaryFetched(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Fetch Group Summary Fail' })
+          })
+        ))
+    )
+  );
+
   addItem$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.AddItem),

@@ -144,42 +144,5 @@ export class GroupManagePage implements OnInit, OnDestroy {
     this.managing = managing;
   }
 
-  reduceByUser(data: OrderSumup[]): {}[] {
-    const result = [];
-    const reduced = data.reduce((acc, current) => {
-      const currentUsername = current.username;
-      const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
-      return acc[currentUsername]
-        ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
-        : acc = { ...acc, [currentUsername]: [item] }
-    }, {});
 
-    for (let prop in reduced) {
-      if (reduced.hasOwnProperty(prop)) {
-        result.push({ username: prop, items: reduced[prop] });
-      }
-    }
-    return result;
-  }
-
-  reduceByItem(data: OrderSumup[]): {}[] {
-    const result = [];
-    const reduced = data.reduce((acc, current) => {
-      const currentItemname = current.itemname;
-      const currentQuantity = current.orderedquantity;
-      return acc[currentItemname]
-        ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
-        : acc = { ...acc, [currentItemname]: currentQuantity }
-    }, {});
-
-    for (let prop in reduced) {
-      if (reduced.hasOwnProperty(prop)) {
-        result.push({
-          itemname: prop,
-          quantity: reduced[prop]
-        });
-      }
-    }
-    return result;
-  }
 }
