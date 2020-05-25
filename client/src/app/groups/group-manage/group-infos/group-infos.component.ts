@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Group } from 'src/app/models/group.model';
-import { ApiClientService } from 'src/app/services/api-client.service';
 import { AlertController, NavController } from '@ionic/angular';
 
 import { ActivatedRoute } from '@angular/router';
@@ -20,10 +19,7 @@ import { map } from 'rxjs/operators';
 })
 export class GroupInfosComponent implements OnInit, OnDestroy {
 
-  // @Input() group: Group;
-  // @Input() managerName: string;
-  // @Output() done = new EventEmitter<Group>();
-  // @Output() cancelled = new EventEmitter();
+  @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
   groupDesc: string;
@@ -36,20 +32,17 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
 
   group$: Group;
 
+  submitBtnLabel = 'SAVE CHANGES';
+
   constructor(
     private alertCtrl: AlertController,
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private store: Store<AppState>,
-    // private apiClientService: ApiClientService,
   ) { }
 
   ngOnInit() {
     this.initialize();
-    // this.groupDesc = this.group.description;
-    // this.groupName = this.group.name;
-    // this.groupManager = this.group.manager_id;
-    // console.log('managerName from group-infos', this.managerName);
   }
 
   ngOnDestroy() { }
@@ -70,15 +63,14 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
           this.groupName = this.group$.name;
           this.groupDesc = this.group$.description;
           this.groupManager = this.group$.manager_id;
+          this.form.form.markAsPristine();
         });
     });
   }
 
-  // onCancel() { this.cancelled.emit(); }
+  onCancel() { this.cancelled.emit(true); }
 
-  deleteGroup(groupid: number) {
-
-  }
+  deleteGroup(groupid: number) { }
 
   onDeleteGroup() {
     const message = `This will permanently delete the ${ this.groupName } group. If you don't want to manage this group anymore, you can ask another member to be in charge of it.`;
@@ -98,21 +90,12 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
   }
 
   onUpdateGroup() {
-    // const updatedValues = {
-    //   name: this.form.value['group-name'],
-    //   description: this.form.value['group-description']
-    // };
     const newGroup = {
       ...this.group$,
       name: this.form.value['group-name'],
       description: this.form.value['group-description']
     };
     this.store.dispatch(new fromGroupsActions.UpdateGroup(newGroup));
-
-    // this.apiClientService.updateGroupInfos(updatedValues, this.group.id)
-    //   .subscribe(data => {
-    //     this.done.emit(data);
-    //   });
   }
 
 

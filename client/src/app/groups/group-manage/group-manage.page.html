@@ -110,7 +110,9 @@
           class="ion-padding-top component">
           <ion-card-content [ngSwitch]="managing" class="ion-no-padding">
 
-            <app-group-infos *ngSwitchCase="'infos'"></app-group-infos>
+            <app-group-infos
+              *ngSwitchCase="'infos'"
+              (cancelled)="onCancel()"></app-group-infos>
 
             <app-group-products *ngSwitchCase="'products'"></app-group-products>
 
