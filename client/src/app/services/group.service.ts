@@ -51,6 +51,15 @@ export class GroupService {
       );
   }
 
+  fetchMembers(groupid: number): Observable<User[]> {
+    const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<User[]>(fullUrl, { headers })
+      .pipe(
+        tap(obj => console.log('fetchMembers response', obj)),
+      );
+  }
+
 
   addItem(payload): Observable<Item> {
     const { groupid, item } = payload;

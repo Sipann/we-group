@@ -45,6 +45,22 @@ export class GroupsEffects {
       ))
   ));
 
+  fetchGroupMembers$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.FetchGroupMembers),
+      mergeMap(action => this.groupService.fetchMembers(action.payload)
+        .pipe(
+          map(members => {
+            const args = { groupid: action.payload, members };
+            return new fromGroups.GroupMembersFetched(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Fetch Group Members Fail' })
+          })
+        ))
+    )
+  );
+
   addItem$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.AddItem),

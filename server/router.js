@@ -26,6 +26,7 @@ router.get('/groups/manage/:groupid/order/:deadline', controllers.groupCtrl.getG
 
 router.post('/groups/user/:groupid', controllers.groupCtrl.addUserToGroup);
 //
+router.get('/groups/members/:groupid', controllers.userCtrl.fetchGroupMembers);
 router.get('/groups/items/:groupid', controllers.itemCtrl.fetchGroupItems);
 //
 router.post('/groups/items', controllers.itemCtrl.addItemToGroup);

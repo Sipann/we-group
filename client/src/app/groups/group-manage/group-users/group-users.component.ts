@@ -4,7 +4,16 @@ import { NgForm } from '@angular/forms';
 // import { Group } from '../../../models/group.model';
 import { User } from '../../../models/user.model';
 import { ActivatedRoute } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { LoadingController, NavController } from '@ionic/angular';
+
+import { Store, select } from '@ngrx/store';
+import { AppState } from '../../../store/reducers';
+import * as fromGroupsActions from '../../../store/actions/groups.actions';
+import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Group } from 'src/app/models/group.model';
+
+
 
 @Component({
   selector: 'app-group-users',
@@ -13,31 +22,66 @@ import { NavController } from '@ionic/angular';
 })
 export class GroupUsersComponent implements OnInit {
 
-  // @Input() group: Group;
-  @Input() members: User[];
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
-  groupId: number;
+  groupid: number;
+  groupSub: Subscription;
+
+  group$: Group;
   groupUsers: { name: string, id: string }[];
+  groupMembers$: { name: string, id: string }[];
+
+  private loadingCtrl: HTMLIonLoadingElement;
 
   constructor(
+    private loadingController: LoadingController,
     private route: ActivatedRoute,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private store: Store<AppState>,
   ) { }
 
-  ngOnInit() {
-    this.route.paramMap.subscribe(paramMap => {
+  ngOnInit() { this.initialize(); }
+
+  async initialize() {
+    this.route.paramMap.subscribe(async paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupId = parseInt(paramMap.get('groupid'));
+      this.groupid = parseInt(paramMap.get('groupid'));
+
+      await this.presentLoading();
+
+      this.store.dispatch(new fromGroupsActions.FetchGroupMembers(this.groupid));
+
+      this.groupSub = this.store.select('groups')
+        .pipe(map(g => g.groups))
+        .subscribe(groups => {
+          this.group$ = groups.find(g => g.id == this.groupid);
+          this.groupMembers$ = this.group$.members;
+        });
+
+      if (this.loadingCtrl) {
+        this.loadingCtrl.dismiss();
+        this.loadingCtrl = null;
+      }
     });
   }
 
   onCancel() { this.cancelled.emit(); }
 
   onDelete(userid: string) { }
+
+
+  async presentLoading() {
+    this.loadingCtrl = await this.loadingController.create({
+      spinner: 'bubbles',
+      translucent: true,
+      cssClass: 'loading-spinner',
+      backdropDismiss: false,
+    });
+    return this.loadingCtrl.present();
+  }
 
 }

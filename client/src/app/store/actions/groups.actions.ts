@@ -2,6 +2,7 @@ import { Action, createAction, props } from '@ngrx/store';
 
 import { Group } from '../../models/group.model';
 import { Item } from '../../models/item.model';
+import { User } from '../../models/user.model';
 import { ItemInput } from '../../models/item-input.model';
 
 
@@ -12,6 +13,9 @@ export enum GroupsActionsTypes {
 
   DeleteItem = '[Groups] Delete Item',
   ItemDeleted = '[Groups] Item Deleted',
+
+  FetchGroupMembers = '[Groups] Fetch Group Members',
+  GroupMembersFetched = '[Groups] Group Members Fetched',
 
   FetchGroupItems = '[Groups] Fetch Group Items',
   GroupItemsFetched = '[Groups] Group Items Fetched',
@@ -31,6 +35,17 @@ export enum GroupsActionsTypes {
 
   ResetCreateGroup = '[Groups] Reset Create Group Modal',
   ResetAddItemModal = '[Groups] Reset Add Item Modal',
+};
+
+
+export class FetchGroupMembers implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupMembers;
+  constructor(public payload: number) { }
+};
+
+export class GroupMembersFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupMembersFetched;
+  constructor(private payload: { members: { name: string, id: string }[], groupid: number }) { }
 };
 
 
@@ -120,4 +135,4 @@ export class GroupUpdated implements Action {
   constructor(private payload: Group) { }
 }
 
-export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted;
+export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted | FetchGroupMembers | GroupMembersFetched;

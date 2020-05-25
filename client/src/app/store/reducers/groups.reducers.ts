@@ -68,7 +68,19 @@ const deleteItemFromSelectedGroup = (selectedGroup: Group, itemid: number) => ({
   items: selectedGroup.items.filter(i => i.id != itemid),
 });
 
-
+const addMembersPropToGroup = (
+  groups: Group[],
+  payload: { members: { name: string, id: string }[], groupid: number }) => {
+  return groups.map(g => {
+    if (g.id == payload.groupid) {
+      return {
+        ...g,
+        members: payload.members,
+      }
+    }
+    return g;
+  })
+};
 
 
 export interface GroupsState {
@@ -95,6 +107,12 @@ export const initialState: GroupsState = {
 export const GroupsReducer = (state = initialState, action): GroupsState => {
 
   switch (action.type) {
+
+    case fromGroupsActions.GroupsActionsTypes.GroupMembersFetched:
+      return {
+        ...state,
+        groups: addMembersPropToGroup(state.groups, action.payload),
+      };
 
     case fromGroupsActions.GroupsActionsTypes.ItemDeleted:
       return {

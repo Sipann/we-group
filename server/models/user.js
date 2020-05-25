@@ -1,6 +1,7 @@
 'use strict';
 
 const pool = require('../models');
+const { isUserGroupManager } = require('./utils');
 
 exports.fetchUserData = async userid => {
   //TODO transaction
@@ -29,6 +30,29 @@ exports.fetchUserData = async userid => {
     console.log('[user model - fetchUserData] error', error.message);
   }
 };
+
+
+exports.fetchGroupMembers = async (userid, groupid) => {
+  try {
+    if (isUserGroupManager(userid, groupid)) {
+      const values = [groupid];
+      const queryStr = `
+      SELECT
+        users.id as id,
+        users.name as name
+      FROM users
+      JOIN groupsusers ON users.id = groupsusers.user_id and groupsusers.group_id = $1;`;
+      const res = await pool.query(queryStr, values);
+      return { ok: true, payload: res.rows };
+    }
+    else {
+      return { ok: false, payload: 'not allowed' };
+    }
+  } catch (error) {
+    console.log('[user model - fetchGroupMembers] error', error.message);
+  }
+};
+
 
 
 exports.createUser = async user => {

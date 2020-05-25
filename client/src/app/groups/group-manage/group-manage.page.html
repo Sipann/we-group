@@ -56,9 +56,8 @@
     </ion-row> -->
 
     <ion-row>
-      <!-- <ion-col size="6">
+      <ion-col size="6">
         <ion-card
-          *ngIf="!loading_members"
           [ngClass]="managing && managing.length && managing !== 'users' ? 'inactive' : 'active'"
           color="secondary"
           (click)="onSelect('users')">
@@ -69,22 +68,8 @@
             View and manage your group's members.
           </ion-card-content>
         </ion-card>
-      </ion-col> -->
+      </ion-col>
 
-      <!-- <ion-col size="6" class="ion-align-self-stretch flex">
-        <ion-card
-          *ngIf="!loading_infos"
-          [ngClass]="managing && managing.length && managing !== 'infos' ? 'inactive' : 'active'"
-          color="light"
-          (click)="onSelect('infos')">
-          <ion-card-header>
-            <ion-card-title class="ion-text-center">Group Details</ion-card-title>
-          </ion-card-header>
-          <ion-card-content class="ion-text-center">
-            View and manage your group's detail.
-          </ion-card-content>
-        </ion-card>
-      </ion-col> -->
 
       <ion-col size="6" class="ion-align-self-stretch flex">
         <ion-card
@@ -118,8 +103,8 @@
 
             <app-group-users
               *ngSwitchCase="'users'"
-              [members]="members"
               (cancelled)="onCancel()"></app-group-users>
+
             <app-group-summary
               *ngSwitchCase="'summary'"
               [group]="group"

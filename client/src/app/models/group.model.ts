@@ -9,6 +9,7 @@ export class Group {
   image?: string;
   deadline?: string;
   items?: Item[];
+  members?: { name: string, id: string }[];
 
   static parse(data) {
     const group = Object.assign(new Group(), data);
