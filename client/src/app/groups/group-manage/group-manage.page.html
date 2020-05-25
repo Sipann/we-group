@@ -85,6 +85,22 @@
           </ion-card-content>
         </ion-card>
       </ion-col> -->
+
+      <ion-col size="6" class="ion-align-self-stretch flex">
+        <ion-card
+          *ngIf="!loading_infos"
+          [ngClass]="managing && managing.length && managing !== 'infos' ? 'inactive' : 'active'"
+          color="light"
+          (click)="onSelect('infos')">
+          <ion-card-header>
+            <ion-card-title class="ion-text-center">Group Details</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="ion-text-center">
+            View and manage your group's detail.
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
     </ion-row>
 
     <ion-row>
@@ -93,12 +109,8 @@
           *ngIf="managing"
           class="ion-padding-top component">
           <ion-card-content [ngSwitch]="managing" class="ion-no-padding">
-            <app-group-infos
-              *ngSwitchCase="'infos'"
-              [group]="group"
-              [managerName]="managerName"
-              (done)="onDone($event)"
-              (cancelled)="onCancel()"></app-group-infos>
+
+            <app-group-infos *ngSwitchCase="'infos'"></app-group-infos>
 
             <app-group-products *ngSwitchCase="'products'"></app-group-products>
 

@@ -43,7 +43,7 @@
           (click)="onCancel()">Cancel Changes</ion-button>
         <ion-button
           color="primary"
-          [disabled]="!f.valid || !f.touched || !formIsValid"
+          [disabled]="!f.valid || f.pristine"
           type="submit">Save Changes</ion-button>
       </ion-col>
     </ion-row>
