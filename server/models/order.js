@@ -1,38 +1,47 @@
 'use strict';
 
 const pool = require('../models');
+const { isUserGroupMember } = require('./utils');
 
 exports.createOrder = async (groupid, userid, date, items) => {
   try {
-    const valuesOrder = [groupid, userid, date];
-    const queryStrOrder = `
+    if (isUserGroupMember(userid, groupid)) {
+
+      const valuesOrder = [groupid, userid, date];
+      const queryStrOrder = `
       INSERT INTO orders (group_id, user_id, date)
       VALUES ($1, $2, $3)
       RETURNING id;`;
-    const resOrder = await pool.query(queryStrOrder, valuesOrder);
-    const orderid = +resOrder.rows[0].id;
-    console.log('[order model createOrder] orderid', orderid);
+      const resOrder = await pool.query(queryStrOrder, valuesOrder);
+      const orderid = +resOrder.rows[0].id;
+      console.log('[order model createOrder] orderid', orderid);
 
-    for (let item of items) {
-      const valuesOrderedItem = [item.quantity, item.itemid, orderid];
-      const queryStrOrderedItem = `
+      for (let item of items) {
+        const valuesOrderedItem = [item.quantity, item.itemid, orderid];
+        const queryStrOrderedItem = `
         INSERT INTO ordered_items (quantity, item_id, order_id)
         VALUES ($1, $2, $3)`;
-      await pool.query(queryStrOrderedItem, valuesOrderedItem);
+        await pool.query(queryStrOrderedItem, valuesOrderedItem);
 
-      const valuesItem = [item.quantity, item.itemid];
-      const queryStrItem = `
+        const valuesItem = [item.quantity, item.itemid];
+        const queryStrItem = `
         UPDATE items
         SET remaining_qty = remaining_qty - $1
         WHERE id = $2;`;
-      await pool.query(queryStrItem, valuesItem);
+        await pool.query(queryStrItem, valuesItem);
 
+      }
+      return { ok: true, payload: { date, orderid, items } };
     }
-    return orderid;
+    else {
+      return { ok: false, payload: 'not allowed' };
+    }
+
   } catch (error) {
     console.log('[order model - createOrder db err]', error.message);
   }
 };
+
 
 exports.getAllOrdersForUser = async (userid) => {
   try {

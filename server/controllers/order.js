@@ -5,15 +5,17 @@ const db = require('../models/order');
 exports.createOrder = async ctx => {
   try {
     const { groupid } = ctx.params;
-    const userid = ctx.request.header.userid;
+    const { userid } = ctx.request.header;
     const { date, items } = ctx.request.body;
-    const res = await db.createOrder(groupid, userid, date, items);
-    ctx.body = res;
+    const response = await db.createOrder(groupid, userid, date, items);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
   } catch (error) {
     ctx.status = 500;
     console.log('[orderCtrl createOrder] error', error.message);
   }
 };
+
 
 exports.getAllOrdersForUser = async ctx => {
   try {

@@ -1,17 +1,18 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/groups/detail/{{ groupId }}"></ion-back-button>
+      <ion-back-button defaultHref="/groups/detail/{{ groupid }}"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ group ? group.name : null }}</ion-title>
+    <ion-title>{{ group$? group$.name : null }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="show">
+<!-- <ion-content *ngIf="show"> -->
+<ion-content *ngIf="group$">
 
   <ion-card>
     <ion-card-content>
-      Deadline set to: {{ formatDate(group.deadline) }}
+      Deadline set to: {{ formatDate(group$.deadline) }}
     </ion-card-content>
   </ion-card>
 
@@ -29,7 +30,7 @@
 
   <ion-grid *ngIf="!empty">
     <ion-row
-      *ngFor="let item of availableItems">
+      *ngFor="let item of group$.items">
       <ion-col size="12" size-sm="6" offset-sm="3">
         <ion-card [ngClass]="item.remaining_qty < 1 ? 'soldout' : ''">
           <ion-card-content>
@@ -69,7 +70,7 @@
       </ion-col>
     </ion-row>
 
-    <ion-row>
+    <ion-row *ngIf="orderPending">
       <ion-col size="12" size-sm="6" offset-sm="3">
         <ion-button
           color="secondary"

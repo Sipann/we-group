@@ -21,6 +21,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { GroupsPageModule } from './groups/groups.module';
 import { GroupsEffects } from './store/effects/groups.effects';
 import { UserEffects } from './store/effects/user.effects';
+import { OrdersEffects } from './store/effects/orders.effects';
 
 import { AuthService } from './services/auth.service';
 import { EffectsModule } from '@ngrx/effects';
@@ -46,7 +47,7 @@ import { reducers } from './store/reducers/index';
 
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({ maxAge: 10 }),
-    EffectsModule.forRoot([GroupsEffects, UserEffects])
+    EffectsModule.forRoot([GroupsEffects, UserEffects, OrdersEffects])
   ],
   providers: [
     AuthService,
