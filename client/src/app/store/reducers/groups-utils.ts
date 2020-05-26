@@ -102,6 +102,9 @@ export const addSummaryPropToGroup = (
 };
 
 
+export const createGroup = (stateGroups: Group[], group: Group) => [...stateGroups, group];
+
+
 export const deleteItemFromGroup = (
   stateGroups: Group[],
   payload: { itemid: string, groupid: string }

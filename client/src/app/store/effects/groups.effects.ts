@@ -18,18 +18,7 @@ export class GroupsEffects {
   ) { }
 
 
-  createGroup$ = createEffect(() => this.actions$.pipe(
-    ofType(fromGroups.GroupsActionsTypes.CreateGroup),
-    mergeMap((action) => this.groupService.createGroup(action.payload)
-      .pipe(
-        map(group => {
-          return new fromGroups.GroupCreated(group);
-        }),
-        catchError(err => {
-          return of({ type: '[Groups] Group Created Fail' })
-        })
-      ))
-  ));
+
 
 
 
@@ -58,6 +47,17 @@ export class GroupsEffects {
         ))
     )
   );
+
+
+  createGroup$ = createEffect(() => this.actions$.pipe(
+    ofType(fromGroups.GroupsActionsTypes.CreateGroup),
+    mergeMap((action) => this.groupService.createGroup(action.payload)
+      .pipe(
+        map(group => new fromGroups.GroupCreated(group)),
+        catchError(err => of({ type: '[Groups] Group Created Fail' }))
+      ))
+  ));
+
 
   deleteItem$ = createEffect(
     () => this.actions$.pipe(

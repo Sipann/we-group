@@ -4,6 +4,7 @@ import {
   addItemToGroup,
   addMembersPropToGroup,
   addSummaryPropToGroup,
+  createGroup,
   deleteItemFromGroup,
   selectGroup,
   updateGroup,
@@ -11,7 +12,7 @@ import {
 
 import { Group } from 'src/app/models/group.model';
 
-const createGroup = (groups, group) => [...groups, group];
+
 
 
 const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
@@ -92,16 +93,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
       };
 
 
-    case fromGroupsActions.GroupsActionsTypes.GroupCreated:
-      return {
-        selectedGroup: state.selectedGroup,
-        selectedGroupId: state.selectedGroupId,
-        loaded: state.loaded,
-        loading: state.loading,
-        groups: createGroup(state.groups, action.payload),
-        groupCreated: true,
-        itemAdded: state.itemAdded,
-      };
+
 
 
     case fromGroupsActions.GroupsActionsTypes.GroupDeleted:
@@ -119,6 +111,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
 
     //
 
+    case fromGroupsActions.GroupsActionsTypes.GroupCreated:
+      return {
+        ...state,
+        groups: createGroup(state.groups, action.payload),
+        groupCreated: true,
+      };
 
     case fromGroupsActions.GroupsActionsTypes.GroupMembersFetched:
       return {

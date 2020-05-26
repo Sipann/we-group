@@ -37,17 +37,6 @@ export class GroupService {
       .subscribe(v => this.user$ = v);
   }
 
-  createGroup(newGroup: Group): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
-  }
-
-
-
-
-
-
 
 
   getGroups(userid: string): Observable<Group[]> {
@@ -59,15 +48,18 @@ export class GroupService {
   //
 
   addItem(payload: { groupid: string, item: Item }): Observable<Item> {
-    // const { groupid, item } = payload;
-    // const body = { groupid, item };
-    // const body = {...payload};        //!
     const fullUrl = `${ this.baseUrl }/groups/items`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    // return this.httpClient.post<Item>(fullUrl, body, { headers })
     return this.httpClient.post<Item>(fullUrl, payload, { headers })
       .pipe(map(item => Item.parse(item)));
   }
+
+  createGroup(newGroup: Group): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
+  }
+
 
   deleteItem(itemid: string): Observable<number> {
     const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;

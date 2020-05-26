@@ -66,15 +66,9 @@ export class SelectGroup implements Action {
   constructor(private payload: { groupid: number }) { }
 };
 
-export class CreateGroup implements Action {
-  readonly type = GroupsActionsTypes.CreateGroup;
-  constructor(public payload: Group) { }        // Group or GroupInput?
-};
 
-export class GroupCreated implements Action {
-  readonly type = GroupsActionsTypes.GroupCreated;
-  constructor(private payload: Group) { }
-}
+
+
 
 export class DeleteGroup implements Action {
   readonly type = GroupsActionsTypes.DeleteGroup;
@@ -98,7 +92,10 @@ export class AddItem implements Action {
   constructor(public payload: { item: Item, groupid: string }) { }
 };
 
-
+export class CreateGroup implements Action {
+  readonly type = GroupsActionsTypes.CreateGroup;
+  constructor(public payload: Group) { }
+};
 
 export class DeleteItem implements Action {
   readonly type = GroupsActionsTypes.DeleteItem;
@@ -119,6 +116,11 @@ export class FetchGroupSummary implements Action {
   readonly type = GroupsActionsTypes.FetchGroupSummary;
   constructor(public payload: { groupid: string }) { }
 };
+
+export class GroupCreated implements Action {
+  readonly type = GroupsActionsTypes.GroupCreated;
+  constructor(private payload: Group) { }
+}
 
 export class GroupItemsFetched implements Action {
   readonly type = GroupsActionsTypes.GroupItemsFetched;
