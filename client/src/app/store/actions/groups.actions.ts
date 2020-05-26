@@ -70,15 +70,7 @@ export class GroupMembersFetched implements Action {
 
 
 
-export class AddItem implements Action {
-  readonly type = GroupsActionsTypes.AddItem;
-  constructor(public payload: { item: ItemInput, groupid: number }) { }
-};
 
-export class ItemAdded implements Action {
-  readonly type = GroupsActionsTypes.ItemAdded;
-  constructor(private payload: { item: Item, groupid: number }) { }
-};
 
 
 
@@ -132,6 +124,13 @@ export class GroupDeleted implements Action {
 
 //
 
+export class AddItem implements Action {
+  readonly type = GroupsActionsTypes.AddItem;
+  constructor(public payload: { item: Item, groupid: string }) { }
+};
+
+
+
 export class DeleteItem implements Action {
   readonly type = GroupsActionsTypes.DeleteItem;
   constructor(public payload: { itemid: string, groupid: string }) { }
@@ -150,6 +149,11 @@ export class GroupItemsFetched implements Action {
 export class GroupUpdated implements Action {
   readonly type = GroupsActionsTypes.GroupUpdated;
   constructor(private payload: Group) { }
+};
+
+export class ItemAdded implements Action {
+  readonly type = GroupsActionsTypes.ItemAdded;
+  constructor(private payload: { item: Item, groupid: string }) { }
 };
 
 export class ItemDeleted implements Action {

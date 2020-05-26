@@ -1,6 +1,7 @@
 import * as fromGroupsActions from '../actions/groups.actions';
 
 import {
+  addItemToGroup,
   deleteItemFromGroup,
   selectGroup,
   updateGroup,
@@ -13,12 +14,7 @@ import { Order } from 'src/app/models/order.model';
 const createGroup = (groups, group) => [...groups, group];
 
 
-const updateSelectedGroup = (group: Group) => Object.assign({}, group);
-
-
 const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
-
-const findGroup = (groups: Group[], groupid: number) => groups.find(g => g.id === groupid);
 
 const updateGroupItems = (groups, payload) => groups.map(g => {
   //! Type issue on groupid
@@ -28,25 +24,6 @@ const updateGroupItems = (groups, payload) => groups.map(g => {
   return g;
 });
 const updateSelectedGroupItems = (selectedGroup, payload) => ({ ...selectedGroup, items: payload.items });
-
-const addItemToGroup = (groups: Group[], payload: { groupid: number, item: Item }) => {
-  console.log('REDUCER ADDITEMTOGROUP payload', payload);
-  return groups.map(g => {
-    //! Type issue on groupid
-    if (g.id == payload.groupid) {
-      return {
-        ...g,
-        items: [...g.items, payload.item]
-      }
-    }
-    return g;
-  })
-};
-
-const addItemToSelectedGroup = (selectedGroup: Group, item: Item) => ({
-  ...selectedGroup,
-  items: [...selectedGroup.items, item]
-});
 
 
 
@@ -164,14 +141,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
 
 
 
-    case fromGroupsActions.GroupsActionsTypes.ItemAdded:
-      return {
-        ...state,
-        selectedGroupId: state.selectedGroupId,
-        selectedGroup: addItemToSelectedGroup(state.selectedGroup, action.payload.item),
-        groups: addItemToGroup(state.groups, action.payload),
-        itemAdded: true,
-      };
+
 
     case fromGroupsActions.GroupsActionsTypes.GroupItemsFetched:
       return {
@@ -243,6 +213,13 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
       return {
         ...state,
         groups: updateGroup(state.groups, action.payload),
+      };
+
+    case fromGroupsActions.GroupsActionsTypes.ItemAdded:
+      return {
+        ...state,
+        groups: addItemToGroup(state.groups, action.payload),
+        itemAdded: true,
       };
 
     case fromGroupsActions.GroupsActionsTypes.ItemDeleted:
