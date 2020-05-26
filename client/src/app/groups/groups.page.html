@@ -17,17 +17,6 @@
 
   <ion-grid class="ion-margin-top">
 
-    <ion-row>
-      <ion-col>
-        <ion-card>
-          <ion-card-content>
-            <pre>{{ user$ | async | json }}</pre>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-
-
     <ion-row class="ion-margin-top">
 
       <ion-col size="12" size-sm="8" offset-sm="2">
@@ -37,6 +26,7 @@
             class="item"
             *ngFor="let group of (groups$ | async); let i = index;"
             detail
+            (click)="onNavigateToGroup(group.id)"
             [routerLink]="['/', 'groups', 'detail', group.id]">
             <ion-thumbnail slot="start">
               <!-- <ion-img [src]="group.image"></ion-img> -->

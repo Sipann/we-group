@@ -14,6 +14,20 @@ exports.fetchUserData = async ctx => {
 };
 
 
+exports.fetchGroupMembers = async ctx => {
+  try {
+    const { userid } = ctx.request.header;
+    const { groupid } = ctx.params;
+    const response = await db.fetchGroupMembers(userid, groupid);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[userCtrl fetchGroupMemebrs] error', error.message);
+  }
+};
+
+
 exports.createUser = async ctx => {
   try {
     const user = ctx.request.body;

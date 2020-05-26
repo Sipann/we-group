@@ -42,7 +42,7 @@ export class GroupsPage implements OnInit, OnDestroy {
     this.groups$ = store.pipe(
       select('groups'),
       map((groupsState: GroupsState) => {
-        console.log('GROUPS STATE', groupsState);   // eslint-disable-line no-console
+        // console.log('GROUPS STATE', groupsState);   // eslint-disable-line no-console
         return groupsState.groups;
       })
     );
@@ -55,7 +55,7 @@ export class GroupsPage implements OnInit, OnDestroy {
     this.user$ = store.pipe(
       select('user'),
       map((userState: UserState) => {
-        console.log('USER STATE', userState);     // eslint-disable-line no-console
+        // console.log('USER STATE', userState);     // eslint-disable-line no-console
         return userState.currentUser;
       })
     );
@@ -65,37 +65,11 @@ export class GroupsPage implements OnInit, OnDestroy {
   ngOnInit() { }
 
 
-  // getGroups(userid) {
-  //   this.store.dispatch(new fromGroupsActions.LoadGroups(userid));
-  // }
-
-
-  // ionViewWillEnter() {
-  //   this.authSub = this.authService.getUserUid().subscribe(auth => {
-  //     if (auth) {
-  //       this.userId = auth.uid;
-  //       // this.fetchAllGroups();
-  //     } else {
-  //       console.log('logged out');
-  //     }
-  //   });
-  // }
-
-
   ngOnDestroy() {
     // if (this.authSub) this.authSub.unsubscribe();
     // if (this.groupsSub) this.groupsSub.unsubscribe();
   }
 
-  // fetchAllGroups() {
-  //   this.apiClientService.getGroups()
-  //     .subscribe((data: Group[]) => {
-  //       this.groups = data;
-  //       this.groups.forEach(group => {
-  //         group.image = this.randomBgThumbnail();
-  //       });
-  //     });
-  // }
 
   onLaunchCreateGroupModal() {
     this.modalCtrl
@@ -110,6 +84,10 @@ export class GroupsPage implements OnInit, OnDestroy {
       .then(_ => {
         this.store.dispatch(new fromGroupsActions.ResetCreateGroup);
       });
+  }
+
+  onNavigateToGroup(id: number) {
+    this.store.dispatch(new fromGroupsActions.SelectGroup(id));
   }
 
   tempBgThumbnail(i: number): string {

@@ -1,94 +1,156 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm, FormBuilder, FormGroup } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
-
-import { ApiClientService } from 'src/app/services/api-client.service';
+import { ModalController, LoadingController, NavController } from '@ionic/angular';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Group } from 'src/app/models/group.model';
-import { Item } from '../../../models/item.model';
 import { NewProductModalComponent } from './new-product-modal/new-product-modal.component';
+
+import { map } from 'rxjs/operators';
+import { Store, select } from '@ngrx/store';
+import { AppState } from '../../../store/reducers/index';
+import { Subscription } from 'rxjs';
+import * as fromGroupsActions from '../../../store/actions/groups.actions';
 
 @Component({
   selector: 'app-group-products',
   templateUrl: './group-products.component.html',
   styleUrls: ['./group-products.component.scss'],
 })
-export class GroupProductsComponent implements OnInit {
-
-  @Input() items: Item[];
-  @Input() group: Group;
-
-  @Output() cancelled = new EventEmitter();
-  @Output() done = new EventEmitter<Group>();
-  @Output() updated = new EventEmitter();
+export class GroupProductsComponent implements OnInit, OnDestroy {
 
   @ViewChild('f', { static: true }) newProductform: NgForm;
 
-  itemAmount: number;
-  itemsForm: FormGroup;
-  itemName: string;
-  itemPrice: number;
+  groupid: number;
+  itemsForm: FormGroup = new FormGroup({});
+  dateTimeFocus = true;
+  group$: Group;
+
+  private loadingCtrl: HTMLIonLoadingElement;
+
+  routeSub: Subscription;
+  groupSub: Subscription;
+
 
   constructor(
-    private apiClientService: ApiClientService,
     private fb: FormBuilder,
-    private modalCtrl: ModalController) { }
+    private loadingController: LoadingController,
+    private modalCtrl: ModalController,
+    private navCtrl: NavController,
+    private route: ActivatedRoute,
+    private store: Store<AppState>
+  ) { }
 
-  ngOnInit() {
-    this.createDynamicItemsList();
+  ngOnInit() { this.initialize(); }
+
+  ngOnDestroy() {
+    if (this.routeSub) this.routeSub.unsubscribe();
+    if (this.groupSub) this.groupSub.unsubscribe();
   }
 
-  ngOnChanges() { this.createDynamicItemsList(); }
+  async initialize() {
+
+    this.routeSub = this.route.paramMap.subscribe(async paramMap => {
+      if (!paramMap.has('groupid')) {
+        this.navCtrl.navigateBack('/groups');
+        return;
+      }
+      this.groupid = parseInt(paramMap.get('groupid'));
+
+      await this.presentLoading();
+
+      this.store.dispatch(new fromGroupsActions.FetchGroupItems(this.groupid));
+
+      this.groupSub = this.store.select('groups')
+        .pipe(map(g => g.groups))
+        .subscribe(groups => {
+          this.group$ = groups.find(g => g.id == this.groupid);
+          const group = groups.find(g => g.id == this.groupid);
+          this.createDynamicItemsList();
+          this.itemsForm.updateValueAndValidity();   //? useful?
+        })
+
+      if (this.loadingCtrl) {
+        this.loadingCtrl.dismiss();
+        this.loadingCtrl = null;
+      }
+
+    });
+  }
+
 
   createDynamicItemsList() {
     const itemsGroup = {};
-    this.items.forEach(item => {
-      const groupName = item.name;
-      itemsGroup[groupName] = this.fb.group({
-        'selected': [false],
-        'amount': [item.remaining_qty],
-        'name': [item.name],
-        'price': [item.price],
-        'currency': [item.currency]
+    let items = [];
+    if (this.group$) {
+      itemsGroup['deadline'] = this.fb.group({
+        'deadlineDate': [this.group$.deadline]
       });
-    });
-    itemsGroup['deadline'] = this.fb.group({
-      'deadlineDate': [this.group.deadline]
-    });
+      if (this.group$.items && this.group$.items.length) {
+        items = this.group$.items;
+        items.forEach(item => {
+          const groupName = item.name;
+          itemsGroup[groupName] = this.fb.group({
+            'selected': [false],
+            'amount': [item.remaining_qty],
+            'name': [item.name],
+            'price': [item.price],
+            'currency': [item.currency]
+          });
+        });
+      }
+    }
     this.itemsForm = new FormGroup(itemsGroup);
-    console.log('this.itemsForm', this.itemsForm);
   }
 
-  onCancel() { this.cancelled.emit(); }
+  onSelectDateIonChange(event) {
+    if (this.dateTimeFocus) {
+      this.dateTimeFocus = false;
+      const newGroup = {
+        ...this.group$,
+        deadline: event.detail.value,
+      };
+      this.store.dispatch(new fromGroupsActions.UpdateGroup(newGroup))
+    }
+  }
 
-  onCreateNewProduct() {
+  onDateTimeFocus() {
+    this.dateTimeFocus = true;
+  }
+
+
+  onLaunchCreateItemModal() {
     this.modalCtrl
       .create({
         component: NewProductModalComponent,
-        componentProps: { group: this.group },
+        componentProps: { group: this.group$ },
       })
       .then(modalEl => {
         modalEl.present();
         return modalEl.onDidDismiss();
       })
       .then(_ => {
-        this.updated.emit(true);
-        this.createDynamicItemsList();
+        this.store.dispatch(new fromGroupsActions.ResetAddItemModal())
       });
   }
 
   onDeleteItem(itemid: number) {
-    this.apiClientService.deleteItem(itemid)
-      .subscribe(_ => {
-        this.updated.emit(true);
-        this.createDynamicItemsList();
-      });
+    this.store.dispatch(new fromGroupsActions.DeleteItem({ itemid, groupid: +this.groupid }));
+    this.createDynamicItemsList();
   }
 
-  onSaveChanges() {
-    this.apiClientService.updateGroupDeadline(this.itemsForm.value['deadline'], this.group.id)
-      .subscribe(data => {
-        this.done.emit(data);
-      })
+  onSendToGroup() {
+    console.log('Send info to group members => ORDER IS NOW AVAILABLE');
+  }
+
+
+  async presentLoading() {
+    this.loadingCtrl = await this.loadingController.create({
+      spinner: 'bubbles',
+      translucent: true,
+      cssClass: 'loading-spinner',
+      backdropDismiss: false,
+    });
+    return this.loadingCtrl.present();
   }
 
 

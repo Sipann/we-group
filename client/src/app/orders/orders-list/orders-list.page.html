@@ -7,7 +7,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!loadingOrders">
+<!-- <ion-content *ngIf="!loadingOrders"> -->
+<ion-content *ngIf="orders && orders.length">
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-sm="8" offset-sm="2">
@@ -20,10 +21,14 @@
           </ion-card-content>
         </ion-card>
         <ion-list *ngIf="!archiveIsEmpty">
+          <!-- <ion-item
+            *ngFor="let order of orders"
+            detail
+            (click)="onNavigateToOrderDetails(order)"> -->
           <ion-item
             *ngFor="let order of orders"
             detail
-            (click)="onNavigateToOrderDetails(order)">
+            (click)="onNavigateToOrderDetails(order.orderid)">
             <ion-label>
               <ion-text>{{ order.groupname }} - {{ formatDate(order.deadline) }}</ion-text>
             </ion-label>

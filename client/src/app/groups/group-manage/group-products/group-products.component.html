@@ -1,6 +1,6 @@
-<form [formGroup]="itemsForm">
+<form *ngIf="group$" [formGroup]="itemsForm">
 
-  <div *ngFor="let item of items"
+  <div *ngFor="let item of group$.items"
     [formGroupName]="item.name"
     class="ion-margin-bottom item">
     <ion-row>
@@ -50,7 +50,7 @@
       <ion-col size="12" size-sm="6" offset-sm="3" class="ion-text-center">
         <ion-button
           color="primary"
-          (click)="onCreateNewProduct()">
+          (click)="onLaunchCreateItemModal()">
           <ion-icon name="add-outline"></ion-icon>
         </ion-button>
       </ion-col>
@@ -65,6 +65,8 @@
     <ion-row formGroupName="deadline">
       <ion-col size="12" class="ion-text-center">
         <ion-datetime
+          (ionChange)="onSelectDateIonChange($event)"
+          (ionFocus)="onDateTimeFocus()"
           placeholder="Select deadline date"
           display-format="D MMM YYYY H:mm a"
           picker-format="D MMM YYYY H:mm"
@@ -79,19 +81,13 @@
     </ion-row>
 
     <ion-row>
-      <ion-col size="6" class="ion-text-right">
-        <ion-button
-          color="secondary"
-          type="button"
-          (click)="onCancel()">Cancel</ion-button>
-      </ion-col>
-      <ion-col size="6" class="ion-text-left">
+      <ion-col size="12" size-sm="6" offset-sm="3" class="ion-text-center">
         <ion-button
           class="save"
           color="primary"
           type="button"
-          disabled="{{ items.length < 1 }}"
-          (click)="onSaveChanges()">Save</ion-button>
+          disabled="{{ !group$.items || group$.items.length < 1 }}"
+          (click)="onSendToGroup()">SEND</ion-button>
       </ion-col>
 
     </ion-row>

@@ -3,14 +3,16 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/orders/all/{{ orderId }}"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ order.groupname }}</ion-title>
-    <ion-title size="small">{{ formatDate(order.deadline) }}</ion-title>
+    <!-- <ion-title>{{ order.groupname }}</ion-title> -->
+    <ion-title>{{ order$ && order$.groupname }}</ion-title>
+    <ion-title size="small">{{ order$ && formatDate(order$.deadline) }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="order$">
   <ion-grid>
-    <ion-row *ngFor="let item of order.items">
+    <!-- <ion-row *ngFor="let item of order.items"> -->
+    <ion-row *ngFor="let item of order$.items">
       <ion-col size="12" size-sm="6" offset-sm="3">
         <ion-list>
           <ion-item

@@ -1,11 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
-import { ApiClientService } from '../services/api-client.service';
 import { Group } from '../models/group.model';
 import { Item } from '../models/item.model';
+
+import { Store, select } from '@ngrx/store';
+import { AppState } from '../store/reducers';
+import { map } from 'rxjs/operators';
+import * as fromGroupsActions from '../store/actions/groups.actions';
+import * as fromOrdersActions from '../store/actions/orders.actions';
 
 import * as moment from 'moment';
 
@@ -25,56 +30,68 @@ export class OrdersPage implements OnInit, OnDestroy {
   ordered: {} = {};
   show = false;
 
+  groupid: number;
+  group$: Group;
+
+  orderPending = true;
+
   private itemsSub: Subscription;
   private orderSub: Subscription;
 
+  groupSub: Subscription;
+
   constructor(
     private alertCtrl: AlertController,
-    private apiClientService: ApiClientService,
     private loadingController: LoadingController,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private router: Router,
+    private store: Store<AppState>,
   ) { }
 
-  ngOnInit() {
-    this.route.paramMap.subscribe(paramMap => {
-      if (!paramMap.has('groupid')) {
-        this.navCtrl.navigateBack('/groups');
-        this.loadingCtrl.dismiss();
-        return;
-      }
-      this.groupId = parseInt(paramMap.get('groupid'));
-
-      if (this.router.getCurrentNavigation().extras.state) {
-        const group = this.router.getCurrentNavigation().extras.state;
-        this.group = Group.parse(group);
-        this.presentLoading();
-
-
-        this.itemsSub = this.apiClientService.getGroupItems(this.groupId)
-          .subscribe(data => {
-            if (data.length) {
-              this.availableItems = data;
-              this.availableItems.forEach(item => {
-                this.ordered[item.id] = 0;
-              });
-              this.empty = false;
-            }
-            this.show = true;
-            this.loadingCtrl.dismiss();
-          });
-      }
-      else {
-        this.router.navigate(['/', 'groups', 'detail', this.groupId]);
-        return;
-      }
-    });
-  }
+  ngOnInit() { this.initialize(); }
 
   ngOnDestroy() {
     if (this.orderSub) this.orderSub.unsubscribe();
     if (this.itemsSub) this.itemsSub.unsubscribe();
+    if (this.groupSub) this.groupSub.unsubscribe();
+  }
+
+  ionViewWillLeave() {
+    this.store.dispatch(new fromOrdersActions.ResetOrderPending());
+  }
+
+  async initialize() {
+    this.route.paramMap.subscribe(async paramMap => {
+      if (!paramMap.has('groupid')) {
+        this.navCtrl.navigateBack('/group');
+        return;
+      }
+      await this.presentLoading();
+      this.groupid = parseInt(paramMap.get('groupid'));
+
+      this.store.dispatch(new fromGroupsActions.FetchGroupItems(this.groupid));
+
+      this.groupSub = this.store.select('groups')
+        .pipe(map(g => g.groups))
+        .subscribe(groups => {
+          this.group$ = groups.find(g => g.id == this.groupid);
+          if (this.group$.items) {
+            this.empty = !this.group$.items.length;
+            this.group$.items.forEach(item => {
+              this.ordered[item.id] = 0;
+            });
+          }
+          this.loadingCtrl.dismiss();
+        });
+
+      this.orderSub = this.store.select('orders')
+        .pipe(map(o => o.orderCreated))
+        .subscribe(v => {
+          this.orderPending = !v;
+        });
+
+
+    });
   }
 
   formatDate(deadline) {
@@ -85,7 +102,7 @@ export class OrdersPage implements OnInit, OnDestroy {
     if (this.ordered[itemid] < available) this.ordered[itemid] += 1;
   }
 
-  onCancel() { this.navCtrl.navigateBack(`/groups/detail/${ this.group.id }`); }
+  onCancel() { this.navCtrl.navigateBack(`/groups/detail/${ this.groupid }`); }
 
   onOrder() {
     const orderedItems = [];
@@ -95,10 +112,7 @@ export class OrdersPage implements OnInit, OnDestroy {
       }
     }
     if (orderedItems.length) {
-      this.orderSub = this.apiClientService.createOrder(this.group.id, this.group.deadline, orderedItems)
-        .subscribe(data => {
-          this.navCtrl.navigateBack(`/groups/detail/${ this.groupId }`);
-        });
+      this.store.dispatch(new fromOrdersActions.CreateOrder({ groupid: this.groupid, deadline: this.group$.deadline, orderedItems }));
     }
     else {
       const message = 'You have not selected any item';

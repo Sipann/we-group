@@ -5,15 +5,32 @@ const db = require('../models/order');
 exports.createOrder = async ctx => {
   try {
     const { groupid } = ctx.params;
-    const userid = ctx.request.header.userid;
+    const { userid } = ctx.request.header;
     const { date, items } = ctx.request.body;
-    const res = await db.createOrder(groupid, userid, date, items);
-    ctx.body = res;
+    const response = await db.createOrder(groupid, userid, date, items);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
   } catch (error) {
     ctx.status = 500;
     console.log('[orderCtrl createOrder] error', error.message);
   }
 };
+
+exports.fetchOrderGroupUser = async ctx => {
+  try {
+    const { groupid } = ctx.params;
+    const { userid } = ctx.request.header;
+    console.log('ENTERING FETCHORDERGROUPUSER with groupid', groupid, 'userid', userid);
+    const response = await db.fetchOrderGroupUser(userid, groupid);
+    console.log('CTRL response', response);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[orderCtrl createOrder] error', error.message);
+  }
+}
+
 
 exports.getAllOrdersForUser = async ctx => {
   try {
@@ -28,10 +45,11 @@ exports.getAllOrdersForUser = async ctx => {
 
 exports.updateOrder = async ctx => {
   try {
-    console.log('updateOrder entering with body', ctx.request.body);
     const updatedOrder = ctx.request.body;
-    const res = await db.updateOrder(updatedOrder);
-    ctx.body = res;
+    const { userid } = ctx.request.header;
+    const response = await db.updateOrder(userid, updatedOrder);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
   } catch (error) {
     ctx.status = 500;
     console.log('[orderCtrl updateOrder] error', error.message);

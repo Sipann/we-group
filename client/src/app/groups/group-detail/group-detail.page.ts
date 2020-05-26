@@ -3,9 +3,12 @@ import { NavController, LoadingController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { ApiClientService } from 'src/app/services/api-client.service';
-import { AuthService } from '../../services/auth.service';
 import { Group } from '../../models/group.model';
+
+import { map } from 'rxjs/operators';
+import { Store, select } from '@ngrx/store';
+import { AppState } from '../../store/reducers/index';
+
 
 @Component({
   selector: 'app-group-detail',
@@ -14,23 +17,21 @@ import { Group } from '../../models/group.model';
 })
 export class GroupDetailPage implements OnInit, OnDestroy {
 
-  currentUserIsManager = false;
-  group: Group;
-  loading = true;
-  loadingCtrl;
-  navigationExtras;
-  orderIsAllowed = false;
+  private currentUserIsManager = false;
+  private group: Group;
+  public loadingPage = true;
+  private loadingCtrl: HTMLIonLoadingElement;
+  public orderIsAllowed = false;
 
-  private groupSub: Subscription;
   private authSub: Subscription;
+  private groupSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
-    private apiClientService: ApiClientService,
-    private authService: AuthService,
     private loadingController: LoadingController,
     private navCtrl: NavController,
-    private router: Router) { }
+    private router: Router,
+    private store: Store<AppState>) { }
 
   ngOnInit() {
     this.initialize()
@@ -38,34 +39,30 @@ export class GroupDetailPage implements OnInit, OnDestroy {
 
   async initialize() {
     await this.presentLoading();
+
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has('groupid')) {
-        this.navCtrl.navigateBack('/groups');
         this.loadingCtrl.dismiss();
+        this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupSub = this.apiClientService.getGroup(parseInt(paramMap.get('groupid')))
-        .subscribe(data => {
-          this.group = data;
-          this.navigationExtras = {
-            state: { ...this.group }
-          };
-          this.loading = false;
+
+      this.groupSub = this.store.select('groups')
+        .pipe(map(g => g.selectedGroup))
+        .subscribe(selectedGroupData => {
+          this.group = selectedGroupData;
+          this.loadingPage = false;
           this.orderIsAllowed = this.group.deadline && new Date(this.group.deadline) >= new Date();
+          this.authSub = this.store.select('user')
+            .pipe(map(u => u.currentUser))
+            .subscribe(currentUserData => {
+              this.currentUserIsManager = currentUserData && currentUserData.id === selectedGroupData.manager_id;
+            });
+
           this.loadingCtrl.dismiss();
-
-          this.authSub = this.authService.getUserUid().subscribe(auth => {
-            if (auth && auth.uid === this.group.manager_id) {
-              this.currentUserIsManager = true;
-            } else {
-              this.currentUserIsManager = false;
-            }
-          });
         });
-
     });
   }
-
 
   async presentLoading() {
     this.loadingCtrl = await this.loadingController.create({
@@ -79,21 +76,28 @@ export class GroupDetailPage implements OnInit, OnDestroy {
 
   onNavigateToManageGroup() {
     if (this.currentUserIsManager) {
-      this.router.navigate(['/', 'groups', 'manage', this.group.id], this.navigationExtras);
+      this.router.navigate(['/', 'groups', 'manage', this.group.id], {
+        state: { ...this.group }
+      });
     }
   }
 
   onNavigateToPlaceOrder() {
-    this.router.navigate(['/', 'orders', 'new', this.group.id], this.navigationExtras);
+    this.router.navigate(['/', 'orders', 'new', this.group.id], {
+      state: { ...this.group }
+    });
   }
 
   onNavigateToOrdersArchives() {
-    this.router.navigate(['/', 'orders', 'all', this.group.id], this.navigationExtras);
+    // this.router.navigate(['/', 'orders', 'all', this.group.id], this.navigationExtras);
+    this.router.navigate(['/', 'orders', 'all', this.group.id], {
+      state: { ...this.group }
+    });
   }
 
   ngOnDestroy() {
-    if (this.groupSub) this.groupSub.unsubscribe();
     if (this.authSub) this.authSub.unsubscribe();
+    if (this.groupSub) this.groupSub.unsubscribe();
   }
 
 }
