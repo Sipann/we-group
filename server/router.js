@@ -42,6 +42,7 @@ router.delete('/groups/items/:itemid', controllers.itemCtrl.deleteItem);
 
 router.post('/orders/:groupid', controllers.orderCtrl.createOrder);
 router.get('/orders', controllers.orderCtrl.getAllOrdersForUser);
+router.get('/orders/:groupid', controllers.orderCtrl.fetchOrderGroupUser);
 router.put('/orders', controllers.orderCtrl.updateOrder);
 
 router.post('/users', controllers.userCtrl.createUser);

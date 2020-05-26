@@ -6,6 +6,7 @@ export class OrderSummary {
   itemname: string;
   itemprice: number;
   groupname: string;
+  groupid: number;
 
   itemid?: number;
   orderedid?: number;

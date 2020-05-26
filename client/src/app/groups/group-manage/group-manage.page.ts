@@ -93,49 +93,49 @@ export class GroupManagePage implements OnInit, OnDestroy {
   }
 
 
-  fetchGroupInfos() {
-    this.infosSub = this.apiClientService.getGroup(this.group.id)
-      .subscribe(data => {
-        this.group = data;
-      });
-  }
+  // fetchGroupInfos() {
+  //   this.infosSub = this.apiClientService.getGroup(this.group.id)
+  //     .subscribe(data => {
+  //       this.group = data;
+  //     });
+  // }
 
-  fetchItems() {
-    this.itemsSub = this.apiClientService.getGroupItems(this.group.id)
-      .subscribe(data => {
-        this.items = data;
-        this.loading_items = false;
-      });
-  }
+  // fetchItems() {
+  //   this.itemsSub = this.apiClientService.getGroupItems(this.group.id)
+  //     .subscribe(data => {
+  //       this.items = data;
+  //       this.loading_items = false;
+  //     });
+  // }
 
-  fetchMembers() {
-    this.membersSub = this.apiClientService.getGroupMembers(this.group.id)
-      .subscribe(data => {
-        this.members = data;
-        this.loading_members = false;
-        const manager = data.find(member => member.id === this.group.manager_id);
-        this.managerName = manager.name;
-      });
-  }
+  // fetchMembers() {
+  //   this.membersSub = this.apiClientService.getGroupMembers(this.group.id)
+  //     .subscribe(data => {
+  //       this.members = data;
+  //       this.loading_members = false;
+  //       const manager = data.find(member => member.id === this.group.manager_id);
+  //       this.managerName = manager.name;
+  //     });
+  // }
 
-  fetchSummary() {
-    if (this.group.deadline) {
-      this.summarySub = this.apiClientService.getGroupOrder(this.group.id, this.group.deadline)
-        .subscribe(data => {
-          this.summaryByUser = this.reduceByUser(data);
-          this.summaryByItem = this.reduceByItem(data);
-          this.loading_summary = false;
-        });
-    }
+  // fetchSummary() {
+  //   if (this.group.deadline) {
+  //     this.summarySub = this.apiClientService.getGroupOrder(this.group.id, this.group.deadline)
+  //       .subscribe(data => {
+  //         this.summaryByUser = this.reduceByUser(data);
+  //         this.summaryByItem = this.reduceByItem(data);
+  //         this.loading_summary = false;
+  //       });
+  //   }
 
-  }
+  // }
 
   onCancel() { this.managing = ''; }
 
   onDone(group: Group) {
     this.managing = '';
     this.group = group;
-    this.fetchSummary();
+    // this.fetchSummary();
   }
 
   onItemsUpdated() { this.fetchItems(); }

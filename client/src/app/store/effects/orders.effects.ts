@@ -33,6 +33,38 @@ export class OrdersEffects {
         )
       )
     )
-  )
+  );
+
+  fetchOrders$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromOrders.OrdersActionsTypes.FetchOrders),
+      mergeMap(action => this.ordersService.fetchOrders(action.payload)
+        .pipe(
+          map(orders => {
+            console.log('fetchOrders createEffect orders', orders);
+            return new fromOrders.OrdersFetched(orders);
+          }),
+          catchError(err => {
+            return of({ type: '[Orders] Orders Fetch Fail' })
+          })
+        ))
+    )
+  );
+
+  updateOrder$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromOrders.OrdersActionsTypes.UpdateOrder),
+      mergeMap(action => this.ordersService.updateOrder(action.payload)
+        .pipe(
+          map(order => {
+            console.log('updateOrder createEffect order', order);
+            return new fromOrders.OrderUpdated(order);
+          }),
+          catchError(err => {
+            return of({ type: '[Orders] Update Order Fail' })
+          })
+        ))
+    )
+  );
 
 }

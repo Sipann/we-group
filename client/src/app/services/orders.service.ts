@@ -10,6 +10,7 @@ import { GroupInput } from '../models/group-input.model';
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
 import { Order } from '../models/order.model';
+import { OrderOutput } from '../models/order-output.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
@@ -45,6 +46,25 @@ export class OrdersService {
     const fullUrl = `${ this.baseUrl }/orders/${ groupid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.post<{ date: string, orderid: number, items: Item[] }>(fullUrl, body, { headers });
+  }
+
+  fetchOrders(payload: { groupid: number }): Observable<OrderOutput[]> {
+    const fullUrl = `${ this.baseUrl }/orders/${ payload.groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<OrderOutput[]>(fullUrl, { headers })
+      .pipe(
+        tap(obj => console.log('fetchOrders service response', obj))
+      );
+  }
+
+  updateOrder(payload: { orderid: number, itemid: number, orderedid: number, quantityChange: number }[]): Observable<{ id: number, quantity: number, item_id: number, order_id: number }[]> {
+    const fullUrl = `${ this.baseUrl }/orders`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    const body = payload;
+    return this.httpClient.put<{ id: number, quantity: number, item_id: number, order_id: number }[]>(fullUrl, body, { headers })
+      .pipe(
+        tap(obj => console.log('updateOrder service response', obj))
+      );
   }
 
 }
