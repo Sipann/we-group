@@ -6,8 +6,10 @@ import { Subscription } from 'rxjs';
 import { Group } from '../../models/group.model';
 
 import { map } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppState } from '../../store/reducers/index';
+
+import { setUpLoader } from '../groups-utils';
 
 
 @Component({
@@ -18,8 +20,7 @@ import { AppState } from '../../store/reducers/index';
 export class GroupDetailPage implements OnInit, OnDestroy {
 
   private currentUserIsManager = false;
-  private group: Group;
-  public loadingPage = true;
+  private group$: Group;
   private loadingCtrl: HTMLIonLoadingElement;
   public orderIsAllowed = false;
 
@@ -31,73 +32,60 @@ export class GroupDetailPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private navCtrl: NavController,
     private router: Router,
-    private store: Store<AppState>) { }
+    private store: Store<AppState>,
+  ) { }
 
-  ngOnInit() {
-    this.initialize()
+  ngOnInit() { this.initialize(); }
+
+  ngOnDestroy() {
+    if (this.authSub) this.authSub.unsubscribe();
+    if (this.groupSub) this.groupSub.unsubscribe();
   }
 
   async initialize() {
-    await this.presentLoading();
-
-    this.route.paramMap.subscribe(paramMap => {
+    this.route.paramMap.subscribe(async paramMap => {
       if (!paramMap.has('groupid')) {
-        this.loadingCtrl.dismiss();
         this.navCtrl.navigateBack('/groups');
         return;
       }
 
+      this.loadingCtrl = await setUpLoader(this.loadingController);
+      this.loadingCtrl.present();
+
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.selectedGroup))
         .subscribe(selectedGroupData => {
-          this.group = selectedGroupData;
-          this.loadingPage = false;
-          this.orderIsAllowed = this.group.deadline && new Date(this.group.deadline) >= new Date();
+          this.group$ = selectedGroupData;
+          this.orderIsAllowed = this.group$.deadline && new Date(this.group$.deadline) >= new Date();
           this.authSub = this.store.select('user')
             .pipe(map(u => u.currentUser))
             .subscribe(currentUserData => {
               this.currentUserIsManager = currentUserData && currentUserData.id === selectedGroupData.manager_id;
             });
 
-          this.loadingCtrl.dismiss();
+          if (this.loadingCtrl) this.loadingCtrl.dismiss();
         });
     });
   }
 
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
-  }
-
   onNavigateToManageGroup() {
     if (this.currentUserIsManager) {
-      this.router.navigate(['/', 'groups', 'manage', this.group.id], {
-        state: { ...this.group }
+      this.router.navigate(['/', 'groups', 'manage', this.group$.id], {
+        state: { ...this.group$ }
       });
     }
   }
 
   onNavigateToPlaceOrder() {
-    this.router.navigate(['/', 'orders', 'new', this.group.id], {
-      state: { ...this.group }
+    this.router.navigate(['/', 'orders', 'new', this.group$.id], {
+      state: { ...this.group$ }
     });
   }
 
   onNavigateToOrdersArchives() {
-    // this.router.navigate(['/', 'orders', 'all', this.group.id], this.navigationExtras);
-    this.router.navigate(['/', 'orders', 'all', this.group.id], {
-      state: { ...this.group }
+    this.router.navigate(['/', 'orders', 'all', this.group$.id], {
+      state: { ...this.group$ }
     });
-  }
-
-  ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.groupSub) this.groupSub.unsubscribe();
   }
 
 }
