@@ -56,12 +56,14 @@ export class GroupDetailPage implements OnInit, OnDestroy {
         .pipe(map(g => g.selectedGroup))
         .subscribe(selectedGroupData => {
           this.group$ = selectedGroupData;
-          this.orderIsAllowed = this.group$.deadline && new Date(this.group$.deadline) >= new Date();
-          this.authSub = this.store.select('user')
-            .pipe(map(u => u.currentUser))
-            .subscribe(currentUserData => {
-              this.currentUserIsManager = currentUserData && currentUserData.id === selectedGroupData.manager_id;
-            });
+          if (this.group$) {
+            this.orderIsAllowed = this.group$.deadline && new Date(this.group$.deadline) >= new Date();
+            this.authSub = this.store.select('user')
+              .pipe(map(u => u.currentUser))
+              .subscribe(currentUserData => {
+                this.currentUserIsManager = currentUserData && currentUserData.id === selectedGroupData.manager_id;
+              });
+          }
 
           if (this.loadingCtrl) this.loadingCtrl.dismiss();
         });
