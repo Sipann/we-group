@@ -23,7 +23,7 @@ exports.fetchUserData = async userid => {
       INNER JOIN groupsusers ON groups.id = groupsusers.group_id AND groupsusers.user_id = $1;
     `;
     const userGroups = await pool.query(userGroupsQueryStr, values);
-
+    // console.log('MODELS USER FETCH USER DATA userGroups.rows', userGroups.rows);
     return { userDetails: userDetails.rows[0], userGroups: userGroups.rows };
 
   } catch (error) {

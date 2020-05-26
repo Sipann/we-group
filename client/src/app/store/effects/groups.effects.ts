@@ -33,38 +33,9 @@ export class GroupsEffects {
 
 
 
-  fetchGroupMembers$ = createEffect(
-    () => this.actions$.pipe(
-      ofType(fromGroups.GroupsActionsTypes.FetchGroupMembers),
-      mergeMap(action => this.groupService.fetchMembers(action.payload)
-        .pipe(
-          map(members => {
-            const args = { groupid: action.payload, members };
-            return new fromGroups.GroupMembersFetched(args);
-          }),
-          catchError(err => {
-            return of({ type: '[Groups] Fetch Group Members Fail' })
-          })
-        ))
-    )
-  );
 
-  fetchGroupSummaries$ = createEffect(
-    () => this.actions$.pipe(
-      ofType(fromGroups.GroupsActionsTypes.FetchGroupSummary),
-      mergeMap(action => this.groupService.fetchSummary(action.payload)
-        .pipe(
-          map(orders => {
-            console.log('fetchGroupSummaries$ orders', orders);
-            const args = { groupid: action.payload, orders };
-            return new fromGroups.GroupSummaryFetched(args);
-          }),
-          catchError(err => {
-            return of({ type: '[Groups] Fetch Group Summary Fail' })
-          })
-        ))
-    )
-  );
+
+
 
 
 
@@ -117,6 +88,40 @@ export class GroupsEffects {
         })
       ))
   ));
+
+
+  fetchGroupMembers$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.FetchGroupMembers),
+      mergeMap(action => this.groupService.fetchMembers(action.payload.groupid)
+        .pipe(
+          map(members => {
+            const args = { groupid: action.payload.groupid, members };
+            return new fromGroups.GroupMembersFetched(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Fetch Group Members Fail' })
+          })
+        ))
+    )
+  );
+
+
+  fetchGroupSummaries$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.FetchGroupSummary),
+      mergeMap(action => this.groupService.fetchSummary(action.payload.groupid)
+        .pipe(
+          map(orders => {
+            const args = { groupid: action.payload.groupid, orders };
+            return new fromGroups.GroupSummaryFetched(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Fetch Group Summary Fail' })
+          })
+        ))
+    )
+  );
 
   updateGroup$ = createEffect(
     () => this.actions$.pipe(

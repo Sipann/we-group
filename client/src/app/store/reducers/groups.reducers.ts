@@ -2,14 +2,14 @@ import * as fromGroupsActions from '../actions/groups.actions';
 
 import {
   addItemToGroup,
+  addMembersPropToGroup,
+  addSummaryPropToGroup,
   deleteItemFromGroup,
   selectGroup,
   updateGroup,
 } from './groups-utils';
 
 import { Group } from 'src/app/models/group.model';
-import { Item } from 'src/app/models/item.model';
-import { Order } from 'src/app/models/order.model';
 
 const createGroup = (groups, group) => [...groups, group];
 
@@ -27,78 +27,6 @@ const updateSelectedGroupItems = (selectedGroup, payload) => ({ ...selectedGroup
 
 
 
-const addMembersPropToGroup = (
-  groups: Group[],
-  payload: { members: { name: string, id: string }[], groupid: number }) => {
-  return groups.map(g => {
-    if (g.id == payload.groupid) {
-      return {
-        ...g,
-        members: payload.members,
-      }
-    }
-    return g;
-  })
-};
-
-const reduceByUser = (data: { username: string, itemname: string, orderedquantity: number }[]) => {
-  const result = [];
-  const reduced = data.reduce((acc, current) => {
-    const currentUsername = current.username;
-    const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
-    return acc[currentUsername]
-      ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
-      : acc = { ...acc, [currentUsername]: [item] }
-  }, {});
-
-  for (let prop in reduced) {
-    if (reduced.hasOwnProperty(prop)) {
-      result.push({ username: prop, items: reduced[prop] });
-    }
-  }
-  return result;
-};
-
-const reduceByItem = (data: { username: string, itemname: string, orderedquantity: number }[]) => {
-  const result = [];
-  const reduced = data.reduce((acc, current) => {
-    const currentItemname = current.itemname;
-    const currentQuantity = current.orderedquantity;
-    return acc[currentItemname]
-      ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
-      : acc = { ...acc, [currentItemname]: currentQuantity }
-  }, {});
-
-  for (let prop in reduced) {
-    if (reduced.hasOwnProperty(prop)) {
-      result.push({
-        itemname: prop,
-        quantity: reduced[prop]
-      });
-    }
-  }
-  return result;
-}
-
-const addSummaryPropToGroup = (
-  groups: Group[],
-  payload: {
-    groupid: number,
-    orders: { username: string, itemname: string, orderedquantity: number }[]
-  }) => {
-  return groups.map(g => {
-    if (g.id == payload.groupid) {
-      return {
-        ...g,
-        order: {
-          byItem: reduceByItem(payload.orders),
-          byUser: reduceByUser(payload.orders),
-        }
-      }
-    }
-    return g;
-  })
-};
 
 
 export interface GroupsState {
@@ -127,20 +55,6 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
   switch (action.type) {
 
 
-    case fromGroupsActions.GroupsActionsTypes.GroupSummaryFetched:
-      return {
-        ...state,
-        groups: addSummaryPropToGroup(state.groups, action.payload),
-      }
-
-    case fromGroupsActions.GroupsActionsTypes.GroupMembersFetched:
-      return {
-        ...state,
-        groups: addMembersPropToGroup(state.groups, action.payload),
-      };
-
-
-
 
 
     case fromGroupsActions.GroupsActionsTypes.GroupItemsFetched:
@@ -152,19 +66,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
       };
 
 
-
     case fromGroupsActions.GroupsActionsTypes.ResetCreateGroup:
       return {
         ...state,
         groupCreated: false,
       };
 
-    // case fromGroupsActions.GroupsActionsTypes.SelectGroup:
-    //   return {
-    //     ...state,
-    //     selectedGroupId: state.selectedGroupId,
-    //     selectedGroup: findGroup(state.groups, action.payload),
-    //   };
 
     case fromGroupsActions.GroupsActionsTypes.GroupsLoaded:
       return {
@@ -208,6 +115,22 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         itemAdded: state.itemAdded,
       };
 
+
+
+    //
+
+
+    case fromGroupsActions.GroupsActionsTypes.GroupMembersFetched:
+      return {
+        ...state,
+        groups: addMembersPropToGroup(state.groups, action.payload),
+      };
+
+    case fromGroupsActions.GroupsActionsTypes.GroupSummaryFetched:
+      return {
+        ...state,
+        groups: addSummaryPropToGroup(state.groups, action.payload),
+      };
 
     case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
       return {

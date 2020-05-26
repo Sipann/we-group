@@ -2,6 +2,7 @@ import { Action, createAction, props } from '@ngrx/store';
 
 import { Group } from '../../models/group.model';
 import { Item } from '../../models/item.model';
+import { OrderSumup } from '../../models/order-sumup.model';
 import { User } from '../../models/user.model';
 import { Order } from '../../models/order.model';
 import { ItemInput } from '../../models/item-input.model';
@@ -40,38 +41,6 @@ export enum GroupsActionsTypes {
   ResetCreateGroup = '[Groups] Reset Create Group Modal',
   ResetAddItemModal = '[Groups] Reset Add Item Modal',
 };
-
-
-export class FetchGroupSummary implements Action {
-  readonly type = GroupsActionsTypes.FetchGroupSummary;
-  constructor(public payload: number) { }
-};
-
-export class GroupSummaryFetched implements Action {
-  readonly type = GroupsActionsTypes.GroupSummaryFetched;
-  constructor(private payload: {
-    groupid: number,
-    orders: { username: string, itemname: string, orderedquantity: number }[]
-  }) { }
-}
-
-export class FetchGroupMembers implements Action {
-  readonly type = GroupsActionsTypes.FetchGroupMembers;
-  constructor(public payload: number) { }
-};
-
-export class GroupMembersFetched implements Action {
-  readonly type = GroupsActionsTypes.GroupMembersFetched;
-  constructor(private payload: { members: { name: string, id: string }[], groupid: number }) { }
-};
-
-
-
-
-
-
-
-
 
 
 
@@ -141,9 +110,32 @@ export class FetchGroupItems implements Action {
   constructor(public payload: { groupid: string }) { }
 };
 
+export class FetchGroupMembers implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupMembers;
+  constructor(public payload: { groupid: string }) { }
+};
+
+export class FetchGroupSummary implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupSummary;
+  constructor(public payload: { groupid: string }) { }
+};
+
 export class GroupItemsFetched implements Action {
   readonly type = GroupsActionsTypes.GroupItemsFetched;
   constructor(private payload: { groupid: string, items: Item[] }) { }
+};
+
+export class GroupMembersFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupMembersFetched;
+  constructor(private payload: { groupid: string, members: User[] }) { }
+};
+
+export class GroupSummaryFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupSummaryFetched;
+  constructor(private payload: {
+    groupid: string,
+    orders: OrderSumup[]
+  }) { }
 };
 
 export class GroupUpdated implements Action {

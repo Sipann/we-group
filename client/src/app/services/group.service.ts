@@ -10,6 +10,7 @@ import { GroupInput } from '../models/group-input.model';
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
 import { Order } from '../models/order.model';
+import { OrderSumup } from '../models/order-sumup.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
@@ -44,24 +45,9 @@ export class GroupService {
 
 
 
-  fetchMembers(groupid: number): Observable<User[]> {
-    const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<User[]>(fullUrl, { headers })
-      .pipe(
-        tap(obj => console.log('fetchMembers response', obj)),
-      );
-  }
 
-  fetchSummary(groupid: number): Observable<{ username: string, itemname: string, orderedquantity: number }[]> {
-    console.log('ENTERING fetchSummary Service');
-    const fullUrl = `${ this.baseUrl }/groups/orders/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<{ username: string, itemname: string, orderedquantity: number }[]>(fullUrl, { headers })
-      .pipe(
-        tap(obj => console.log('FETCH SUMMARY RES', obj)),
-      );
-  }
+
+
 
 
   getGroups(userid: string): Observable<Group[]> {
@@ -95,6 +81,22 @@ export class GroupService {
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.get<Item[]>(fullUrl, { headers })
       .pipe(map(itemArr => itemArr.map(item => Item.parse(item))));
+  }
+
+
+  fetchMembers(groupid: string): Observable<User[]> {
+    const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<User[]>(fullUrl, { headers })
+      .pipe(map(usersArr => usersArr.map(user => User.parse(user))));
+  }
+
+
+  fetchSummary(groupid: string): Observable<OrderSumup[]> {
+    const fullUrl = `${ this.baseUrl }/groups/orders/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<OrderSumup[]>(fullUrl, { headers })
+      .pipe(map(ordersumups => ordersumups.map(ordersumup => OrderSumup.parse(ordersumup))));
   }
 
 

@@ -1,5 +1,52 @@
 import { Group } from 'src/app/models/group.model';
+import { User } from 'src/app/models/user.model';
 import { Item } from 'src/app/models/item.model';
+import { OrderSumup } from 'src/app/models/order-sumup.model';
+
+
+
+const reduceByUser = (data: OrderSumup[]) => {
+  const result = [];
+  const reduced = data.reduce((acc, current) => {
+    const currentUsername = current.username;
+    const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
+    return acc[currentUsername]
+      ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
+      : acc = { ...acc, [currentUsername]: [item] }
+  }, {});
+
+  for (let prop in reduced) {
+    if (reduced.hasOwnProperty(prop)) {
+      result.push({ username: prop, items: reduced[prop] });
+    }
+  }
+  return result;
+};
+
+const reduceByItem = (data: OrderSumup[]) => {
+  const result = [];
+  const reduced = data.reduce((acc, current) => {
+    const currentItemname = current.itemname;
+    const currentQuantity = current.orderedquantity;
+    return acc[currentItemname]
+      ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
+      : acc = { ...acc, [currentItemname]: currentQuantity }
+  }, {});
+
+  for (let prop in reduced) {
+    if (reduced.hasOwnProperty(prop)) {
+      result.push({
+        itemname: prop,
+        quantity: reduced[prop]
+      });
+    }
+  }
+  return result;
+}
+
+
+// EXPORTS
+
 
 export const addItemToGroup = (
   stateGroups: Group[],
@@ -16,6 +63,45 @@ export const addItemToGroup = (
   });
 };
 
+export const addMembersPropToGroup = (
+  stateGroups: Group[],
+  payload: { members: User[], groupid: string }) => {
+  return stateGroups.map(group => {
+    if (group.id === payload.groupid) {
+      return {
+        ...group,
+        members: payload.members,
+      }
+    }
+    return group;
+  })
+};
+
+
+export const addSummaryPropToGroup = (
+  stateGroups: Group[],
+  payload: { groupid: string, orders: OrderSumup[] }) => {
+  console.log('addSummaryPropToGroup groupid', payload.groupid);
+  return stateGroups.map(group => {
+    if (group.id === payload.groupid) {
+      const summaryByItem = reduceByItem(payload.orders);
+      const summaryByUser = reduceByUser(payload.orders);
+      console.log('summaryByItem', summaryByItem);
+      console.log('summaryByUser', summaryByUser);
+      return {
+        ...group,
+        order: {
+          byItem: reduceByItem(payload.orders),
+          byUser: reduceByUser(payload.orders),
+        }
+      }
+    }
+    // console.log('addSummaryPropToGroup', group);
+    return group;
+  })
+};
+
+
 export const deleteItemFromGroup = (
   stateGroups: Group[],
   payload: { itemid: string, groupid: string }
@@ -30,6 +116,8 @@ export const deleteItemFromGroup = (
     return group;
   });
 };
+
+
 
 
 export const updateGroup = (

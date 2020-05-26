@@ -1,18 +1,20 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
-// import { Group } from '../../../models/group.model';
-import { User } from '../../../models/user.model';
-import { ActivatedRoute } from '@angular/router';
 import { LoadingController, NavController } from '@ionic/angular';
 
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../store/reducers';
-import * as fromGroupsActions from '../../../store/actions/groups.actions';
+import { ActivatedRoute } from '@angular/router';
+
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Group } from 'src/app/models/group.model';
 
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
+
+import { setUpLoader } from '../../groups-utils';
+
+import { Group } from 'src/app/models/group.model';
 
 
 @Component({
@@ -20,28 +22,29 @@ import { Group } from 'src/app/models/group.model';
   templateUrl: './group-users.component.html',
   styleUrls: ['./group-users.component.scss'],
 })
-export class GroupUsersComponent implements OnInit {
+export class GroupUsersComponent implements OnInit, OnDestroy {
 
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
-  groupid: number;
-  groupSub: Subscription;
-
-  group$: Group;
-  groupUsers: { name: string, id: string }[];
-  groupMembers$: { name: string, id: string }[];
-
+  private group$: Group;
+  private groupid: string;
+  public groupMembers$: { name: string, id: string }[];
+  private groupSub: Subscription;
   private loadingCtrl: HTMLIonLoadingElement;
 
   constructor(
     private loadingController: LoadingController,
-    private route: ActivatedRoute,
     private navCtrl: NavController,
+    private route: ActivatedRoute,
     private store: Store<AppState>,
   ) { }
 
   ngOnInit() { this.initialize(); }
+
+  ngOnDestroy() {
+    if (this.groupSub) this.groupSub.unsubscribe();
+  }
 
   async initialize() {
     this.route.paramMap.subscribe(async paramMap => {
@@ -49,39 +52,32 @@ export class GroupUsersComponent implements OnInit {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupid = parseInt(paramMap.get('groupid'));
+      this.groupid = paramMap.get('groupid');
 
-      await this.presentLoading();
+      this.loadingCtrl = await setUpLoader(this.loadingController);
+      this.loadingCtrl.present();
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupMembers(this.groupid));
+      this.store.dispatch(new fromGroupsActions.FetchGroupMembers({ groupid: this.groupid }));
 
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.groups))
         .subscribe(groups => {
           this.group$ = groups.find(g => g.id == this.groupid);
           this.groupMembers$ = this.group$.members;
-        });
 
-      if (this.loadingCtrl) {
-        this.loadingCtrl.dismiss();
-        this.loadingCtrl = null;
-      }
+          if (this.loadingCtrl) {
+            this.loadingCtrl.dismiss();
+            this.loadingCtrl = null;
+          }
+        });
     });
   }
 
   onCancel() { this.cancelled.emit(); }
 
-  onDelete(userid: string) { }
-
-
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
+  onDelete(userid: string) {
+    //TODO
+    console.log('delete user with id', userid);
   }
 
 }
