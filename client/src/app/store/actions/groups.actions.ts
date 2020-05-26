@@ -102,9 +102,7 @@ export class ResetAddItemModal implements Action {
 };
 
 
-export class ResetCreateGroup implements Action {
-  readonly type = GroupsActionsTypes.ResetCreateGroup;
-};
+
 
 export class LoadGroups implements Action {
   readonly type = GroupsActionsTypes.LoadGroups;
@@ -118,7 +116,7 @@ export class GroupsLoaded implements Action {
 
 export class SelectGroup implements Action {
   readonly type = GroupsActionsTypes.SelectGroup;
-  constructor(private payload: number) { }        // Group or GroupInput?
+  constructor(private payload: { groupid: number }) { }
 };
 
 export class CreateGroup implements Action {
@@ -141,15 +139,50 @@ export class GroupDeleted implements Action {
   constructor(private payload: Group) { }
 }
 
-export class UpdateGroup implements Action {
-  readonly type = GroupsActionsTypes.UpdateGroup;
-  constructor(public payload: Group) { }        // Group or GroupInput?
-};
 
+
+
+
+
+//
 
 export class GroupUpdated implements Action {
   readonly type = GroupsActionsTypes.GroupUpdated;
   constructor(private payload: Group) { }
-}
+};
 
-export type GroupsActions = AddItem | ItemAdded | LoadGroups | GroupsLoaded | SelectGroup | CreateGroup | GroupCreated | DeleteGroup | GroupDeleted | UpdateGroup | GroupUpdated | ResetCreateGroup | FetchGroupItems | GroupItemsFetched | ResetAddItemModal | DeleteItem | ItemDeleted | FetchGroupMembers | GroupMembersFetched | FetchGroupSummary | GroupSummaryFetched;
+export class ResetCreateGroup implements Action {
+  readonly type = GroupsActionsTypes.ResetCreateGroup;
+};
+
+export class UpdateGroup implements Action {
+  readonly type = GroupsActionsTypes.UpdateGroup;
+  constructor(public payload: Group) { }
+};
+
+
+
+
+export type GroupsActions = AddItem |
+  ItemAdded |
+  LoadGroups |
+  GroupsLoaded |
+  SelectGroup |
+  CreateGroup |
+  GroupCreated |
+  DeleteGroup |
+  GroupDeleted |
+  UpdateGroup |
+  GroupUpdated |
+  FetchGroupItems |
+  GroupItemsFetched |
+  ResetAddItemModal |
+  DeleteItem |
+  ItemDeleted |
+  FetchGroupMembers |
+  GroupMembersFetched |
+  FetchGroupSummary |
+  GroupSummaryFetched |
+
+  ResetCreateGroup
+  ;

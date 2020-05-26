@@ -91,21 +91,22 @@ export class GroupService {
     return this.httpClient.delete<number>(fullUrl, { headers });
   }
 
-  updateGroup(group: Group): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.put<Group>(fullUrl, group, { headers })
-      .pipe(
-        tap(obj => console.log('UPDATE GROUP HTTPCLIENT RES', obj)),
-        map(group => Group.parse(group))
-      );
-  }
+
 
 
   getGroups(userid: string): Observable<Group[]> {
     const fullUrl = `${ this.baseUrl }/groups`;
     const headers = new HttpHeaders().append('userid', '9tO9WsqEqyRBP4HkZXH5NNexZ5P2');
     return this.httpClient.get<Group[]>(fullUrl, { headers });
+  }
+
+  //
+
+  updateGroup(group: Group): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.put<Group>(fullUrl, group, { headers })
+      .pipe(map(group => Group.parse(group)));
   }
 
 }

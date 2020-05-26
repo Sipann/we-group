@@ -1,18 +1,13 @@
 import * as fromGroupsActions from '../actions/groups.actions';
 
+import { selectGroup, updateGroup } from './groups-utils';
+
 import { Group } from 'src/app/models/group.model';
 import { Item } from 'src/app/models/item.model';
 import { Order } from 'src/app/models/order.model';
 
 const createGroup = (groups, group) => [...groups, group];
 
-const updateGroup = (groups, group) => groups.map(g => {
-  if (g.id == group.id) {
-    const { name, description, deadline, currency, id, manager_id } = group;
-    return { ...g, name, description, deadline, currency, id, manager_id };
-  }
-  return g;
-});
 
 const updateSelectedGroup = (group: Group) => Object.assign({}, group);
 
@@ -219,12 +214,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groupCreated: false,
       };
 
-    case fromGroupsActions.GroupsActionsTypes.SelectGroup:
-      return {
-        ...state,
-        selectedGroupId: state.selectedGroupId,
-        selectedGroup: findGroup(state.groups, action.payload),
-      };
+    // case fromGroupsActions.GroupsActionsTypes.SelectGroup:
+    //   return {
+    //     ...state,
+    //     selectedGroupId: state.selectedGroupId,
+    //     selectedGroup: findGroup(state.groups, action.payload),
+    //   };
 
     case fromGroupsActions.GroupsActionsTypes.GroupsLoaded:
       return {
@@ -236,15 +231,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groupCreated: state.groupCreated,
         itemAdded: state.itemAdded,
       };
+
     case fromGroupsActions.GroupsActionsTypes.SelectGroup:
       return {
-        selectedGroup: action.payload,
-        selectedGroupId: state.selectedGroupId,
-        groups: state.groups,  // not spread ?
-        loaded: state.loaded,
-        loading: state.loading,
-        groupCreated: state.groupCreated,
-        itemAdded: state.itemAdded,
+        ...state,
+        selectedGroupId: action.payload.groupid,
+        selectedGroup: selectGroup(state.groups, action.payload.groupid),
       };
 
 
@@ -259,16 +251,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         itemAdded: state.itemAdded,
       };
 
-    case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
-      return {
-        selectedGroup: updateSelectedGroup(action.payload),
-        selectedGroupId: state.selectedGroupId,
-        loaded: state.loaded,
-        loading: state.loading,
-        groups: updateGroup(state.groups, action.payload),
-        groupCreated: state.groupCreated,
-        itemAdded: true,
-      };
+
     case fromGroupsActions.GroupsActionsTypes.GroupDeleted:
       return {
         selectedGroup: state.selectedGroup,
@@ -279,6 +262,16 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groupCreated: state.groupCreated,
         itemAdded: state.itemAdded,
       };
+
+
+    case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
+      return {
+        ...state,
+        groups: updateGroup(state.groups, action.payload),
+      };
+
+
+
     default:
       return state;
   }

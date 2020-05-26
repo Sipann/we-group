@@ -1,15 +1,17 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Group } from 'src/app/models/group.model';
 import { AlertController, NavController } from '@ionic/angular';
 
 import { ActivatedRoute } from '@angular/router';
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../store/reducers/index';
+
 import { Subscription } from 'rxjs';
-import * as fromGroupsActions from '../../../store/actions/groups.actions';
 import { map } from 'rxjs/operators';
 
+import { Store } from '@ngrx/store';
+import { AppState } from '../../../store/reducers/index';
+import * as fromGroupsActions from '../../../store/actions/groups.actions';
+
+import { Group } from 'src/app/models/group.model';
 
 
 @Component({
@@ -22,31 +24,30 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
-  groupDesc: string;
-  groupName: string;
-  groupManager: string;
+  private group$: Group;
+  private groupid: string;
+  public groupDesc: string;
+  public groupName: string;
+  public groupManager: string;
 
-  routeSub: Subscription;
-  groupSub: Subscription;
-  groupid: number;
+  private groupSub: Subscription;
+  private routeSub: Subscription;
 
-  group$: Group;
-
-  submitBtnLabel = 'SAVE CHANGES';
+  public submitBtnLabel = 'SAVE CHANGES';
 
   constructor(
     private alertCtrl: AlertController,
-    private route: ActivatedRoute,
     private navCtrl: NavController,
+    private route: ActivatedRoute,
     private store: Store<AppState>,
   ) { }
 
-  ngOnInit() {
-    this.initialize();
+  ngOnInit() { this.initialize(); }
+
+  ngOnDestroy() {
+    if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.routeSub) this.routeSub.unsubscribe();
   }
-
-  ngOnDestroy() { }
-
 
   async initialize() {
     this.routeSub = this.route.paramMap.subscribe(async paramMap => {
@@ -54,12 +55,12 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupid = parseInt(paramMap.get('groupid'));
+      this.groupid = paramMap.get('groupid');
 
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.groups))
         .subscribe(groups => {
-          this.group$ = groups.find(g => g.id == this.groupid);
+          this.group$ = groups.find(g => g.id === this.groupid);
           this.groupName = this.group$.name;
           this.groupDesc = this.group$.description;
           this.groupManager = this.group$.manager_id;
@@ -70,7 +71,9 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
 
   onCancel() { this.cancelled.emit(true); }
 
-  deleteGroup(groupid: number) { }
+  deleteGroup(groupid: string) {
+    //TODO
+  }
 
   onDeleteGroup() {
     const message = `This will permanently delete the ${ this.groupName } group. If you don't want to manage this group anymore, you can ask another member to be in charge of it.`;

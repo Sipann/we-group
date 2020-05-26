@@ -110,17 +110,15 @@ export class GroupsEffects {
     )
   );
 
+  //
+
   updateGroup$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.UpdateGroup),
       mergeMap(action => this.groupService.updateGroup(action.payload)
         .pipe(
-          map(group => {
-            return new fromGroups.GroupUpdated(group);
-          }),
-          catchError(err => {
-            return of({ type: '[Groups] Update Group Fail' })
-          })
+          map(group => new fromGroups.GroupUpdated(group)),
+          catchError(err => of({ type: '[Groups] Update Group Fail' }))
         ))
     )
   );

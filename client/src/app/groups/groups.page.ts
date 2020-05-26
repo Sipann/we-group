@@ -1,18 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
-import { Subscription, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
-
 import { Store, select } from '@ngrx/store';
-import * as fromGroupsActions from '../store/actions/groups.actions';
 import { AppState } from '../store/reducers/index';
+import * as fromGroupsActions from '../store/actions/groups.actions';
 import { GroupsState } from '../store/reducers/groups.reducers';
 import { UserState } from '../store/reducers/user.reducers';
 
-import { AuthService } from '../services/auth.service';
+import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
 import { Group } from '../models/group.model';
 import { User } from '../models/user.model';
@@ -23,53 +21,27 @@ import { User } from '../models/user.model';
   templateUrl: './groups.page.html',
   styleUrls: ['./groups.page.scss'],
 })
-export class GroupsPage implements OnInit, OnDestroy {
+export class GroupsPage implements OnInit {
 
   groups$: Observable<Group[]>;
   user$: Observable<User>;
-  // userId: string;
-
-  // uid$: string;
-
-  // private authSub: Subscription;
-  // private groupsSub: Subscription;
 
   constructor(
-    // private authService: AuthService,
     private modalCtrl: ModalController,
-    private store: Store<AppState>
+    private store: Store<AppState>,
   ) {
     this.groups$ = store.pipe(
       select('groups'),
-      map((groupsState: GroupsState) => {
-        // console.log('GROUPS STATE', groupsState);   // eslint-disable-line no-console
-        return groupsState.groups;
-      })
+      map((groupsState: GroupsState) => groupsState.groups)
     );
-
-    // this.groups$ = store.pipe(
-    //   select('groups'),
-    //   map((groupsState: GroupsState) => groupsState.groups)
-    // );
 
     this.user$ = store.pipe(
       select('user'),
-      map((userState: UserState) => {
-        // console.log('USER STATE', userState);     // eslint-disable-line no-console
-        return userState.currentUser;
-      })
+      map((userState: UserState) => userState.currentUser)
     );
-
   }
 
   ngOnInit() { }
-
-
-  ngOnDestroy() {
-    // if (this.authSub) this.authSub.unsubscribe();
-    // if (this.groupsSub) this.groupsSub.unsubscribe();
-  }
-
 
   onLaunchCreateGroupModal() {
     this.modalCtrl
@@ -82,12 +54,12 @@ export class GroupsPage implements OnInit, OnDestroy {
         return modalEl.onDidDismiss();
       })
       .then(_ => {
-        this.store.dispatch(new fromGroupsActions.ResetCreateGroup);
+        this.store.dispatch(new fromGroupsActions.ResetCreateGroup());
       });
   }
 
-  onNavigateToGroup(id: number) {
-    this.store.dispatch(new fromGroupsActions.SelectGroup(id));
+  onNavigateToGroup(groupid: number) {
+    this.store.dispatch(new fromGroupsActions.SelectGroup({ groupid }));
   }
 
   tempBgThumbnail(i: number): string {

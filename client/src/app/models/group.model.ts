@@ -1,7 +1,8 @@
 import { Item } from './item.model';
 
 export class Group {
-  id?: number;
+  // id?: number;
+  id?: string;
   name?: string;
   description?: string;
   currency?: string;
