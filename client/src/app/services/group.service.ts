@@ -42,15 +42,7 @@ export class GroupService {
     return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
   }
 
-  fetchItems(groupid: number): Observable<Item[]> {
-    const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<Item[]>(fullUrl, { headers })
-      .pipe(
-        // tap(obj => console.log('obj', obj)),
-        map(obj => obj.map(item => Item.parse(item)))   // ?
-      );
-  }
+
 
   fetchMembers(groupid: number): Observable<User[]> {
     const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
@@ -85,11 +77,7 @@ export class GroupService {
       );
   }
 
-  deleteItem(itemid: number): Observable<number> {
-    const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.delete<number>(fullUrl, { headers });
-  }
+
 
 
 
@@ -101,6 +89,21 @@ export class GroupService {
   }
 
   //
+
+  deleteItem(itemid: string): Observable<number> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.delete<number>(fullUrl, { headers });
+  }
+
+
+  fetchItems(groupid: string): Observable<Item[]> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Item[]>(fullUrl, { headers })
+      .pipe(map(obj => obj.map(item => Item.parse(item))));
+  }
+
 
   updateGroup(group: Group): Observable<Group> {
     const fullUrl = `${ this.baseUrl }/groups`;

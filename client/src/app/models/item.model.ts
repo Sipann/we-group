@@ -1,5 +1,6 @@
 export class Item {
-  id: number;
+  // id: number;
+  id: string;
   name: string;
   description: string;
   price: number;

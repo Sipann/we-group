@@ -1,15 +1,22 @@
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm, FormBuilder, FormGroup } from '@angular/forms';
+
 import { ModalController, LoadingController, NavController } from '@ionic/angular';
-import { ActivatedRoute, Router } from '@angular/router';
+
+import { ActivatedRoute } from '@angular/router';
+
+import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
+
 import { Group } from 'src/app/models/group.model';
 import { NewProductModalComponent } from './new-product-modal/new-product-modal.component';
 
-import { map } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../store/reducers/index';
-import { Subscription } from 'rxjs';
-import * as fromGroupsActions from '../../../store/actions/groups.actions';
+import { setUpLoader } from '../../groups-utils';
+
 
 @Component({
   selector: 'app-group-products',
@@ -20,15 +27,14 @@ export class GroupProductsComponent implements OnInit, OnDestroy {
 
   @ViewChild('f', { static: true }) newProductform: NgForm;
 
-  groupid: number;
-  itemsForm: FormGroup = new FormGroup({});
-  dateTimeFocus = true;
-  group$: Group;
-
+  private dateTimeFocus = true;
+  public group$: Group;
+  private groupid: string;
+  public itemsForm: FormGroup = new FormGroup({});
   private loadingCtrl: HTMLIonLoadingElement;
 
-  routeSub: Subscription;
-  groupSub: Subscription;
+  private routeSub: Subscription;
+  private groupSub: Subscription;
 
 
   constructor(
@@ -37,7 +43,7 @@ export class GroupProductsComponent implements OnInit, OnDestroy {
     private modalCtrl: ModalController,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private store: Store<AppState>
+    private store: Store<AppState>,
   ) { }
 
   ngOnInit() { this.initialize(); }
@@ -48,17 +54,17 @@ export class GroupProductsComponent implements OnInit, OnDestroy {
   }
 
   async initialize() {
-
     this.routeSub = this.route.paramMap.subscribe(async paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupid = parseInt(paramMap.get('groupid'));
+      this.groupid = paramMap.get('groupid');
 
-      await this.presentLoading();
+      this.loadingCtrl = await setUpLoader(this.loadingController);
+      this.loadingCtrl.present();
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupItems(this.groupid));
+      this.store.dispatch(new fromGroupsActions.FetchGroupItems({ groupid: this.groupid }));
 
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.groups))
@@ -133,25 +139,14 @@ export class GroupProductsComponent implements OnInit, OnDestroy {
       });
   }
 
-  onDeleteItem(itemid: number) {
-    this.store.dispatch(new fromGroupsActions.DeleteItem({ itemid, groupid: +this.groupid }));
+  onDeleteItem(itemid: string) {
+    this.store.dispatch(new fromGroupsActions.DeleteItem({ itemid, groupid: this.groupid }));
     this.createDynamicItemsList();
   }
 
   onSendToGroup() {
+    //TODO
     console.log('Send info to group members => ORDER IS NOW AVAILABLE');
   }
-
-
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
-  }
-
 
 }

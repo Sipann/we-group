@@ -82,8 +82,9 @@ exports.deleteItemFromGroup = async (itemid, userid) => {
     if (isUserGroupManager(userid, groupid)) {
       const values = [itemid];
       const queryStr = `
-        DELETE FROM items
-        WHERE id = $1
+        UPDATE items
+          SET initial_qty = 0
+          WHERE id = $1
         RETURNING id;
       `;
       const res = await pool.query(queryStr, values);

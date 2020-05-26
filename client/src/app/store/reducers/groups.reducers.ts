@@ -1,6 +1,10 @@
 import * as fromGroupsActions from '../actions/groups.actions';
 
-import { selectGroup, updateGroup } from './groups-utils';
+import {
+  deleteItemFromGroup,
+  selectGroup,
+  updateGroup,
+} from './groups-utils';
 
 import { Group } from 'src/app/models/group.model';
 import { Item } from 'src/app/models/item.model';
@@ -44,25 +48,7 @@ const addItemToSelectedGroup = (selectedGroup: Group, item: Item) => ({
   items: [...selectedGroup.items, item]
 });
 
-const deleteItemFromGroup = (groups: Group[], payload: { itemid: number, groupid: number }) => {
-  return groups.map(g => {
-    //! TYPE ISSUE ON ITEMID
-    if (g.id == payload.groupid) {
-      return {
-        ...g,
-        //! TYPE ISSUE ON ITEMID
-        items: g.items.filter(i => i.id != payload.itemid),
-      }
-    }
-    return g;
-  })
-};
 
-const deleteItemFromSelectedGroup = (selectedGroup: Group, itemid: number) => ({
-  //! TYPE ISSUE ON ITEMID
-  ...selectedGroup,
-  items: selectedGroup.items.filter(i => i.id != itemid),
-});
 
 const addMembersPropToGroup = (
   groups: Group[],
@@ -176,14 +162,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: addMembersPropToGroup(state.groups, action.payload),
       };
 
-    case fromGroupsActions.GroupsActionsTypes.ItemDeleted:
-      return {
-        ...state,
-        selectedGroupId: state.selectedGroupId,
-        // selectedGroup: deleteItemFromSelectedGroup(state.selectedGroup, action.payload.itemid),
-        selectedGroup: state.selectedGroup,
-        groups: deleteItemFromGroup(state.groups, action.payload),
-      };
+
 
     case fromGroupsActions.GroupsActionsTypes.ItemAdded:
       return {
@@ -202,11 +181,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: updateGroupItems(state.groups, action.payload),
       };
 
-    case fromGroupsActions.GroupsActionsTypes.ResetAddItemModal:
-      return {
-        ...state,
-        itemAdded: false,
-      };
+
 
     case fromGroupsActions.GroupsActionsTypes.ResetCreateGroup:
       return {
@@ -270,7 +245,18 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: updateGroup(state.groups, action.payload),
       };
 
+    case fromGroupsActions.GroupsActionsTypes.ItemDeleted:
+      return {
+        ...state,
+        groups: deleteItemFromGroup(state.groups, action.payload),
+      };
 
+
+    case fromGroupsActions.GroupsActionsTypes.ResetAddItemModal:
+      return {
+        ...state,
+        itemAdded: false,
+      };
 
     default:
       return state;

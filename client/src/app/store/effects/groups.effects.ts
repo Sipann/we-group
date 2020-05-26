@@ -31,19 +31,7 @@ export class GroupsEffects {
       ))
   ));
 
-  fetchGroupItems$ = createEffect(() => this.actions$.pipe(
-    ofType(fromGroups.GroupsActionsTypes.FetchGroupItems),
-    mergeMap(action => this.groupService.fetchItems(action.payload)
-      .pipe(
-        map(items => {
-          const args = { groupid: action.payload, items };
-          return new fromGroups.GroupItemsFetched(args);
-        }),
-        catchError(err => {
-          return of({ type: '[Groups] Fetch Group Items Fail' })
-        })
-      ))
-  ));
+
 
   fetchGroupMembers$ = createEffect(
     () => this.actions$.pipe(
@@ -94,6 +82,10 @@ export class GroupsEffects {
     )
   );
 
+
+
+  //
+
   deleteItem$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.DeleteItem),
@@ -110,7 +102,19 @@ export class GroupsEffects {
     )
   );
 
-  //
+  fetchGroupItems$ = createEffect(() => this.actions$.pipe(
+    ofType(fromGroups.GroupsActionsTypes.FetchGroupItems),
+    mergeMap(action => this.groupService.fetchItems(action.payload.groupid)
+      .pipe(
+        map(items => {
+          const args = { groupid: action.payload.groupid, items };
+          return new fromGroups.GroupItemsFetched(args);
+        }),
+        catchError(err => {
+          return of({ type: '[Groups] Fetch Group Items Fail' })
+        })
+      ))
+  ));
 
   updateGroup$ = createEffect(
     () => this.actions$.pipe(

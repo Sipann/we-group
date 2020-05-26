@@ -66,15 +66,9 @@ export class GroupMembersFetched implements Action {
 };
 
 
-export class DeleteItem implements Action {
-  readonly type = GroupsActionsTypes.DeleteItem;
-  constructor(public payload: { itemid: number, groupid: number }) { }
-};
 
-export class ItemDeleted implements Action {
-  readonly type = GroupsActionsTypes.ItemDeleted;
-  constructor(private payload: { itemid: number, groupid: number }) { }
-};
+
+
 
 export class AddItem implements Action {
   readonly type = GroupsActionsTypes.AddItem;
@@ -87,19 +81,11 @@ export class ItemAdded implements Action {
 };
 
 
-export class FetchGroupItems implements Action {
-  readonly type = GroupsActionsTypes.FetchGroupItems;
-  constructor(public payload: number) { }
-};
 
-export class GroupItemsFetched implements Action {
-  readonly type = GroupsActionsTypes.GroupItemsFetched;
-  constructor(private payload: { groupid: number, items: Item[] }) { }
-};
 
-export class ResetAddItemModal implements Action {
-  readonly type = GroupsActionsTypes.ResetAddItemModal;
-};
+
+
+
 
 
 
@@ -146,9 +132,33 @@ export class GroupDeleted implements Action {
 
 //
 
+export class DeleteItem implements Action {
+  readonly type = GroupsActionsTypes.DeleteItem;
+  constructor(public payload: { itemid: string, groupid: string }) { }
+};
+
+export class FetchGroupItems implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupItems;
+  constructor(public payload: { groupid: string }) { }
+};
+
+export class GroupItemsFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupItemsFetched;
+  constructor(private payload: { groupid: string, items: Item[] }) { }
+};
+
 export class GroupUpdated implements Action {
   readonly type = GroupsActionsTypes.GroupUpdated;
   constructor(private payload: Group) { }
+};
+
+export class ItemDeleted implements Action {
+  readonly type = GroupsActionsTypes.ItemDeleted;
+  constructor(private payload: { itemid: string, groupid: string }) { }
+};
+
+export class ResetAddItemModal implements Action {
+  readonly type = GroupsActionsTypes.ResetAddItemModal;
 };
 
 export class ResetCreateGroup implements Action {
