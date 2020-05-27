@@ -1,4 +1,4 @@
-import { LoadingController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 
 export const setUpLoader = async (loadingController: LoadingController) => {
   return await loadingController.create({
@@ -7,4 +7,14 @@ export const setUpLoader = async (loadingController: LoadingController) => {
     cssClass: 'loading-spinner',
     backdropDismiss: false,
   });
-}
+};
+
+
+export const setUpToast = async (toastController: ToastController, message: string) => {
+  const toastCtrl = await toastController.create({
+    message: message,
+    color: 'primary',
+    duration: 2000
+  });
+  return toastCtrl.present();
+};

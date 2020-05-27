@@ -1,12 +1,6 @@
 import { Action, createAction, props } from '@ngrx/store';
 
 import { User } from '../../models/user.model';
-import { Group } from '../../models/group.model'
-
-export interface UserData {
-  userDetails: User,
-  userGroups: Group[],
-}
 
 
 export enum UserActionsTypes {
@@ -14,6 +8,9 @@ export enum UserActionsTypes {
   UserLoaded = '[User] Loaded',
   LoadUserData = '[User] Load UserData',
   UserDataLoaded = '[User] UserData Loaded',
+  UpdateUserProfile = '[User] Update User Profile',
+  UserProfileUpdated = '[User] User Profile Updated',
+  ResetUpdateStatus = '[User] Reset Update Status',
 };
 
 export class LoadUser implements Action {
@@ -26,14 +23,39 @@ export class UserLoaded implements Action {
   constructor(private payload: User) { }
 };
 
+
+//
+
 export class LoadUserData implements Action {
   readonly type = UserActionsTypes.LoadUserData;
-  constructor(public payload: string) { }
+  constructor(public payload: { userid: string }) { }
+};
+
+export class ResetUpdateStatus implements Action {
+  readonly type = UserActionsTypes.ResetUpdateStatus;
+}
+
+export class UpdateUserProfile implements Action {
+  readonly type = UserActionsTypes.UpdateUserProfile;
+  constructor(public payload: User) { }
+};
+
+export class UserProfileUpdated implements Action {
+  readonly type = UserActionsTypes.UserProfileUpdated;
+  constructor(private payload: User) { }
 };
 
 export class UserDataLoaded implements Action {
   readonly type = UserActionsTypes.UserDataLoaded;
-  constructor(private payload: UserData) { }
+  constructor(private payload: User) { }
 };
 
-export type UserActions = LoadUser | UserLoaded | LoadUserData | UserDataLoaded;
+
+
+export type UserActions = LoadUser |
+  UserLoaded |
+  LoadUserData |
+  UserDataLoaded |
+  UpdateUserProfile |
+  ResetUpdateStatus |
+  UserProfileUpdated;

@@ -6,6 +6,7 @@ exports.fetchUserData = async ctx => {
   try {
     const { userid } = ctx.request.header;
     const res = await db.fetchUserData(userid);
+    // console.log('CTRL USER FETCH USER DATA res', res);
     ctx.body = res;
   } catch (error) {
     ctx.status = 500;
@@ -53,8 +54,9 @@ exports.updateUser = async ctx => {
   try {
     const { userid } = ctx.request.header;
     const user = ctx.request.body;
-    const res = await db.updateUser(userid, user);
-    ctx.body = res;
+    const response = await db.updateUser(userid, user);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
   } catch (error) {
     ctx.status = 500;
     console.log('[userCtrl createUser] error', error.message);

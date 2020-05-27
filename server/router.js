@@ -50,6 +50,7 @@ router.get('/users', controllers.userCtrl.getUser);
 router.put('/users', controllers.userCtrl.updateUser);
 router.delete('/users', controllers.userCtrl.deleteUser);
 
+//
 
 router.get('/user', controllers.userCtrl.fetchUserData);
 
