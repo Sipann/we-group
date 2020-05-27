@@ -153,8 +153,8 @@ exports.addUserToGroup = async ctx => {
   try {
     const { userid } = ctx.request.header;
     const { groupid } = ctx.params;
-    const res = await db.addUserToGroup(userid, groupid);
-    ctx.body = res;
+    const response = await db.addUserToGroup(userid, groupid);
+    if (response.ok) ctx.body = response.payload;
   } catch (error) {
     ctx.status = 500;
     console.log('[groupCtrl addUserToGroup] error', error.message);

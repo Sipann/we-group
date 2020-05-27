@@ -10,6 +10,12 @@ import { ItemInput } from '../../models/item-input.model';
 
 export enum GroupsActionsTypes {
 
+  AddMemberToGroup = '[Groups] Add Member To Group',
+  MemberAddedToGroup = '[Groups] Member Added To Group',
+
+  FetchOtherGroups = '[Groups] Fetch Other Groups',
+  OtherGroupsFetched = '[Groups] Other Groups Fetched',
+
   AddItem = '[Groups] Add Item',
   ItemAdded = '[Groups] Item Added',
 
@@ -92,6 +98,11 @@ export class AddItem implements Action {
   constructor(public payload: { item: Item, groupid: string }) { }
 };
 
+export class AddMemberToGroup implements Action {
+  readonly type = GroupsActionsTypes.AddMemberToGroup;
+  constructor(public payload: { groupid: string }) { }
+};
+
 export class CreateGroup implements Action {
   readonly type = GroupsActionsTypes.CreateGroup;
   constructor(public payload: Group) { }
@@ -115,6 +126,10 @@ export class FetchGroupMembers implements Action {
 export class FetchGroupSummary implements Action {
   readonly type = GroupsActionsTypes.FetchGroupSummary;
   constructor(public payload: { groupid: string }) { }
+};
+
+export class FetchOtherGroups implements Action {
+  readonly type = GroupsActionsTypes.FetchOtherGroups;
 };
 
 export class GroupCreated implements Action {
@@ -155,6 +170,16 @@ export class ItemDeleted implements Action {
   constructor(private payload: { itemid: string, groupid: string }) { }
 };
 
+export class MemberAddedToGroup implements Action {
+  readonly type = GroupsActionsTypes.MemberAddedToGroup;
+  constructor(private payload: Group) { }
+}
+
+export class OtherGroupsFetched implements Action {
+  readonly type = GroupsActionsTypes.OtherGroupsFetched;
+  constructor(private payload: Group[]) { }
+};
+
 export class ResetAddItemModal implements Action {
   readonly type = GroupsActionsTypes.ResetAddItemModal;
 };
@@ -172,6 +197,8 @@ export class UpdateGroup implements Action {
 
 
 export type GroupsActions = AddItem |
+  AddMemberToGroup |
+  MemberAddedToGroup |
   ItemAdded |
   LoadGroups |
   GroupsLoaded |
@@ -191,6 +218,8 @@ export type GroupsActions = AddItem |
   GroupMembersFetched |
   FetchGroupSummary |
   GroupSummaryFetched |
+  FetchOtherGroups |
+  OtherGroupsFetched |
 
   ResetCreateGroup
   ;

@@ -260,12 +260,22 @@ exports.searchGroups = async userid => {
 
 exports.addUserToGroup = async (userid, groupid) => {
   try {
-    const values = [userid, groupid];
-    const queryStr = `
+    //TODO transaction
+    const valuesAddMember = [userid, groupid];
+    const queryStrAddMember = `
       INSERT INTO groupsusers (user_id, group_id)
-      VALUES ($1, $2);`;
-    const res = await pool.query(queryStr, values);
-    return res.rowCount;
+        VALUES ($1, $2);`;
+    await pool.query(queryStrAddMember, valuesAddMember);
+
+    const valuesGroup = [groupid];
+    const queryStrGroup = `
+      SELECT * FROM groups
+        WHERE id = $1;
+    `;
+
+    const res = await pool.query(queryStrGroup, valuesGroup);
+    return { ok: true, payload: res.rows[0] };
+
   } catch (error) {
     console.log('[group model - addUserToGroup db] error', error.message);
   }

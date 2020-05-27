@@ -140,6 +140,7 @@ export class GroupProductsComponent implements OnInit, OnDestroy {
   }
 
   onDeleteItem(itemid: string) {
+    console.log('onDeleteItem, itemid:', itemid, 'type:', typeof (itemid));
     this.store.dispatch(new fromGroupsActions.DeleteItem({ itemid, groupid: this.groupid }));
     this.createDynamicItemsList();
   }

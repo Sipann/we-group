@@ -44,9 +44,30 @@ const reduceByItem = (data: OrderSumup[]) => {
   return result;
 }
 
+//
+
+export const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
+
+export const updateGroupItems = (groups, payload) => groups.map(g => {
+  //! Type issue on groupid
+  if (g.id == payload.groupid) {
+    return { ...g, items: payload.items }
+  }
+  return g;
+});
+// const updateSelectedGroupItems = (selectedGroup, payload) => ({ ...selectedGroup, items: payload.items });
+
+
+
+
+
+
 
 // EXPORTS
 
+export const addGroup = (groups: Group[], group: Group): Group[] => {
+  return [...groups, group];
+};
 
 export const addItemToGroup = (
   stateGroups: Group[],
@@ -121,6 +142,32 @@ export const deleteItemFromGroup = (
 };
 
 
+export const setAvailableGroups = (stateGroups: Group[], availableGroups: Group[]): Group[] => {
+  console.log('UTILS stateGroups:', stateGroups, 'availableGroups:', availableGroups);
+  const otherGroups = [];
+  const mapStateGroups = {};
+  stateGroups.forEach(group => {
+    mapStateGroups[group.id] = true;
+  });
+  availableGroups.forEach(group => {
+    if (!mapStateGroups[group.id]) otherGroups.push(group);
+  });
+  console.log('UTILS otherGroups', otherGroups);
+  return otherGroups;
+};
+
+
+export const removeGroup = (groups: Group[], groupid: string) => {
+  return groups.filter(group => group.id !== groupid);
+};
+
+
+export const selectGroup = (
+  stateGroups: Group[],
+  selectedGroupid: string
+): Group => {
+  return stateGroups.find(group => group.id === selectedGroupid);
+};
 
 
 export const updateGroup = (
@@ -133,11 +180,3 @@ export const updateGroup = (
   }
   return g;
 });
-
-
-export const selectGroup = (
-  stateGroups: Group[],
-  selectedGroupid: string
-): Group => {
-  return stateGroups.find(group => group.id === selectedGroupid);
-};

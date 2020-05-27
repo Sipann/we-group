@@ -54,6 +54,13 @@ export class GroupService {
       .pipe(map(item => Item.parse(item)));
   }
 
+  addMemberToGroup(groupid: string): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups/user/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, null, { headers });
+  }
+
+
   createGroup(newGroup: Group): Observable<Group> {
     const fullUrl = `${ this.baseUrl }/groups`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
@@ -61,10 +68,10 @@ export class GroupService {
   }
 
 
-  deleteItem(itemid: string): Observable<number> {
+  deleteItem(itemid: string): Observable<string> {
     const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.delete<number>(fullUrl, { headers });
+    return this.httpClient.delete<string>(fullUrl, { headers });
   }
 
 
@@ -81,6 +88,14 @@ export class GroupService {
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.get<User[]>(fullUrl, { headers })
       .pipe(map(usersArr => usersArr.map(user => User.parse(user))));
+  }
+
+
+  fetchOtherGroups(): Observable<Group[]> {
+    const fullUrl = `${ this.baseUrl }/groups/search`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Group[]>(fullUrl, { headers })
+      .pipe(map(groupsArr => groupsArr.map(group => Group.parse(group))));
   }
 
 
