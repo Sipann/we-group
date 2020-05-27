@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -24,6 +25,5 @@ export class LoginComponent implements OnInit {
   }
 
   onSwitchToSignup() { this.switch.emit(); }
-
 
 }

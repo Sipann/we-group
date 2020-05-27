@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { auth } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
 
-import { Observable, of } from 'rxjs';
-import { BehaviorSubject, from } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HttpHeaders } from '@angular/common/http';
 
 import { User } from '../models/user.model';
-import { ApiClientService } from './api-client.service';
 import { UserInput } from '../models/user-input.model';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
+
+import { environment } from '../../environments/environment';
+
 import * as fromUserActions from '../store/actions/user.actions';
 import * as fromGroupsActions from '../store/actions/groups.actions';
 
@@ -26,6 +26,7 @@ import * as fromGroupsActions from '../store/actions/groups.actions';
 })
 export class AuthService {
 
+  private baseUrl = environment.apiBaseUrl;
   _user: any;
   _userId = new BehaviorSubject<User>(null);
 
@@ -38,7 +39,7 @@ export class AuthService {
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this._user = user;
-        this.store.dispatch(new fromUserActions.LoadUserData(user.uid));
+        this.store.dispatch(new fromUserActions.LoadUserData({ userid: user.uid }));
         this.router.navigate(['groups']);
       }
       else {
@@ -82,8 +83,7 @@ export class AuthService {
           'Content-Type': 'application/json',
         })
       };
-      const baseUrl = 'http://localhost:3000';
-      return this.http.post(`${ baseUrl }/users`, newUser, httpOptions)
+      return this.http.post(`${ this.baseUrl }/users`, newUser, httpOptions)
         .pipe(map(user => User.parse(user)))
         .subscribe();
 
@@ -101,10 +101,9 @@ export class AuthService {
           'Content-Type': 'application/json',
         })
       };
-      const baseUrl = 'http://localhost:3000';
 
       await this._user.delete();
-      return this.http.delete(`${ baseUrl }/users`, httpOptions);
+      return this.http.delete(`${ this.baseUrl }/users`, httpOptions);
     } catch (error) {
       console.log('unregister error', error.message);
     }
