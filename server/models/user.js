@@ -17,8 +17,7 @@ exports.fetchUserData = async userid => {
         groups.id as id,
         groups.name as name,
         groups.description as description,
-        groups.manager_id as manager_id,
-        groups.deadline as deadline
+        groups.manager_id as manager_id
       FROM groups
       INNER JOIN groupsusers ON groups.id = groupsusers.group_id AND groupsusers.user_id = $1;
     `;
