@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/groups/manage/{{ groupid }}"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ groupname$ }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="order$">
+
+  <div>
+    <h2>Expected Delivery Date: {{ order$.order_delivery_ts }}</h2>
+    <h4>Delivery Status: {{ setDeliveryStatus() }}</h4>
+    <h4>Order Deadline Date: {{ order$.order_deadline_ts }}</h4>
+
+    <div *ngIf="!order$.order_delivery_status">
+      <h4 (click)="markOrderAs('pending')">Mark as Pending</h4>
+      <h4 (click)="markOrderAs('done')">Mark as Done</h4>
+    </div>
+
+  </div>
+
+  <ion-segment
+    (ionChange)="summaryDisplayChanged($event)"
+    value="items">
+    <ion-segment-button value="items">
+      <ion-label>By Items</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="users">
+      <ion-label>By Users</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-grid *ngIf="display === 'items'">
+    <ion-row *ngFor="let summary of order$.summary.byItem | keyvalue">
+      <ion-col size="8" class="ion-text-start">
+        <ion-text>{{ summary.key }}</ion-text>
+      </ion-col>
+      <ion-col size="4" class="ion-text-end">
+        <ion-text>{{ summary.value }}</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="display === 'users'">
+    <ion-grid *ngFor="let summary of order$.summary.byUser | keyvalue">
+      <ion-row>
+        <ion-col>{{ summary.key }}</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let item of summary.value">
+        <ion-col size="8" class="ion-text-start">
+          <ion-text>{{ item.itemName }}</ion-text>
+        </ion-col>
+        <ion-col size="4" class="ion-text-end">
+          <ion-text>{{ item.itemQty }}</ion-text>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+
+</ion-content>

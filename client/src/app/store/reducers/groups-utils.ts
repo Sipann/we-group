@@ -1,48 +1,9 @@
 import { Group } from 'src/app/models/group.model';
 import { User } from 'src/app/models/user.model';
 import { Item } from 'src/app/models/item.model';
-import { OrderSumup } from 'src/app/models/order-sumup.model';
-
-
-
-const reduceByUser = (data: OrderSumup[]) => {
-  const result = [];
-  const reduced = data.reduce((acc, current) => {
-    const currentUsername = current.username;
-    const item = { itemname: current.itemname, orderedquantity: current.orderedquantity };
-    return acc[currentUsername]
-      ? acc = { ...acc, [currentUsername]: [...acc[currentUsername], item] }
-      : acc = { ...acc, [currentUsername]: [item] }
-  }, {});
-
-  for (let prop in reduced) {
-    if (reduced.hasOwnProperty(prop)) {
-      result.push({ username: prop, items: reduced[prop] });
-    }
-  }
-  return result;
-};
-
-const reduceByItem = (data: OrderSumup[]) => {
-  const result = [];
-  const reduced = data.reduce((acc, current) => {
-    const currentItemname = current.itemname;
-    const currentQuantity = current.orderedquantity;
-    return acc[currentItemname]
-      ? acc = { ...acc, [currentItemname]: acc[currentItemname] + currentQuantity }
-      : acc = { ...acc, [currentItemname]: currentQuantity }
-  }, {});
-
-  for (let prop in reduced) {
-    if (reduced.hasOwnProperty(prop)) {
-      result.push({
-        itemname: prop,
-        quantity: reduced[prop]
-      });
-    }
-  }
-  return result;
-}
+import { GroupOrder } from 'src/app/models/group-order.model';
+import { GroupOrderDB } from 'src/app/models/group-order-db.model';
+// import { OrderSumup } from 'src/app/models/order-sumup.model';
 
 //
 
@@ -55,11 +16,66 @@ export const updateGroupItems = (groups, payload) => groups.map(g => {
   }
   return g;
 });
-// const updateSelectedGroupItems = (selectedGroup, payload) => ({ ...selectedGroup, items: payload.items });
 
 
 
+// UTILS
 
+const reduceByOrderTs = (arr: GroupOrderDB[]) => {
+  return arr.reduce((acc, curr) => {
+    const currentOrderDeadline = curr.order_deadline_ts;
+    if (acc[currentOrderDeadline]) { acc[currentOrderDeadline].push({ ...curr }); }
+    else { acc[currentOrderDeadline] = [{ ...curr }]; }
+    return acc;
+  }, {});
+};
+
+const reduceFinal = (reducedByOrderTs) => {
+  const result = {};
+
+  for (let deadline in reducedByOrderTs) {
+
+    const obj = {
+      order_deadline_ts: deadline,
+      order_delivery_ts: reducedByOrderTs[deadline][0].order_delivery_ts,
+      order_delivery_status: reducedByOrderTs[deadline][0].order_delivery_status,
+      order_confirmed_status: reducedByOrderTs[deadline][0].order_confirmed_status,
+      summary: { byUser: {}, byItem: {} },
+    };
+
+    if (reducedByOrderTs.hasOwnProperty(deadline)) {
+
+      const itemsOrdered = reducedByOrderTs[deadline];
+
+      itemsOrdered.reduce((acc, curr) => {
+        const username = curr.user_name;
+        const currentItem = {
+          itemName: curr.item_name,
+          itemQty: curr.item_ordered_quantity,
+        };
+        if (acc[username]) {
+          const itemAlreadyListed = acc[username].find(item => item.itemName === curr.item_name);
+          if (itemAlreadyListed) { itemAlreadyListed.itemQty += curr.item_ordered_quantity; }
+          else { acc[username].push(currentItem); }
+        }
+        else { acc[username] = [currentItem]; }
+        return acc;
+      }, obj.summary.byUser);
+
+
+      itemsOrdered.reduce((acc, curr) => {
+        const itemname = curr.item_name;
+        const currentQty = curr.item_ordered_quantity;
+        if (acc[itemname]) { acc[itemname] += currentQty; }
+        else { acc[itemname] = currentQty; }
+        return acc;
+      }, obj.summary.byItem);
+
+    }
+    result[deadline] = obj;
+  }
+  return result;
+};
 
 
 
@@ -99,27 +115,24 @@ export const addMembersPropToGroup = (
 };
 
 
-export const addSummaryPropToGroup = (
+export const addOrdersPropToGroup = (
   stateGroups: Group[],
-  payload: { groupid: string, orders: OrderSumup[] }) => {
-  console.log('addSummaryPropToGroup groupid', payload.groupid);
-  return stateGroups.map(group => {
+  payload: { groupid: string, orders: GroupOrderDB[] }
+) => {
+  const reducedByOrderTs = reduceByOrderTs(payload.orders);
+  const ordersSummary = reduceFinal(reducedByOrderTs)
+
+  const updatedGroups = stateGroups.map(group => {
     if (group.id === payload.groupid) {
-      const summaryByItem = reduceByItem(payload.orders);
-      const summaryByUser = reduceByUser(payload.orders);
-      console.log('summaryByItem', summaryByItem);
-      console.log('summaryByUser', summaryByUser);
-      return {
+      const updatedGroup = {
         ...group,
-        order: {
-          byItem: reduceByItem(payload.orders),
-          byUser: reduceByUser(payload.orders),
-        }
-      }
+        orders: ordersSummary,
+      };
+      return updatedGroup;
     }
-    // console.log('addSummaryPropToGroup', group);
     return group;
-  })
+  });
+  return updatedGroups;
 };
 
 
@@ -143,7 +156,6 @@ export const deleteItemFromGroup = (
 
 
 export const setAvailableGroups = (stateGroups: Group[], availableGroups: Group[]): Group[] => {
-  console.log('UTILS stateGroups:', stateGroups, 'availableGroups:', availableGroups);
   const otherGroups = [];
   const mapStateGroups = {};
   stateGroups.forEach(group => {
@@ -152,7 +164,6 @@ export const setAvailableGroups = (stateGroups: Group[], availableGroups: Group[
   availableGroups.forEach(group => {
     if (!mapStateGroups[group.id]) otherGroups.push(group);
   });
-  console.log('UTILS otherGroups', otherGroups);
   return otherGroups;
 };
 

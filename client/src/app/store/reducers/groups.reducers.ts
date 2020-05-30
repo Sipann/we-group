@@ -4,7 +4,7 @@ import {
   addGroup,
   addItemToGroup,
   addMembersPropToGroup,
-  addSummaryPropToGroup,
+  addOrdersPropToGroup,
   createGroup,
   deleteGroup,
   deleteItemFromGroup,
@@ -96,10 +96,10 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: addMembersPropToGroup(state.groups, action.payload),
       };
 
-    case fromGroupsActions.GroupsActionsTypes.GroupSummaryFetched:
+    case fromGroupsActions.GroupsActionsTypes.GroupOrdersFetched:
       return {
         ...state,
-        groups: addSummaryPropToGroup(state.groups, action.payload),
+        groups: addOrdersPropToGroup(state.groups, action.payload),
       };
 
     case fromGroupsActions.GroupsActionsTypes.GroupUpdated:

@@ -3,17 +3,20 @@ import { SegmentChangeEventDetail } from '@ionic/core';
 
 import { LoadingController, NavController } from '@ionic/angular';
 
-import { Order } from '../../../models/order.model';
-import { Group } from 'src/app/models/group.model';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import * as moment from 'moment';
 
-import { ActivatedRoute } from '@angular/router';
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../store/reducers';
-import * as fromGroupsActions from '../../../store/actions/groups.actions';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
+
+import { setUpLoader } from '../../groups-utils';
+
+import { Group } from 'src/app/models/group.model';
 
 
 @Component({
@@ -24,27 +27,25 @@ import { map } from 'rxjs/operators';
 export class GroupSummaryComponent implements OnInit, OnDestroy {
 
   @Input() deadline: string;
-  empty = true;
 
-  summaries: [];
-  display: string = 'items';
-
-  groupid: number;
+  public display: string = 'items';
+  public empty = true;
+  public group$: Group;
+  private groupid: string;
   private loadingCtrl: HTMLIonLoadingElement;
+  public ordersDates: string[];
 
-  groupSub: Subscription;
-  group$: Group;
+  private groupSub: Subscription;
 
   constructor(
-    private store: Store<AppState>,
+    private loadingController: LoadingController,
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private loadingController: LoadingController,
+    private router: Router,
+    private store: Store<AppState>,
   ) { }
 
-  ngOnInit() {
-    this.initialize();
-  }
+  ngOnInit() { this.initialize(); }
 
   ngOnDestroy() {
     if (this.groupSub) this.groupSub.unsubscribe();
@@ -56,42 +57,39 @@ export class GroupSummaryComponent implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/groups');
         return;
       }
-      this.groupid = parseInt(paramMap.get('groupid'));
+      this.groupid = paramMap.get('groupid');
 
-      await this.presentLoading();
-
-      this.store.dispatch(new fromGroupsActions.FetchGroupSummary(this.groupid));
+      this.loadingCtrl = await setUpLoader(this.loadingController);
+      this.loadingCtrl.present();
 
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.groups))
         .subscribe(groups => {
           this.group$ = groups.find(g => g.id == this.groupid);
-          if (this.group$.order) this.empty = !this.group$.order.byItem.length;
+          if (this.group$.orders) {
+            this.ordersDates = Object.keys(this.group$.orders);
+            this.empty = !this.ordersDates.length;
+          }
+
+          if (this.loadingCtrl) {
+            this.loadingCtrl.dismiss();
+            this.loadingCtrl = null;
+          }
         })
 
-      if (this.loadingCtrl) {
-        this.loadingCtrl.dismiss();
-        this.loadingCtrl = null;
-      }
+      this.store.dispatch(new fromGroupsActions.FetchGroupOrders({ groupid: this.groupid }));
     })
+  }
+
+  formatDate(deadline: string) {
+    return moment(new Date(deadline)).format('Do MMM YYYY - hh:mm a');
+  }
+
+  onNavigateToOrderDetails(date: string) {
+    this.router.navigate(['/', 'groups', 'manage', this.groupid, date]);
   }
 
   summaryDisplayChanged(e: CustomEvent<SegmentChangeEventDetail>) {
     this.display = e.detail.value;
   }
-
-  formatDate(deadline) {
-    return moment(new Date(deadline)).format('Do MMM YYYY - hh:mm a');
-  }
-
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
-  }
-
 }

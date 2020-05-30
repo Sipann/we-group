@@ -9,6 +9,7 @@ import { GroupInput } from '../models/group-input.model';
 
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
+import { GroupOrderDB } from 'src/app/models/group-order-db.model';
 import { Order } from '../models/order.model';
 import { OrderSumup } from '../models/order-sumup.model';
 import { Store, select } from '@ngrx/store';
@@ -99,11 +100,10 @@ export class GroupService {
   }
 
 
-  fetchSummary(groupid: string): Observable<OrderSumup[]> {
-    const fullUrl = `${ this.baseUrl }/groups/orders/${ groupid }`;
+  fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
+    const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<OrderSumup[]>(fullUrl, { headers })
-      .pipe(map(ordersumups => ordersumups.map(ordersumup => OrderSumup.parse(ordersumup))));
+    return this.httpClient.get<GroupOrderDB[]>(fullUrl, { headers });
   }
 
 

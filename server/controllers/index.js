@@ -9,5 +9,5 @@ module.exports = {
   groupCtrl,
   itemCtrl,
   orderCtrl,
-  userCtrl
+  userCtrl,
 };

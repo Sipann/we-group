@@ -3,6 +3,19 @@
 const db = require('../models/group');
 
 
+exports.fetchGroupOrders = async ctx => {
+  try {
+    const { groupid } = ctx.params;
+    const { userid } = ctx.request.header;
+    const response = await db.fetchGroupOrders(userid, groupid);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[testCtrl] fetchGroupOrders', error.message);
+  }
+};
+
 exports.fetchGroupOrder = async ctx => {
   try {
     const { groupid } = ctx.params;
@@ -12,7 +25,7 @@ exports.fetchGroupOrder = async ctx => {
     else throw new Error(response.payload);
   } catch (error) {
     ctx.status = 500;
-    console.log('[groupCtrl fetchGroupOrders] error', error.message);
+    console.log('[groupCtrl fetchGroupOrder] error', error.message);
   }
 };
 

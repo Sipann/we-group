@@ -22,8 +22,8 @@ export enum GroupsActionsTypes {
   DeleteItem = '[Groups] Delete Item',
   ItemDeleted = '[Groups] Item Deleted',
 
-  FetchGroupSummary = '[Groups] Fetch Group Summary',
-  GroupSummaryFetched = '[Groups] Group Summary Fetched',
+  FetchGroupOrders = '[Groups] Fetch Group Orders',
+  GroupOrdersFetched = '[Groups] GroupOrders Fetched',
 
   FetchGroupMembers = '[Groups] Fetch Group Members',
   GroupMembersFetched = '[Groups] Group Members Fetched',
@@ -123,8 +123,8 @@ export class FetchGroupMembers implements Action {
   constructor(public payload: { groupid: string }) { }
 };
 
-export class FetchGroupSummary implements Action {
-  readonly type = GroupsActionsTypes.FetchGroupSummary;
+export class FetchGroupOrders implements Action {
+  readonly type = GroupsActionsTypes.FetchGroupOrders;
   constructor(public payload: { groupid: string }) { }
 };
 
@@ -147,12 +147,9 @@ export class GroupMembersFetched implements Action {
   constructor(private payload: { groupid: string, members: User[] }) { }
 };
 
-export class GroupSummaryFetched implements Action {
-  readonly type = GroupsActionsTypes.GroupSummaryFetched;
-  constructor(private payload: {
-    groupid: string,
-    orders: OrderSumup[]
-  }) { }
+export class GroupOrdersFetched implements Action {
+  readonly type = GroupsActionsTypes.GroupOrdersFetched;
+  constructor(private payload) { };
 };
 
 export class GroupUpdated implements Action {
@@ -216,8 +213,8 @@ export type GroupsActions = AddItem |
   ItemDeleted |
   FetchGroupMembers |
   GroupMembersFetched |
-  FetchGroupSummary |
-  GroupSummaryFetched |
+  FetchGroupOrders |
+  GroupOrdersFetched |
   FetchOtherGroups |
   OtherGroupsFetched |
 
