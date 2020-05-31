@@ -16,6 +16,7 @@ export class AppComponent {
 
   private menuLinks: MenuMainLink[] = [
     { title: 'My Groups', icon: 'people-outline', rLink: '/groups' },
+    { title: 'My Orders', icon: 'people-outline', rLink: '/orders' },
     { title: 'Search', icon: 'search-outline', rLink: '/groups/search' },
     { title: 'Profile', icon: 'person-outline', rLink: '/auth/profile' },
   ];

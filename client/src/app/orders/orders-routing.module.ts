@@ -5,13 +5,13 @@ import { OrdersPage } from './orders.page';
 
 const routes: Routes = [
   {
+    path: '',
+    loadChildren: () => import('./orders-list/orders-list.module').then(m => m.OrdersListPageModule)
+  },
+  {
     path: 'new/:groupid',
     component: OrdersPage
   },
-  {
-    path: 'all/:groupid',
-    loadChildren: () => import('./orders-list/orders-list.module').then(m => m.OrdersListPageModule)
-  }
 ];
 
 @NgModule({

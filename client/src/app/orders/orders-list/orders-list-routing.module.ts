@@ -11,6 +11,10 @@ const routes: Routes = [
   {
     path: 'archive',
     loadChildren: () => import('./order-archive/order-archive.module').then(m => m.OrderArchivePageModule)
+  },
+  {
+    path: 'group/:groupname',
+    loadChildren: () => import('./orders-group/orders-group.module').then(m => m.OrdersGroupPageModule)
   }
 ];
 

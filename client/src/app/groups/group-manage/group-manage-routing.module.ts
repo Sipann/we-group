@@ -7,7 +7,11 @@ const routes: Routes = [
   {
     path: '',
     component: GroupManagePage,
-  }
+  },
+  {
+    path: ':date',
+    loadChildren: () => import('./group-order/group-order.module').then(m => m.GroupOrderPageModule)
+  },
 ];
 
 @NgModule({
