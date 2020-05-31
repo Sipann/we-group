@@ -6,12 +6,14 @@ export interface UserState {
   currentUser: User,
   loaded: boolean,
   loading: boolean,
+  updateIsComplete: boolean,
 };
 
 export const initialState: UserState = {
   currentUser: null,
   loaded: false,
   loading: false,
+  updateIsComplete: false,
 };
 
 
@@ -20,16 +22,32 @@ export const UserReducer = (state = initialState, action): UserState => {
   switch (action.type) {
     case fromUserActions.UserActionsTypes.UserLoaded:
       return {
+        ...state,
         currentUser: action.payload,
-        loaded: state.loaded,
-        loading: state.loading,
       };
+
+
+    //
+
+    case fromUserActions.UserActionsTypes.ResetUpdateStatus:
+      return {
+        ...state,
+        updateIsComplete: false,
+      };
+
     case fromUserActions.UserActionsTypes.UserDataLoaded:
       return {
-        currentUser: action.payload.userDetails,
-        loaded: state.loaded,
-        loading: state.loading,
-      }
+        ...state,
+        currentUser: action.payload,
+      };
+
+    case fromUserActions.UserActionsTypes.UserProfileUpdated:
+      return {
+        ...state,
+        currentUser: action.payload,
+        updateIsComplete: true,
+      };
+
     default:
       return state;
   }

@@ -1,14 +1,18 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnDestroy } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { ModalController, NavController, LoadingController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
-import { ApiClientService } from 'src/app/services/api-client.service';
-import { Group } from 'src/app/models/group.model';
-import { map } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../../../store/reducers';
-import * as fromGroupsActions from '../../../../store/actions/groups.actions';
+
+import { ModalController, LoadingController } from '@ionic/angular';
+
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
+
+import { setUpLoader } from '../../../groups-utils';
+
+import { Group } from 'src/app/models/group.model';
 
 
 @Component({
@@ -16,7 +20,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './new-product-modal.component.html',
   styleUrls: ['./new-product-modal.component.scss'],
 })
-export class NewProductModalComponent implements OnInit {
+export class NewProductModalComponent implements OnInit, OnDestroy {
 
   @Input() group: Group;
   @ViewChild('f', { static: true }) form: NgForm;
@@ -29,22 +33,18 @@ export class NewProductModalComponent implements OnInit {
   productName: string;
   productPrice: number;
 
-  addItemSub: Subscription;
-
-  private routeSub: Subscription;
+  private addItemSub: Subscription;
 
   constructor(
-    private apiClientService: ApiClientService,
     private loadingController: LoadingController,
     private modalCtrl: ModalController,
-    private navCtrl: NavController,
-    private route: ActivatedRoute,
     private store: Store<AppState>,
   ) {
     this.addItemSub = this.store.select('groups')
       .pipe(map(s => s.itemAdded))
       .subscribe(v => {
         if (v) {
+          if (this.loadingCtrl) this.loadingCtrl.dismiss();
           this.form.reset();
           this.modalCtrl.dismiss();
         }
@@ -55,8 +55,13 @@ export class NewProductModalComponent implements OnInit {
     this.productCurrency = this.group.currency;
   }
 
+  ngOnDestroy() {
+    if (this.addItemSub) this.addItemSub.unsubscribe();
+  }
 
-  onAddProduct() {
+  async onAddProduct() {
+    await setUpLoader(this.loadingController);
+
     const item = {
       name: this.form.value['product-name'],
       description: this.form.value['product-description'],
@@ -65,7 +70,7 @@ export class NewProductModalComponent implements OnInit {
       initial_qty: this.form.value['product-amount']
     };
 
-    this.store.dispatch(new fromGroupsActions.AddItem({ item, groupid: +this.group.id }))
+    this.store.dispatch(new fromGroupsActions.AddItem({ item, groupid: this.group.id }))
   }
 
   onCancel() {
@@ -74,15 +79,5 @@ export class NewProductModalComponent implements OnInit {
 
   onResetNewProductForm() {
     this.form.reset();
-  }
-
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
   }
 }

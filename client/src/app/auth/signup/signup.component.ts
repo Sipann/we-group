@@ -2,16 +2,12 @@ import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/cor
 import { NgForm } from '@angular/forms';
 
 
-
-
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-
-
 
   @Output() switch = new EventEmitter();
   @Output() signup = new EventEmitter<{ email: string, name: string, password: string }>();
@@ -30,7 +26,5 @@ export class SignupComponent implements OnInit {
     const password: string = this.form.value['password'];
     this.signup.emit({ name, email, password });
   }
-
-
 
 }

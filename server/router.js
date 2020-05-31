@@ -38,6 +38,8 @@ router.post('/groups', controllers.groupCtrl.createGroup);
 
 router.delete('/groups/items/:itemid', controllers.itemCtrl.deleteItem);
 
+router.get('/orders/group/:groupid', controllers.groupCtrl.fetchGroupOrders);
+router.get('/orders/user', controllers.orderCtrl.fetchUserOrders);
 
 
 router.post('/orders/:groupid', controllers.orderCtrl.createOrder);
@@ -50,7 +52,13 @@ router.get('/users', controllers.userCtrl.getUser);
 router.put('/users', controllers.userCtrl.updateUser);
 router.delete('/users', controllers.userCtrl.deleteUser);
 
+//
 
 router.get('/user', controllers.userCtrl.fetchUserData);
+
+
+
+
+
 
 module.exports = router;

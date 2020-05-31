@@ -1,7 +1,8 @@
 import { Item } from './item.model';
 
 export class Group {
-  id?: number;
+  // id?: number;
+  id?: string;
   name?: string;
   description?: string;
   currency?: string;
@@ -11,6 +12,7 @@ export class Group {
   items?: Item[];
   members?: { name: string, id: string }[];
   order?: { byItem, byUser };
+  orders?;    //!
 
   static parse(data) {
     const group = Object.assign(new Group(), data);

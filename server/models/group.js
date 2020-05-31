@@ -4,6 +4,57 @@ const pool = require('../models');
 const { isUserGroupManager } = require('./utils');
 
 
+
+exports.fetchGroupOrders = async (userid, groupid) => {
+  try {
+    const userIsAllowed = await isUserGroupManager(userid, groupid);
+    if (userIsAllowed) {
+      const values = [groupid];
+      const queryStr = `
+        SELECT
+          orders.id as order_id,
+          orders.user_id as user_id,
+          orders.group_id as group_id,
+          orders.deadline_order_ts as order_deadline_ts,
+          orders.delivery_ts as order_delivery_ts,
+          orders.delivery_status as order_delivery_status,
+          orders.confirmed_status as order_confirmed_status,
+          groups.name as group_name,
+          users.name as user_name,
+          items.id as item_id,
+          items.name as item_name,
+          items.price as item_price,
+          ordered_items.quantity as item_ordered_quantity
+
+        FROM orders
+
+        JOIN ordered_items
+          ON ordered_items.order_id = orders.id
+          AND orders.group_id = $1
+
+        LEFT JOIN users
+          ON orders.user_id = users.id
+
+        LEFT JOIN groups
+          ON orders.group_id = groups.id
+
+        LEFT JOIN items
+          ON ordered_items.item_id = items.id
+      `;
+
+      const response = await pool.query(queryStr, values);
+      return { ok: true, payload: response.rows };
+    }
+    else {
+      return { ok: false, payload: 'not allowed' };
+    }
+  } catch (error) {
+    console.log('test 1 error', error.message);
+  }
+
+};
+
+
 exports.fetchGroupOrder = async (userid, groupid) => {
   try {
     if (isUserGroupManager(userid, groupid)) {
@@ -260,12 +311,22 @@ exports.searchGroups = async userid => {
 
 exports.addUserToGroup = async (userid, groupid) => {
   try {
-    const values = [userid, groupid];
-    const queryStr = `
+    //TODO transaction
+    const valuesAddMember = [userid, groupid];
+    const queryStrAddMember = `
       INSERT INTO groupsusers (user_id, group_id)
-      VALUES ($1, $2);`;
-    const res = await pool.query(queryStr, values);
-    return res.rowCount;
+        VALUES ($1, $2);`;
+    await pool.query(queryStrAddMember, valuesAddMember);
+
+    const valuesGroup = [groupid];
+    const queryStrGroup = `
+      SELECT * FROM groups
+        WHERE id = $1;
+    `;
+
+    const res = await pool.query(queryStrGroup, valuesGroup);
+    return { ok: true, payload: res.rows[0] };
+
   } catch (error) {
     console.log('[group model - addUserToGroup db] error', error.message);
   }

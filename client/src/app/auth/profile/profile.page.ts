@@ -1,15 +1,22 @@
-import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { AlertController, LoadingController, ToastController, IonItemSliding } from '@ionic/angular';
 import { NgForm } from '@angular/forms';
 import { SegmentChangeEventDetail } from '@ionic/core';
 
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { ApiClientService } from 'src/app/services/api-client.service';
 import { AuthService } from 'src/app/services/auth.service';
+
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers';
+import * as fromUserActions from 'src/app/store/actions/user.actions';
+
+import { setUpLoader, setUpToast } from '../../groups/groups-utils';
 
 import { Group } from 'src/app/models/group.model';
 import { User } from 'src/app/models/user.model';
+
 
 @Component({
   selector: 'app-profile',
@@ -20,100 +27,92 @@ export class ProfilePage implements OnInit, OnDestroy {
 
   @ViewChild('f', { static: false }) form: NgForm;
 
-  display: string = 'userdata';
-  user: User;
-  groups: Group[];
-  loadingCtrl;
-  loadingGroups = true;
-  loadingInfos = true;
-  toastCtrl;
-  updateComplete = true;
+  public display: string = 'userdata';
+  public user: User;
+  public userEmail: string;
+  public userGroups: Group[];
+  public userName: string;
+  public userPhone: string;
+  public userPreferredMode: string;
 
-  userEmail: string;
-  userGroups: Group[];
-  userName: string;
-  userPhone: string;
-  userPreferredMode: string;
+  private loadingCtrl: HTMLIonLoadingElement;
+  private loadingCtrlUpdate: HTMLIonLoadingElement;
 
-  private authSub: Subscription;
-  private groupSub: Subscription;
+  private groupsSub: Subscription;
   private userSub: Subscription;
+  private userUpdateCompleteSub: Subscription;
 
 
   constructor(
     private alertCtrl: AlertController,
-    private apiClientService: ApiClientService,
     private authService: AuthService,
     private loadingController: LoadingController,
     private toastController: ToastController,
-  ) { }
-
-  ngOnInit() {
-    this.userSub = this.apiClientService.getUser()
-      .subscribe(data => {
-        console.log('profile data userGroup', data);
-        this.user = data;
-        this.userName = this.user.name;
-        this.userEmail = this.user.email;
-        this.userPhone = this.user.phone;
-        this.userPreferredMode = this.user.preferred_contact_mode;
-        this.loadingInfos = false;
-      });
-    this.groupSub = this.apiClientService.getGroups()
-      .subscribe(data => {
-        console.log('profile data groupSub', data);
-        this.userGroups = data;
-        this.loadingGroups = false;
-      });
+    private store: Store<AppState>,
+  ) {
+    this.userUpdateCompleteSub = this.store.select('user')
+      .pipe(map(u => u.updateIsComplete))
+      .subscribe(v => {
+        if (v) {
+          if (this.loadingCtrlUpdate) this.loadingCtrlUpdate.dismiss();
+          setUpToast(this.toastController, 'Your profile has been updated!');
+          this.store.dispatch(new fromUserActions.ResetUpdateStatus());
+        }
+      })
   }
 
+  ngOnInit() { this.initialize(); }
+
   ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.groupsSub) this.groupsSub.unsubscribe();
     if (this.userSub) this.userSub.unsubscribe();
+    if (this.userUpdateCompleteSub) this.userUpdateCompleteSub.unsubscribe();
+  }
+
+  async initialize() {
+    this.loadingCtrl = await setUpLoader(this.loadingController);
+    this.loadingCtrl.present();
+
+    this.userSub = this.store.select('user')
+      .pipe(map(user => user.currentUser))
+      .subscribe(currentUserData => {
+        this.user = currentUserData;
+        this.userName = currentUserData.name;
+        this.userEmail = currentUserData.email;
+        this.userPhone = currentUserData.phone;
+        this.userPreferredMode = currentUserData.preferred_contact_mode;
+
+        this.groupsSub = this.store.select('groups')
+          .pipe(map(groups => groups.groups))
+          .subscribe(groupsData => {
+            this.userGroups = groupsData;
+          });
+
+        if (this.loadingCtrl) this.loadingCtrl.dismiss();
+      });
+
   }
 
   async onSubmitChanges() {
-    const updatedUser = {
-      name: this.form.value['user-name'],
-      email: this.form.value['user-email'],
-      phone: this.form.value['user-phone'],
-      preferred_contact_mode: this.form.value['user-preferred-mode']
-    };
     if (this.form.value['user-preferred-mode'] === 'phone' && !this.form.value['user-phone']) {
       const header = 'Inconsistent Information';
       const message = 'You must include a phone number when you select \'phone\' as a contact mode';
       this.showAlert(header, message);
     }
     if (this.form.valid) {
-      await this.presentLoading();
-      this.apiClientService.updateUser(updatedUser)
-        .subscribe(data => {
-          console.log('data', data);
-          this.user = data;
-          this.loadingCtrl.dismiss();
-          this.presentToast();
-        })
+      const updatedUser = {
+        ...this.user,
+        name: this.form.value['user-name'],
+        email: this.form.value['user-email'],
+        phone: this.form.value['user-phone'],
+        preferred_contact_mode: this.form.value['user-preferred-mode']
+      }
+
+      this.loadingCtrlUpdate = await setUpLoader(this.loadingController);
+      this.loadingCtrlUpdate.present();
+
+      this.store.dispatch(new fromUserActions.UpdateUserProfile(updatedUser))
     }
-  }
-
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'bubbles',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
-  }
-
-  async presentToast() {
-    this.toastCtrl = await this.toastController.create({
-      message: 'Your settings have been saved.',
-      color: 'primary',
-      duration: 2000
-    });
-    this.toastCtrl.present();
   }
 
   profileDisplayChanged(e: CustomEvent<SegmentChangeEventDetail>) {
@@ -131,21 +130,19 @@ export class ProfilePage implements OnInit, OnDestroy {
   }
 
   onLeaveGroup(group: Group, slidingEl: IonItemSliding) {
-    console.log('manager_id', group.manager_id);
-    console.log('current user id', this.user.id);
     if (group.manager_id === this.user.id) {
       const header = 'Oops';
       const message = 'You are the manager of the group. To delete it, please go to the "Manage Group" panel.';
       this.showAlert(header, message);
     }
     else {
+      //TODO
       console.log('leaving group with id', group.id);
     }
     slidingEl.close();
   }
 
   unRegister() {
-    console.log('unregister');
     this.alertCtrl.create({
       header: 'Farewell',
       message: `By clicking the \'I\'m leaving\' button, you will delete your account. If you wish to proceed, just press it.
@@ -160,7 +157,6 @@ export class ProfilePage implements OnInit, OnDestroy {
         }
       ]
     }).then(alertEl => alertEl.present());
-
   }
 
 }

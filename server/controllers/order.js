@@ -2,6 +2,20 @@
 
 const db = require('../models/order');
 
+exports.fetchUserOrders = async ctx => {
+  try {
+    const { userid } = ctx.request.header;
+    const response = await db.fetchUserOrders(userid);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
+  } catch (error) {
+    ctx.status = 500;
+    console.log('[testCtrl] fetchUserOrders', error.message);
+  }
+};
+
+
+
 exports.createOrder = async ctx => {
   try {
     const { groupid } = ctx.params;
@@ -20,9 +34,7 @@ exports.fetchOrderGroupUser = async ctx => {
   try {
     const { groupid } = ctx.params;
     const { userid } = ctx.request.header;
-    console.log('ENTERING FETCHORDERGROUPUSER with groupid', groupid, 'userid', userid);
     const response = await db.fetchOrderGroupUser(userid, groupid);
-    console.log('CTRL response', response);
     if (response.ok) ctx.body = response.payload;
     else throw new Error(response.payload);
   } catch (error) {

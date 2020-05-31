@@ -1,5 +1,5 @@
 const pool = require('../models');
-const { getGroupUsers } = require('./user');
+const { getGroupUsers } = require('./group');
 
 exports.isUserGroupManager = async (userid, groupid) => {
   try {

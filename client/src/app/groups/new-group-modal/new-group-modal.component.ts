@@ -5,11 +5,11 @@ import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../../store/reducers/index';
-import * as fromGroupsActions from '../../store/actions/groups.actions';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/store/reducers/index';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
-import { GroupInput } from '../../models/group-input.model';
+import { Group } from 'src/app/models/group.model';
 
 
 @Component({
@@ -19,13 +19,13 @@ import { GroupInput } from '../../models/group-input.model';
 })
 export class NewGroupModalComponent implements OnInit {
 
-  @Output() created = new EventEmitter();
+  // @Output() created = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
-  groupDescription: string;
-  groupName: string;
+  public groupDescription: string;
+  public groupName: string;
 
-  createGroupSub: Subscription;
+  private createGroupSub: Subscription;
 
   constructor(
     private modalCtrl: ModalController,
@@ -35,7 +35,7 @@ export class NewGroupModalComponent implements OnInit {
       .pipe(map(s => s.groupCreated))
       .subscribe(v => {
         if (v) {
-          this.created.emit(true);  // useful?
+          // this.created.emit(true);  // useful?
           this.form.reset();
           this.modalCtrl.dismiss();
         }
@@ -51,7 +51,7 @@ export class NewGroupModalComponent implements OnInit {
   onCancel() { this.modalCtrl.dismiss(); }
 
   onAddGroup() {
-    const group: GroupInput = {
+    const group: Group = {
       name: this.form.value['group-name'],
       description: this.form.value['group-description'],
       currency: this.form.value['group-currency']

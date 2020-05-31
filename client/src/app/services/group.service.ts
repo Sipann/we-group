@@ -9,7 +9,9 @@ import { GroupInput } from '../models/group-input.model';
 
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
+import { GroupOrderDB } from 'src/app/models/group-order-db.model';
 import { Order } from '../models/order.model';
+import { OrderSumup } from '../models/order-sumup.model';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
@@ -36,76 +38,80 @@ export class GroupService {
       .subscribe(v => this.user$ = v);
   }
 
-  createGroup(newGroup: Group): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
-  }
-
-  fetchItems(groupid: number): Observable<Item[]> {
-    const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<Item[]>(fullUrl, { headers })
-      .pipe(
-        // tap(obj => console.log('obj', obj)),
-        map(obj => obj.map(item => Item.parse(item)))   // ?
-      );
-  }
-
-  fetchMembers(groupid: number): Observable<User[]> {
-    const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<User[]>(fullUrl, { headers })
-      .pipe(
-        tap(obj => console.log('fetchMembers response', obj)),
-      );
-  }
-
-  fetchSummary(groupid: number): Observable<{ username: string, itemname: string, orderedquantity: number }[]> {
-    console.log('ENTERING fetchSummary Service');
-    const fullUrl = `${ this.baseUrl }/groups/orders/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<{ username: string, itemname: string, orderedquantity: number }[]>(fullUrl, { headers })
-      .pipe(
-        tap(obj => console.log('FETCH SUMMARY RES', obj)),
-      );
-  }
-
-  addItem(payload): Observable<Item> {
-    const { groupid, item } = payload;
-    const fullUrl = `${ this.baseUrl }/groups/items`;
-    const body = { groupid, item };
-    // const body = {...payload}        //?
-    console.log('BODY', body);
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Item>(fullUrl, body, { headers })
-      .pipe(
-        tap(obj => console.log('ADD ITEM HTTPCLIENT RES', obj)),
-        map(item => Item.parse(item))   // ?
-      );
-  }
-
-  deleteItem(itemid: number): Observable<number> {
-    const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.delete<number>(fullUrl, { headers });
-  }
-
-  updateGroup(group: Group): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.put<Group>(fullUrl, group, { headers })
-      .pipe(
-        tap(obj => console.log('UPDATE GROUP HTTPCLIENT RES', obj)),
-        map(group => Group.parse(group))
-      );
-  }
 
 
   getGroups(userid: string): Observable<Group[]> {
     const fullUrl = `${ this.baseUrl }/groups`;
     const headers = new HttpHeaders().append('userid', '9tO9WsqEqyRBP4HkZXH5NNexZ5P2');
     return this.httpClient.get<Group[]>(fullUrl, { headers });
+  }
+
+  //
+
+  addItem(payload: { groupid: string, item: Item }): Observable<Item> {
+    const fullUrl = `${ this.baseUrl }/groups/items`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Item>(fullUrl, payload, { headers })
+      .pipe(map(item => Item.parse(item)));
+  }
+
+  addMemberToGroup(groupid: string): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups/user/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, null, { headers });
+  }
+
+
+  createGroup(newGroup: Group): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
+  }
+
+
+  deleteItem(itemid: string): Observable<string> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.delete<string>(fullUrl, { headers });
+  }
+
+
+  fetchItems(groupid: string): Observable<Item[]> {
+    const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Item[]>(fullUrl, { headers })
+      .pipe(map(itemArr => itemArr.map(item => Item.parse(item))));
+  }
+
+
+  fetchMembers(groupid: string): Observable<User[]> {
+    const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<User[]>(fullUrl, { headers })
+      .pipe(map(usersArr => usersArr.map(user => User.parse(user))));
+  }
+
+
+  fetchOtherGroups(): Observable<Group[]> {
+    const fullUrl = `${ this.baseUrl }/groups/search`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Group[]>(fullUrl, { headers })
+      .pipe(map(groupsArr => groupsArr.map(group => Group.parse(group))));
+  }
+
+
+  fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
+    const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<GroupOrderDB[]>(fullUrl, { headers });
+  }
+
+
+  updateGroup(group: Group): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.put<Group>(fullUrl, group, { headers })
+      .pipe(map(group => Group.parse(group)));
   }
 
 }

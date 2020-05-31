@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoadingController, AlertController } from '@ionic/angular';
 import { AuthService } from '../services/auth.service';
 
+
 @Component({
   selector: 'app-auth',
   templateUrl: './auth.page.html',
@@ -56,7 +57,6 @@ export class AuthPage implements OnInit {
               this.showAlert(message);
             });
         }
-
       });
   }
 
@@ -71,6 +71,5 @@ export class AuthPage implements OnInit {
       })
       .then(alertEl => alertEl.present());
   }
-
 
 }

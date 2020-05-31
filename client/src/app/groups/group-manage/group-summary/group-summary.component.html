@@ -1,51 +1,21 @@
 <ion-card>
   <ion-card-header>
-    <ion-card-title class="ion-text-center">Order Summary</ion-card-title>
-    <ion-card-subtitle class="ion-text-center">{{group$ && formatDate(group$.deadline) }}</ion-card-subtitle>
+    <ion-card-title class="ion-text-center">Orders</ion-card-title>
   </ion-card-header>
 
   <ion-card-content *ngIf="empty">
-    <ion-label>No order yet!</ion-label>
+    <ion-label>No orders yet!</ion-label>
   </ion-card-content>
 
   <ion-card-content *ngIf="!empty">
-    <ion-segment
-      (ionChange)="summaryDisplayChanged($event)"
-      value="items">
-      <ion-segment-button value="items">
-        <ion-label>By Item</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="users">
-        <ion-label>By User</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-
-    <ion-grid *ngIf="group$.order && display === 'items'">
-      <ion-row *ngFor="let summary of group$.order.byItem">
-        <ion-col size="8" class="ion-text-start">
-          <ion-text>{{ summary.itemname }}</ion-text>
-        </ion-col>
-        <ion-col size="4" class="ion-text-end">
-          <ion-text>{{ summary.quantity }}</ion-text>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
-    <div *ngIf="group$.order && display === 'users'">
-      <ion-grid *ngFor="let summary of group$.order.byUser">
-        <ion-row>
-          <ion-col>{{ summary.username }}</ion-col>
-        </ion-row>
-        <ion-row *ngFor="let item of summary.items">
-          <ion-col size="8" class="ion-text-start">
-            <ion-text>{{ item.itemname }}</ion-text>
-          </ion-col>
-          <ion-col size="4" class="ion-text-end">
-            <ion-text>{{ item.orderedquantity }}</ion-text>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
+    <ion-list>
+      <ion-item
+        *ngFor="let date of ordersDates"
+        detail
+        (click)="onNavigateToOrderDetails(date)">
+        <ion-label>{{ date }}</ion-label>
+      </ion-item>
+    </ion-list>
 
   </ion-card-content>
 </ion-card>

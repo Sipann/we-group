@@ -17,13 +17,12 @@ exports.fetchUserData = async userid => {
         groups.id as id,
         groups.name as name,
         groups.description as description,
-        groups.manager_id as manager_id,
-        groups.deadline as deadline
+        groups.manager_id as manager_id
       FROM groups
       INNER JOIN groupsusers ON groups.id = groupsusers.group_id AND groupsusers.user_id = $1;
     `;
     const userGroups = await pool.query(userGroupsQueryStr, values);
-
+    // console.log('MODELS USER FETCH USER DATA userGroups.rows', userGroups.rows);
     return { userDetails: userDetails.rows[0], userGroups: userGroups.rows };
 
   } catch (error) {
@@ -83,17 +82,40 @@ exports.getUser = async userid => {
   }
 };
 
+const isUserDataOwner = async (userid, user) => {
+  try {
+    const values = [userid];
+    const queryStr = `
+      SELECT email FROM users
+        WHERE id = $1;
+    `;
+    const res = await pool.query(queryStr, values);
+    return user.email === res.rows[0].email;
+
+  } catch (error) {
+    console.log('[user model - isUserDataOwner db err]', error.message);
+  }
+}
+
+
 exports.updateUser = async (userid, user) => {
   try {
-    const { name, email, phone, preferred_contact_mode } = user;
-    const values = [name, email, phone, preferred_contact_mode, userid];
-    const queryStr = `
-      UPDATE users
-        SET name = $1, email = $2, phone = $3, preferred_contact_mode = $4
-      WHERE id = $5
-      RETURNING *`;
-    const res = await pool.query(queryStr, values);
-    return res.rows[0];
+    const userUpdatesOwnData = await isUserDataOwner(userid, user);
+    if (userUpdatesOwnData) {
+      const { name, email, phone, preferred_contact_mode } = user;
+      const values = [name, email, phone, preferred_contact_mode, userid];
+      const queryStr = `
+        UPDATE users
+          SET name = $1, email = $2, phone = $3, preferred_contact_mode = $4
+        WHERE id = $5
+        RETURNING *`;
+      const res = await pool.query(queryStr, values);
+      return { ok: true, payload: res.rows[0] };
+    }
+    else {
+      return { ok: false, payload: 'not allowed' }
+    }
+
   } catch (error) {
     console.log('[user model - updateUser db err]', error.message);
   }

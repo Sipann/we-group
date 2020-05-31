@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { Group } from '../models/group.model';
 import { Item } from '../models/item.model';
 
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppState } from '../store/reducers';
 import { map } from 'rxjs/operators';
 import * as fromGroupsActions from '../store/actions/groups.actions';
@@ -30,7 +30,7 @@ export class OrdersPage implements OnInit, OnDestroy {
   ordered: {} = {};
   show = false;
 
-  groupid: number;
+  groupid: string;
   group$: Group;
 
   orderPending = true;
@@ -67,9 +67,9 @@ export class OrdersPage implements OnInit, OnDestroy {
         return;
       }
       await this.presentLoading();
-      this.groupid = parseInt(paramMap.get('groupid'));
+      this.groupid = paramMap.get('groupid');
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupItems(this.groupid));
+      this.store.dispatch(new fromGroupsActions.FetchGroupItems({ groupid: this.groupid }));
 
       this.groupSub = this.store.select('groups')
         .pipe(map(g => g.groups))
@@ -112,7 +112,7 @@ export class OrdersPage implements OnInit, OnDestroy {
       }
     }
     if (orderedItems.length) {
-      this.store.dispatch(new fromOrdersActions.CreateOrder({ groupid: this.groupid, deadline: this.group$.deadline, orderedItems }));
+      // this.store.dispatch(new fromOrdersActions.CreateOrder({ groupid: this.groupid, deadline: this.group$.deadline, orderedItems }));
     }
     else {
       const message = 'You have not selected any item';

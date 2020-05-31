@@ -7,7 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="group">
   <ion-grid>
 
     <ion-row>
@@ -60,7 +60,6 @@
 
       <ion-col size="6" class="ion-align-self-stretch flex">
         <ion-card
-          *ngIf="!loading_infos"
           [ngClass]="managing && managing.length && managing !== 'infos' ? 'inactive' : 'active'"
           color="light"
           (click)="onSelect('infos')">
@@ -86,7 +85,9 @@
               *ngSwitchCase="'infos'"
               (cancelled)="onCancel()"></app-group-infos>
 
-            <app-group-products *ngSwitchCase="'products'"></app-group-products>
+            <app-group-products
+              *ngSwitchCase="'products'"
+              (cancelled)="onCancel()"></app-group-products>
 
             <app-group-users
               *ngSwitchCase="'users'"

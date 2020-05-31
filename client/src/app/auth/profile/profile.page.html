@@ -22,7 +22,7 @@
 
 
   <form #f="ngForm" (ngSubmit)="onSubmitChanges()"
-    *ngIf="display === 'userdata' && !loadingInfos">
+    *ngIf="user && display === 'userdata'">
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-sm="6" offset-sm="3">
@@ -100,7 +100,7 @@
     </ion-grid>
   </form>
 
-  <ion-card *ngIf="display === 'usergroups' && !loadingGroups">
+  <ion-card *ngIf="user && display === 'usergroups'">
     <ion-row *ngFor="let group of userGroups">
       <ion-col size="12" size-sm="6" offset-sm="3">
         <ion-item-sliding #slidingItem>
