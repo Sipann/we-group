@@ -9,6 +9,7 @@ import * as fromUserServices from '../../services/user.service';
 import { User } from 'src/app/models/user.model';
 
 import * as fromGroups from '../actions/groups.actions';
+import * as fromOrders from '../actions/orders.actions';
 // import * as fromGroupsServices from '../../services/group.service';
 
 
@@ -32,13 +33,15 @@ export class UserEffects {
     )
   );
 
-  loadUser$ = createEffect(() => this.actions$.pipe(
+
+  loadUser1$ = createEffect(() => this.actions$.pipe(
     ofType(fromUser.UserActionsTypes.LoadUserData),
     switchMap((action) => this.userService.fetchUserData(action.payload.userid)
       .pipe(
         switchMap(userData => [
           new fromUser.UserDataLoaded(userData.userDetails),
           new fromGroups.GroupsLoaded(userData.userGroups),
+          new fromOrders.UserOrdersFetched(userData.userOrders),
         ]),
         catchError(err => {
           console.log('[User Effects] err', err.message);

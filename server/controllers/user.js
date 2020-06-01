@@ -2,11 +2,11 @@
 
 const db = require('../models/user');
 
+
 exports.fetchUserData = async ctx => {
   try {
     const { userid } = ctx.request.header;
     const res = await db.fetchUserData(userid);
-    // console.log('CTRL USER FETCH USER DATA res', res);
     ctx.body = res;
   } catch (error) {
     ctx.status = 500;

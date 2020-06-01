@@ -2,10 +2,13 @@
 
 const pool = require('../models');
 const { isUserGroupManager } = require('./utils');
+const { fetchUserOrders } = require('./order');
+
 
 exports.fetchUserData = async userid => {
   //TODO transaction
   try {
+    let userOrders;
     const values = [userid];
     const userDetailsQueryStr = `
       SELECT * FROM users
@@ -22,13 +25,23 @@ exports.fetchUserData = async userid => {
       INNER JOIN groupsusers ON groups.id = groupsusers.group_id AND groupsusers.user_id = $1;
     `;
     const userGroups = await pool.query(userGroupsQueryStr, values);
-    // console.log('MODELS USER FETCH USER DATA userGroups.rows', userGroups.rows);
-    return { userDetails: userDetails.rows[0], userGroups: userGroups.rows };
+
+    const responseOrders = await fetchUserOrders(userid);
+    if (responseOrders.ok) userOrders = responseOrders.payload;
+    else throw new Error(response.payload);
+
+    return {
+      userDetails: userDetails.rows[0],
+      userGroups: userGroups.rows,
+      userOrders
+    };
 
   } catch (error) {
     console.log('[user model - fetchUserData] error', error.message);
   }
 };
+
+
 
 
 exports.fetchGroupMembers = async (userid, groupid) => {

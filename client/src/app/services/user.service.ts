@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { User } from 'src/app/models/user.model';
 import { Group } from 'src/app/models/group.model';
+import { GroupOrderDB } from 'src/app/models/group-order-db.model';
+
 
 import { map, tap } from 'rxjs/operators';
 
@@ -30,10 +32,10 @@ export class UserService {
 
   //
 
-  fetchUserData(uid: string): Observable<{ userDetails: User, userGroups: Group[] }> {
+  fetchUserData(uid: string): Observable<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }> {
     const fullUrl = `${ this.baseUrl }/user`;
     const headers = new HttpHeaders().append('userid', uid);
-    return this.httpClient.get<{ userDetails: User, userGroups: Group[] }>(fullUrl, { headers });
+    return this.httpClient.get<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }>(fullUrl, { headers });
   }
 
   updateUserProfile(updatedUser: User): Observable<User> {
