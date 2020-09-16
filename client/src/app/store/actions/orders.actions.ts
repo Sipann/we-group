@@ -1,10 +1,5 @@
 import { Action, createAction, props } from '@ngrx/store';
 
-import { Group } from '../../models/group.model';
-import { Item } from '../../models/item.model';
-import { User } from '../../models/user.model';
-import { Order } from '../../models/order.model';
-import { ItemInput } from '../../models/item-input.model';
 import { OrderOutput } from '../../models/order-output.model';
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
 
@@ -21,7 +16,13 @@ export enum OrdersActionsTypes {
   UpdateOrder = '[Orders] Update Order',
   OrderUpdated = '[Orders] Order Updated',
 
+  PlaceOrder = '[Orders] Place Order',
+  OrderPlaced = '[Orders] Order Placed',
 };
+
+
+
+
 
 export class UpdateOrder implements Action {
   readonly type = OrdersActionsTypes.UpdateOrder;
@@ -58,14 +59,6 @@ export class ResetOrderPending implements Action {
 
 //
 
-export class FetchUserOrders implements Action {
-  readonly type = OrdersActionsTypes.FetchUserOrders;
-};
-
-export class UserOrdersFetched implements Action {
-  readonly type = OrdersActionsTypes.UserOrdersFetched;
-  constructor(private payload: GroupOrderDB[]) { }
-}
 
 export class FetchOrders implements Action {
   readonly type = OrdersActionsTypes.FetchOrders;
@@ -78,7 +71,34 @@ export class OrdersFetched implements Action {
 };
 
 
+///////////////////////////////////////////////////////:
+// CALLED
 
+
+
+export class FetchUserOrders implements Action {
+  readonly type = OrdersActionsTypes.FetchUserOrders;
+};
+
+export class PlaceOrder implements Action {
+  readonly type = OrdersActionsTypes.PlaceOrder;
+  constructor(public payload: {
+    availableOrderid: string,
+    items: { availableitemid: string, itemid: string, orderedQty: number }[]
+  }) { }
+};
+
+export class OrderPlaced implements Action {
+  readonly type = OrdersActionsTypes.OrderPlaced;
+  constructor(private payload: GroupOrderDB[]) { }
+};
+
+
+
+export class UserOrdersFetched implements Action {
+  readonly type = OrdersActionsTypes.UserOrdersFetched;
+  constructor(private payload: GroupOrderDB[]) { }
+};
 
 export type OrdersActions = CreateOrder |
   OrderCreated |
@@ -88,5 +108,7 @@ export type OrdersActions = CreateOrder |
   UpdateOrder |
   OrderUpdated |
   FetchUserOrders |
-  UserOrdersFetched
+  UserOrdersFetched |
+  PlaceOrder |
+  OrderPlaced
   ;

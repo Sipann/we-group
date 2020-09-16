@@ -3,12 +3,41 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/groups/detail/{{ groupid }}"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ group$? group$.name : null }}</ion-title>
+    <!-- <ion-title>{{ group$? group$.name : null }}</ion-title> -->
+    <ion-title>AVAILABLE ORDERS PAGE</ion-title>
   </ion-toolbar>
 </ion-header>
 
+
+<!-- DISPLAY LIST OF AVAILABLE ORDERS
+ON CLICK => PLACE-ORDER PAGE (orderid) SEND ORDER IN STATE -->
+
+<ion-content *ngIf="availableOrders$">
+  <h1>ION CONTENT</h1>
+  <!-- <ion-grid *ngIf="(availableOrders$ | async).length; else noOrdersBlock"> -->
+  <ion-grid *ngIf="availableOrdersKeys$.length; else noOrdersBlock">
+    <ion-row *ngFor="let key of availableOrdersKeys$">
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-card (click)="onNavigateToOrder(key)">
+          <ion-card-header>{{ availableOrders$[key].deliveryTs }}</ion-card-header>
+          <ion-card-content>{{ availableOrders$[key].deadlineTs }}</ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ng-template #noOrdersBlock>
+    NO ORDERS BLOCK
+  </ng-template>
+</ion-content>
+
+
+
+
+
+
+
 <!-- <ion-content *ngIf="show"> -->
-<ion-content *ngIf="group$">
+<!-- <ion-content *ngIf="group$">
 
   <ion-card>
     <ion-card-content>
@@ -85,4 +114,4 @@
 
   </ion-grid>
 
-</ion-content>
+</ion-content> -->

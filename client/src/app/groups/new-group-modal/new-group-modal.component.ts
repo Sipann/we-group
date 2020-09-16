@@ -10,6 +10,7 @@ import { AppState } from 'src/app/store/reducers/index';
 import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
 import { Group } from 'src/app/models/group.model';
+import { GroupInput } from 'src/app/models/group-input.model';
 
 
 @Component({
@@ -51,7 +52,7 @@ export class NewGroupModalComponent implements OnInit {
   onCancel() { this.modalCtrl.dismiss(); }
 
   onAddGroup() {
-    const group: Group = {
+    const group: GroupInput = {
       name: this.form.value['group-name'],
       description: this.form.value['group-description'],
       currency: this.form.value['group-currency']

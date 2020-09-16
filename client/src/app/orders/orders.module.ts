@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { OrdersPageRoutingModule } from './orders-routing.module';
 
 import { OrdersPage } from './orders.page';
-import { OrderInputComponent } from './order-input/order-input.component';
+// import { OrderInputComponent } from './order-input/order-input.component';
 
 @NgModule({
   imports: [
@@ -17,7 +17,8 @@ import { OrderInputComponent } from './order-input/order-input.component';
     OrdersPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [OrdersPage, OrderInputComponent],
-  entryComponents: [OrderInputComponent]
+  // declarations: [OrdersPage, OrderInputComponent],
+  // entryComponents: [OrderInputComponent]
+  declarations: [OrdersPage],
 })
 export class OrdersPageModule { }

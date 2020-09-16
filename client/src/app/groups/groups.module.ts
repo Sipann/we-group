@@ -13,7 +13,7 @@ import { GroupsEffects } from '../store/effects/groups.effects';
 import { EffectsModule } from '@ngrx/effects';
 
 import { GroupsPage } from './groups.page';
-import { NewProductModalComponent } from './group-manage/group-products/new-product-modal/new-product-modal.component';
+// import { NewProductModalComponent } from './group-manage/group-products/new-product-modal/new-product-modal.component';
 import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
 @NgModule({
@@ -23,7 +23,12 @@ import { NewGroupModalComponent } from './new-group-modal/new-group-modal.compon
     IonicModule,
     GroupsPageRoutingModule,
   ],
-  declarations: [GroupsPage, NewProductModalComponent, NewGroupModalComponent],
-  entryComponents: [NewProductModalComponent, NewGroupModalComponent]
+  declarations: [
+    GroupsPage,
+    NewGroupModalComponent
+  ], //NewProductModalComponent,
+  entryComponents: [
+    NewGroupModalComponent
+  ] //NewProductModalComponent,
 })
 export class GroupsPageModule { }

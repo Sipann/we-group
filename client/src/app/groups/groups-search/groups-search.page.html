@@ -7,10 +7,10 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="otherGroups && otherGroups.length">
+<ion-content *ngIf="availableGroups$ && availableGroups$.length">
   <ion-grid class="ion-margin-top">
     <ion-row class="ion-margin-top"
-      *ngFor="let group of otherGroups">
+      *ngFor="let group of availableGroups$">
       <ion-col size="12" size-sm="8" offset-sm="2">
         <ion-list>
           <ion-item-sliding #slidingItem>

@@ -1,6 +1,30 @@
 'use strict';
 
 const db = require('../models/order');
+const { handleErrorCtrl } = require('./utils');
+
+//////////////////////////
+
+exports.placeOrder = async ctx => {
+  try {
+    console.log('ENTERING PLACEORDER CTRL');
+
+    const { availableorderid } = ctx.params;
+    const { userid } = ctx.request.header;
+    const itemsordered = ctx.request.body;
+
+    console.log('PLACEORDER CTRL :: availableorderid =>', availableorderid, 'userid =>', userid, 'items =>', itemsordered);
+
+    const response = await db.placeOrder(userid, availableorderid, itemsordered);
+    if (response.ok) ctx.body = response.payload;
+    else throw new Error(response.payload);
+  } catch (error) {
+    // console.log('[ORDER CTRL] placeOrder error', error.message);
+    handleErrorCtrl(ctx, error.message);
+  }
+};
+
+
 
 exports.fetchUserOrders = async ctx => {
   try {
@@ -16,6 +40,7 @@ exports.fetchUserOrders = async ctx => {
 
 
 
+//? FOUND BUT ACTION CALLED?
 exports.createOrder = async ctx => {
   try {
     const { groupid } = ctx.params;
@@ -30,6 +55,7 @@ exports.createOrder = async ctx => {
   }
 };
 
+//? FOUND BUT ACTION CALLED?
 exports.fetchOrderGroupUser = async ctx => {
   try {
     const { groupid } = ctx.params;
@@ -43,18 +69,7 @@ exports.fetchOrderGroupUser = async ctx => {
   }
 }
 
-
-exports.getAllOrdersForUser = async ctx => {
-  try {
-    const userid = ctx.request.header.userid;
-    const res = await db.getAllOrdersForUser(userid);
-    ctx.body = res;
-  } catch (error) {
-    ctx.status = 500;
-    console.log('[orderCtrl getAllOrdersForUser] error', error.message);
-  }
-};
-
+//? FOUND BUT ACTION CALLED?
 exports.updateOrder = async ctx => {
   try {
     const updatedOrder = ctx.request.body;

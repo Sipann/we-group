@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>group-available-order</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-fab vertical="top" horizontal="end" edge="true" slot="fixed">
+    <ion-fab-button (click)="onCreateNewItem()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <h1 *ngIf="(availableItems$ && availableItems$.length); else noAvailableItemsBlock">
+    AVAILABLE ITEMS PRODUCTS
+    <p *ngFor="let item of availableItems$">{{ item.itemname }} - {{ item.availableitemremainingqty }}</p>
+  </h1>
+
+  <h1 *ngIf="(groupItems$ && groupItems$.length); else noGroupItemsBlock">
+    GROUP ITEM PRODUCTS
+    <div *ngFor="let item of groupItems$">
+      <p>{{ item.name }}</p>
+      <p>{{ item.description }}</p>
+      <p (click)="onAddItemToOrder(item.id)">+</p>
+      <p (click)="onDeleteItemFromGroup(item.id)">x</p>
+    </div>
+
+  </h1>
+
+  <ng-template #noGroupItemsBlock>
+    NO GROUP ITEMS BLOCK
+  </ng-template>
+
+  <ng-template #noAvailableItemsBlock>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Ooops</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        There are no items available for this order yet. You can add some by clicking on the + button.
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
+
+
+
+</ion-content>

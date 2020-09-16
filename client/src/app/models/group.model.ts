@@ -7,6 +7,7 @@ export class Group {
   description?: string;
   currency?: string;
   manager_id?: string;
+
   image?: string;
   deadline?: string;
   items?: Item[];
@@ -16,7 +17,6 @@ export class Group {
 
   static parse(data) {
     const group = Object.assign(new Group(), data);
-
     return group;
   }
 

@@ -4,16 +4,39 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "createtables": "node -r esm ./databaseSetup/createTables.js",
+    "createtablestest": "cross-env NODE_ENV=test node -r esm ./databaseSetup/createTables.js",
+    "droptables": "node -r esm ./databaseSetup/dropTables.js",
+    "droptablestest": "cross-env NODE_ENV=test node -r esm ./databaseSetup/dropTables.js",
+    "mockdatatest": "cross-env NODE_ENV=test node -r esm ./databaseSetup/mockData/index.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@koa/cors": "^3.0.0",
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^8.0.8",
+    "lodash.isequal": "^4.5.0",
     "pg": "^8.0.2"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.10.2",
+    "babel-jest": "^26.0.1",
+    "cross-env": "^7.0.2",
+    "jest": "^26.0.1",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }

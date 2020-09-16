@@ -30,13 +30,18 @@ export class UserService {
   }
 
 
-  //
 
+  ////////////////////////////////////////
+  // CALLED
+
+
+  // with items for group manager
   fetchUserData(uid: string): Observable<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }> {
-    const fullUrl = `${ this.baseUrl }/user`;
+    const fullUrl = `${ this.baseUrl }/test/user`;
     const headers = new HttpHeaders().append('userid', uid);
     return this.httpClient.get<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }>(fullUrl, { headers });
   }
+
 
   updateUserProfile(updatedUser: User): Observable<User> {
     const fullUrl = `${ this.baseUrl }/users`;

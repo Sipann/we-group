@@ -1,24 +1,23 @@
 import { Group } from '../models/group.model';
+import { GroupInput } from 'src/app/models/group-input.model';
 import { Injectable } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 
-import { GroupInput } from '../models/group-input.model';
 
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
-import { Order } from '../models/order.model';
-import { OrderSumup } from '../models/order-sumup.model';
-import { Store, select } from '@ngrx/store';
+import { GroupOrderAvailable } from 'src/app/models/group-order-available.model';
+import { Store, } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
-import { GroupsState } from '../store/reducers/groups.reducers';
-import { UserState } from '../store/reducers/user.reducers';
-import { map, tap } from 'rxjs/operators';
-import { ItemInput } from '../models/item-input.model';
+import { catchError, map } from 'rxjs/operators';
+
+import { handleError } from './utils';
+
 
 @Injectable({
   providedIn: 'root'
@@ -40,33 +39,26 @@ export class GroupService {
 
 
 
-  getGroups(userid: string): Observable<Group[]> {
-    const fullUrl = `${ this.baseUrl }/groups`;
-    const headers = new HttpHeaders().append('userid', '9tO9WsqEqyRBP4HkZXH5NNexZ5P2');
-    return this.httpClient.get<Group[]>(fullUrl, { headers });
-  }
 
   //
 
-  addItem(payload: { groupid: string, item: Item }): Observable<Item> {
-    const fullUrl = `${ this.baseUrl }/groups/items`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Item>(fullUrl, payload, { headers })
-      .pipe(map(item => Item.parse(item)));
-  }
-
-  addMemberToGroup(groupid: string): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups/user/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Group>(fullUrl, null, { headers });
-  }
 
 
-  createGroup(newGroup: Group): Observable<Group> {
-    const fullUrl = `${ this.baseUrl }/groups`;
+
+
+  // addNewItem(payload: { orderid: string, item: ?? }): Observable<??> {
+  addNewItem(payload: { orderid: string, item }) {
+    console.log('SERVICE addNewItem orderid:', payload.orderid, 'item:', payload.item);
+    const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
+    // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
+    return this.httpClient.post(fullUrl, payload.item, { headers });
   }
+
+
+
+
+
 
 
   deleteItem(itemid: string): Observable<string> {
@@ -75,6 +67,16 @@ export class GroupService {
     return this.httpClient.delete<string>(fullUrl, { headers });
   }
 
+
+
+  // route not targeted
+  // fetchAvailableItems(payload: { orderid: string }): Observable<> {
+  fetchAvailableItems(payload: { orderid: string }) {
+    const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    // return this.httpClient.get<>(fullUrl, { headers });
+    return this.httpClient.get(fullUrl, { headers });
+  }
 
   fetchItems(groupid: string): Observable<Item[]> {
     const fullUrl = `${ this.baseUrl }/groups/items/${ groupid }`;
@@ -92,19 +94,8 @@ export class GroupService {
   }
 
 
-  fetchOtherGroups(): Observable<Group[]> {
-    const fullUrl = `${ this.baseUrl }/groups/search`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<Group[]>(fullUrl, { headers })
-      .pipe(map(groupsArr => groupsArr.map(group => Group.parse(group))));
-  }
 
 
-  fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
-    const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<GroupOrderDB[]>(fullUrl, { headers });
-  }
 
 
   updateGroup(group: Group): Observable<Group> {
@@ -113,5 +104,114 @@ export class GroupService {
     return this.httpClient.put<Group>(fullUrl, group, { headers })
       .pipe(map(group => Group.parse(group)));
   }
+
+  // not targeting any route
+  // fetchGroupAvailableItems(groupid: string): Observable<> {
+  fetchGroupAvailableItems(groupid: string) {
+    const fullUrl = `${ this.baseUrl }/`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    // return this.httpClient.get<>(fullUrl, { headers });
+    return this.httpClient.get(fullUrl, { headers });
+  }
+
+  // not targeting any route
+  setGroupAvailableItems(payload: { groupid: string, item: Item }): Observable<Item> {
+    const fullUrl = `${ this.baseUrl }/test/groups/items`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Item>(fullUrl, payload, { headers })
+      .pipe(map(item => Item.parse(item)));
+  }
+
+  //////////////////////////////////////////////////////
+  // CALLED
+
+  // addItemToOrder(payload: { orderid: string, item }): Observable<??> {
+  addItemToOrder(payload: { orderid: string, itemData }) {
+    console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
+    // const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }/add`;
+    const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }/add`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
+    return this.httpClient.post(fullUrl, payload.item, { headers });
+  }
+
+
+  addMemberToGroup(groupid: string): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups/user/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, null, { headers });
+  }
+
+  // createGroup(newGroup: GroupInput): Observable<Group> {
+  //   const fullUrl = `${ this.baseUrl }/groups`;
+  //   const headers = new HttpHeaders().append('userid', this.user$.id);
+  //   return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
+  // }
+
+
+
+  createGroup(newGroup: GroupInput): Observable<Group> {
+    const fullUrl = `${ this.baseUrl }/groups`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Group>(fullUrl, newGroup, { headers })
+      .pipe(
+        map(response => Group.parse(response)),
+        catchError(handleError)
+      );
+  };
+
+
+  createNewGroupOrder(payload: {
+    groupid: string,
+    newOrder: { deadlineTs: string, deliveryTs: string }
+  }): Observable<GroupOrderAvailable> {
+    const fullUrl = `${ this.baseUrl }/groups/orders/new/${ payload.groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<GroupOrderAvailable>(fullUrl, payload.newOrder, { headers });
+  }
+
+  fetchAvailableOrders(payload: { groupid: string }): Observable<GroupOrderAvailable[]> {
+    const fullUrl = `${ this.baseUrl }/test/groups/orders/${ payload.groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<GroupOrderAvailable[]>(fullUrl, { headers });
+  }
+
+
+
+  fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
+    const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<GroupOrderDB[]>(fullUrl, { headers });
+  }
+
+  fetchOtherGroups(): Observable<Group[]> {
+    const fullUrl = `${ this.baseUrl }/groups/search`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Group[]>(fullUrl, { headers })
+      .pipe(map(groupsArr => groupsArr.map(group => Group.parse(group))));
+  }
+
+
+  //////////////////////////////////////////////////////
+
+
+
+
+  // EXTRACTED
+
+  // addItem(payload: { groupid: string, item: Item }): Observable<Item> {
+  //   const fullUrl = `${ this.baseUrl }/groups/items`;
+  //   const headers = new HttpHeaders().append('userid', this.user$.id);
+  //   return this.httpClient.post<Item>(fullUrl, payload, { headers })
+  //     .pipe(map(item => Item.parse(item)));
+  // }
+
+
+
+  // getGroups(userid: string): Observable<Group[]> {
+  //   const fullUrl = `${ this.baseUrl }/groups`;
+  //   const headers = new HttpHeaders().append('userid', '9tO9WsqEqyRBP4HkZXH5NNexZ5P2');
+  //   return this.httpClient.get<Group[]>(fullUrl, { headers });
+  // }
 
 }

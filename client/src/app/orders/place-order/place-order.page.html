@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>place-order</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="availableOrder">
+
+  <ion-grid *ngIf="(availableOrderItems.available.length); else noItemsBlock">
+
+    <ion-row
+      *ngFor="let item of availableOrderItems.available">
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-card>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="8">
+                  <h2>{{ item.itemname }}</h2>
+                </ion-col>
+                <ion-col size="4" class="ion-text-right">
+                  <!-- <ion-badge *ngIf="item.remaining_qty > 0">{{ ordered[item.id] }}</ion-badge> -->
+                </ion-col>
+              </ion-row>
+
+              <ion-row>
+                <ion-col size="8">
+                  <p>{{ item.itemdescription }}</p>
+                  <p>{{ item.itemprice }}</p>
+                  <p>Available: {{ item.availableitemremainingqty }}</p>
+                </ion-col>
+                <ion-col size="4" class="ion-text-right">
+                  <div>
+                    <ion-icon
+                      name="caret-up-outline"
+                      (click)="onAddToBasket(item.availableitemid, item.availableitemremainingqty)"></ion-icon>
+                  </div>
+                  <div>
+                    <ion-icon
+                      name="caret-down-outline"
+                      (click)="onRemoveFromBasket(item.availableitemid)"></ion-icon>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <!-- <ion-row *ngIf="orderPending"> -->
+    <ion-row>
+      <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-button
+          color="secondary"
+          type="button"
+          (click)="onCancel()">Cancel</ion-button>
+        <ion-button
+          color="primary"
+          type="button"
+          (click)="onOrder()">Order</ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+  <ng-template #noItemsBlock>
+    No items available for this order
+  </ng-template>
+</ion-content>

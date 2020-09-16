@@ -9,7 +9,7 @@ import { HttpHeaders } from '@angular/common/http';
 
 import { User } from '../models/user.model';
 import { UserInput } from '../models/user-input.model';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
@@ -19,6 +19,7 @@ import { environment } from '../../environments/environment';
 import * as fromUserActions from '../store/actions/user.actions';
 import * as fromGroupsActions from '../store/actions/groups.actions';
 
+import { handleError } from './utils';
 
 
 @Injectable({
@@ -83,8 +84,14 @@ export class AuthService {
           'Content-Type': 'application/json',
         })
       };
+      // return this.http.post(`${ this.baseUrl }/users`, newUser, httpOptions)
+      //   .pipe(map(user => User.parse(user)))
+      //   .subscribe();
       return this.http.post(`${ this.baseUrl }/users`, newUser, httpOptions)
-        .pipe(map(user => User.parse(user)))
+        .pipe(
+          map(response => User.parse(response)),
+          catchError(handleError)
+        )
         .subscribe();
 
 

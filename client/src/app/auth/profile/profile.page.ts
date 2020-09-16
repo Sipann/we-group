@@ -106,7 +106,7 @@ export class ProfilePage implements OnInit, OnDestroy {
         email: this.form.value['user-email'],
         phone: this.form.value['user-phone'],
         preferred_contact_mode: this.form.value['user-preferred-mode']
-      }
+      };
 
       this.loadingCtrlUpdate = await setUpLoader(this.loadingController);
       this.loadingCtrlUpdate.present();

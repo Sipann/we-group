@@ -26,18 +26,34 @@ export class UserLoaded implements Action {
 
 //
 
-export class LoadUserData implements Action {
-  readonly type = UserActionsTypes.LoadUserData;
-  constructor(public payload: { userid: string }) { }
-};
 
 export class ResetUpdateStatus implements Action {
   readonly type = UserActionsTypes.ResetUpdateStatus;
 }
 
+
+
+
+
+
+////////////////////////
+// CALLED
+
+
+export class LoadUserData implements Action {
+  readonly type = UserActionsTypes.LoadUserData;
+  constructor(public payload: { userid: string }) { }
+};
+
 export class UpdateUserProfile implements Action {
   readonly type = UserActionsTypes.UpdateUserProfile;
   constructor(public payload: User) { }
+};
+
+
+export class UserDataLoaded implements Action {
+  readonly type = UserActionsTypes.UserDataLoaded;
+  constructor(private payload: User) { }
 };
 
 export class UserProfileUpdated implements Action {
@@ -45,12 +61,7 @@ export class UserProfileUpdated implements Action {
   constructor(private payload: User) { }
 };
 
-export class UserDataLoaded implements Action {
-  readonly type = UserActionsTypes.UserDataLoaded;
-  constructor(private payload: User) { }
-};
-
-
+////////////////////////////////
 
 export type UserActions = LoadUser |
   UserLoaded |

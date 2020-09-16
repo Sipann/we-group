@@ -27,6 +27,8 @@ export const OrdersReducer = (state = initialState, action): OrdersState => {
     //     list: updateOrder(state.list, action.payload),
     //   }
 
+
+
     case fromOrdersActions.OrdersActionsTypes.OrderCreated:
       return {
         ...state,
@@ -38,6 +40,16 @@ export const OrdersReducer = (state = initialState, action): OrdersState => {
         ...state,
         orderCreated: false,
       }
+
+
+    ///////////////////////////////////////////////////
+    // CALLED
+    case fromOrdersActions.OrdersActionsTypes.OrderPlaced:
+      return {
+        ...state,
+        //TODO update
+      };
+
 
     case fromOrdersActions.OrdersActionsTypes.UserOrdersFetched:
       return {

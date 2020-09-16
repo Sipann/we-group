@@ -9,9 +9,14 @@ const routes: Routes = [
     component: GroupManagePage,
   },
   {
+    path: 'available-orders',
+    loadChildren: () => import('./group-available-orders/group-available-orders.module').then(m => m.GroupAvailableOrdersPageModule)
+  },
+  {
     path: ':date',
     loadChildren: () => import('./group-order/group-order.module').then(m => m.GroupOrderPageModule)
   },
+
 ];
 
 @NgModule({

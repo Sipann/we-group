@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>GROUPNAMEr</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <form #f="ngForm" (ngSubmit)="onAddNewOrder()">
+    <h2 class="ion-text-center">Add New Order</h2>
+    <ion-grid>
+
+      <ion-row>
+        <ion-col size="12" class="ion-text-center">
+          <ion-datetime
+            (ionChange)="onDateChange($event)"
+            placeholder="Select delivery date"
+            display-format="D MMM YYYY H:mm a"
+            picker-format="D MMM YYYY H:mm"
+            [(ngModel)]="deliveryTs"
+            name="delivery-ts"></ion-datetime>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" class="ion-text-center">
+          <ion-datetime
+            placeholder="Select deadline date"
+            display-format="D MMM YYYY H:mm a"
+            picker-format="D MMM YYYY H:mm"
+            [(ngModel)]="deadlineTs"
+            name="deadline-ts"></ion-datetime>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12" size-sm="6" offset-sm="3">
+          <ion-button
+            color="primary"
+            type="submit">Create Order</ion-button>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </form>
+</ion-content>

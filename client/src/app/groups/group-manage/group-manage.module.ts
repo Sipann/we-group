@@ -8,7 +8,7 @@ import { GroupManagePageRoutingModule } from './group-manage-routing.module';
 
 import { GroupManagePage } from './group-manage.page';
 import { GroupInfosComponent } from './group-infos/group-infos.component';
-import { GroupProductsComponent } from './group-products/group-products.component';
+// import { GroupProductsComponent } from './group-products/group-products.component';
 import { GroupUsersComponent } from './group-users/group-users.component';
 import { GroupSummaryComponent } from './group-summary/group-summary.component';
 
@@ -23,15 +23,14 @@ import { GroupSummaryComponent } from './group-summary/group-summary.component';
   declarations: [
     GroupManagePage,
     GroupInfosComponent,
-    GroupProductsComponent,
     GroupUsersComponent,
     GroupSummaryComponent
-  ],
+  ],  // GroupProductsComponent,
+
   entryComponents: [
     GroupInfosComponent,
-    GroupProductsComponent,
     GroupUsersComponent,
     GroupSummaryComponent
-  ]
+  ]  // GroupProductsComponent,
 })
 export class GroupManagePageModule { }

@@ -35,11 +35,8 @@ export const UserReducer = (state = initialState, action): UserState => {
         updateIsComplete: false,
       };
 
-    case fromUserActions.UserActionsTypes.UserDataLoaded:
-      return {
-        ...state,
-        currentUser: action.payload,
-      };
+    /////////////////////////////////////////////////////////////
+    // CALLED
 
     case fromUserActions.UserActionsTypes.UserProfileUpdated:
       return {
@@ -47,6 +44,15 @@ export const UserReducer = (state = initialState, action): UserState => {
         currentUser: action.payload,
         updateIsComplete: true,
       };
+
+
+    case fromUserActions.UserActionsTypes.UserDataLoaded:
+      return {
+        ...state,
+        currentUser: action.payload,
+      };
+
+
 
     default:
       return state;

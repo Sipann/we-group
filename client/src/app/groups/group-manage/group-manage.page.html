@@ -15,7 +15,7 @@
         <ion-card
           [ngClass]="managing && managing.length && managing !== 'products' ? 'inactive' : 'active'"
           color="primary"
-          (click)="onSelect('products')">
+          (click)="onNavigateToAvailableOrders()">
           <ion-card-header class="ion-text-center">
             <ion-card-title>Available Items</ion-card-title>
           </ion-card-header>
@@ -85,9 +85,6 @@
               *ngSwitchCase="'infos'"
               (cancelled)="onCancel()"></app-group-infos>
 
-            <app-group-products
-              *ngSwitchCase="'products'"
-              (cancelled)="onCancel()"></app-group-products>
 
             <app-group-users
               *ngSwitchCase="'users'"

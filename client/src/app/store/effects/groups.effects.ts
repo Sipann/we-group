@@ -17,47 +17,7 @@ export class GroupsEffects {
     private groupService: fromGroupsServices.GroupService,
   ) { }
 
-  addItem$ = createEffect(
-    () => this.actions$.pipe(
-      ofType(fromGroups.GroupsActionsTypes.AddItem),
-      mergeMap(action => this.groupService.addItem(action.payload)
-        .pipe(
-          map(item => {
-            const args = { item, groupid: action.payload.groupid };
-            return new fromGroups.ItemAdded(args);
-          }),
-          catchError(err => {
-            return of({ type: '[Groups] Add Item Fail' })
-          })
-        ))
-    )
-  );
 
-
-  addMemberToGroup$ = createEffect(
-    () => this.actions$.pipe(
-      ofType(fromGroups.GroupsActionsTypes.AddMemberToGroup),
-      mergeMap(action => this.groupService.addMemberToGroup(action.payload.groupid)
-        .pipe(
-          map(group => {
-            return new fromGroups.MemberAddedToGroup(group);
-          }),
-          catchError(err => {
-            return of({ type: '[Groups] Add Member to Group Fail' })
-          })
-        ))
-    )
-  );
-
-
-  createGroup$ = createEffect(() => this.actions$.pipe(
-    ofType(fromGroups.GroupsActionsTypes.CreateGroup),
-    mergeMap((action) => this.groupService.createGroup(action.payload)
-      .pipe(
-        map(group => new fromGroups.GroupCreated(group)),
-        catchError(err => of({ type: '[Groups] Group Created Fail' }))
-      ))
-  ));
 
 
   deleteItem$ = createEffect(
@@ -76,6 +36,24 @@ export class GroupsEffects {
     )
   );
 
+
+
+  // fetchGroupAvailableItems$ = createEffect(
+  //   () => this.actions$.pipe(
+  //     ofType(fromGroups.GroupsActionsTypes.FetchGroupAvailableOrderItems),
+  //     mergeMap(action => this.groupService.fetchGroupAvailableItems(action.payload)
+  //       .pipe(
+  //         map(res => {
+  //           console.log('EFFECTS res', res);
+  //           return new fromGroups.GroupAvailableOrderItemsFetched();
+  //         }),
+  //         catchError(err => {
+  //           return of({ type: '[Groups] Fetch Group Order Available Items Fail', err })
+  //         })
+  //       ))
+  //   )
+  // );
+
   fetchGroupItems$ = createEffect(() => this.actions$.pipe(
     ofType(fromGroups.GroupsActionsTypes.FetchGroupItems),
     mergeMap(action => this.groupService.fetchItems(action.payload.groupid)
@@ -89,6 +67,141 @@ export class GroupsEffects {
         })
       ))
   ));
+
+
+
+
+
+
+
+
+  //////////////////////////////////////////////////////////:
+  // CALLED
+
+  addExistingItemToOrder$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.AddItemToOrder),
+      mergeMap(action => this.groupService.addItemToOrder(action.payload)
+        .pipe(
+          map(response => {
+            const args = {
+              groupid: action.payload.groupid,
+              orderid: action.payload.orderid,
+              item: response,
+            };
+            console.log('EFFECT addExistingItemToOrder response', args);
+            return new fromGroups.ItemAddedToOrder(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Add Existing Item To Order Fail' })
+          })
+        ))
+    )
+  );
+
+  addMemberToGroup$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.AddMemberToGroup),
+      mergeMap(action => this.groupService.addMemberToGroup(action.payload.groupid)
+        .pipe(
+          map(group => {
+            return new fromGroups.MemberAddedToGroup(group);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Add Member to Group Fail' })
+          })
+        ))
+    )
+  );
+
+
+  addNewItem$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.AddNewItem),
+      mergeMap(action => this.groupService.addNewItem(action.payload)
+        .pipe(
+          map(response => {
+            const args = {
+              groupid: action.payload.groupid,
+              orderid: action.payload.orderid,
+              item: response,
+            };
+            console.log('EFFECT addNewItem response', args);
+            return new fromGroups.NewItemAdded(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Add New Item Fail' })
+          })
+        ))
+    )
+  );
+
+  // createGroup$ = createEffect(() => this.actions$.pipe(
+  //   ofType(fromGroups.GroupsActionsTypes.CreateGroup),
+  //   mergeMap((action) => this.groupService.createGroup(action.payload)
+  //     .pipe(
+  //       map(group => new fromGroups.GroupCreated(group)),
+  //       catchError(err => of({ type: '[Groups] Group Created Fail' }))
+  //     ))
+  // ));
+
+  createGroup$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.CreateGroup),
+      mergeMap(
+        action => this.groupService.createGroup(action.payload)
+          .pipe(
+            map(group => new fromGroups.GroupCreated(group)),
+            catchError(err => of({ type: fromGroups.GroupsActionsTypes.CreateGroupFail, payload: err }))
+          ))
+    ));
+
+
+  // createGroup$ = createEffect(
+  //   () => this.actions$.pipe(
+  //   ofType(fromGroups.GroupsActionsTypes.CreateGroup),
+  //   mergeMap(
+  //     action => this.groupService.createGroup(action.payload)
+  //       .pipe(
+  //         map(group => new fromGroups.GroupCreated(group),
+  //         catchError(err => of({ type: '[Groups] Group Created Fail' }))
+  //       ))
+  // ));
+
+
+  createGroupOrder$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.CreateNewGroupOrder),
+      mergeMap(action => this.groupService.createNewGroupOrder(action.payload)
+        .pipe(
+          map(response => {
+            console.log('response', response);
+            return new fromGroups.NewGroupOrderCreated(response);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] New Group Order Create Fail' })
+          })
+        ))
+    ));
+
+
+
+  fetchGroupAvailableOrders$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.FetchGroupAvailableOrders),
+      mergeMap(action => this.groupService.fetchAvailableOrders(action.payload)
+        .pipe(
+          map(response => {
+            console.log('EFFECTS response', response);
+            // return new fromGroups.GroupAvailableItemsFetched(res);
+            const args = { groupid: action.payload.groupid, available: response };
+            return new fromGroups.GroupAvailableItemsFetched(args);
+          }),
+          catchError(err => {
+            return of({ type: '[Groups] Fetch Group Available Items Fail', err })
+          })
+        ))
+    ));
 
 
   fetchGroupMembers$ = createEffect(
@@ -124,7 +237,6 @@ export class GroupsEffects {
     )
   );
 
-
   fetchOtherGroups$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.FetchOtherGroups),
@@ -140,7 +252,6 @@ export class GroupsEffects {
     )
   );
 
-
   updateGroup$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromGroups.GroupsActionsTypes.UpdateGroup),
@@ -151,5 +262,8 @@ export class GroupsEffects {
         ))
     )
   );
+
+
+
 
 }

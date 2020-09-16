@@ -12,6 +12,11 @@ const routes: Routes = [
     path: 'new/:groupid',
     component: OrdersPage
   },
+  {
+    // path: 'place-order',
+    path: 'new/:groupid/place-order/:orderid',
+    loadChildren: () => import('./place-order/place-order.module').then(m => m.PlaceOrderPageModule)
+  },
 ];
 
 @NgModule({

@@ -18,6 +18,10 @@ export class OrdersEffects {
     private ordersService: fromOrdersServices.OrdersService,
   ) { }
 
+
+
+
+
   createOrder$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromOrders.OrdersActionsTypes.CreateOrder),
@@ -51,21 +55,6 @@ export class OrdersEffects {
     )
   );
 
-  fetchUserOrders$ = createEffect(
-    () => this.actions$.pipe(
-      ofType(fromOrders.OrdersActionsTypes.FetchUserOrders),
-      mergeMap(_ => this.ordersService.fetchUserOrders()
-        .pipe(
-          map(orders => {
-            return new fromOrders.UserOrdersFetched(orders);
-          }),
-          catchError(err => {
-            return of({ type: '[Orders] Fetch User Orders Fail' })
-          })
-        ))
-    )
-  );
-
   //
 
   fetchOrders$ = createEffect(
@@ -82,5 +71,41 @@ export class OrdersEffects {
         ))
     )
   );
+
+  //////////////////////////////////////////////////
+  // CALLED
+
+  fetchUserOrders$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromOrders.OrdersActionsTypes.FetchUserOrders),
+      mergeMap(_ => this.ordersService.fetchUserOrders()
+        .pipe(
+          map(orders => {
+            return new fromOrders.UserOrdersFetched(orders);
+          }),
+          catchError(err => {
+            return of({ type: '[Orders] Fetch User Orders Fail' })
+          })
+        ))
+    )
+  );
+
+
+  placeOrder$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromOrders.OrdersActionsTypes.PlaceOrder),
+      mergeMap(action => this.ordersService.placeOrder(action.payload)
+        .pipe(
+          map(response => {         // GroupOrderDB model
+            console.log('EFFECTS placeOrder response', response);
+            return new fromOrders.OrderPlaced(response);
+          }),
+          catchError(err => {
+            return of({ type: '[Orders] Place Order Fail' })
+          })
+        ))
+    )
+  );
+
 
 }

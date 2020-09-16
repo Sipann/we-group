@@ -24,10 +24,12 @@
             <ion-label>Manage Group</ion-label>
           </ion-item>
 
+          <!-- [detail]="orderIsAllowed" -->
+          <!-- (click)="orderIsAllowed ? onNavigateToPlaceOrder() : null" -->
+          <!-- [ngClass]="orderIsAllowed ? '' : 'noorder'" -->
           <ion-item
-            [detail]="orderIsAllowed"
-            [ngClass]="orderIsAllowed ? '' : 'noorder'"
-            (click)="orderIsAllowed ? onNavigateToPlaceOrder() : null">
+            detail
+            (click)="onNavigateToPlaceOrder()">
             <ion-label>Place an Order</ion-label>
           </ion-item>
 

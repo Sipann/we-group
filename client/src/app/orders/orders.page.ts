@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -12,7 +12,11 @@ import { map } from 'rxjs/operators';
 import * as fromGroupsActions from '../store/actions/groups.actions';
 import * as fromOrdersActions from '../store/actions/orders.actions';
 
+import { OrdersService } from 'src/app/services/orders.service';
+
 import * as moment from 'moment';
+
+import { setUpLoader } from '../groups/groups-utils';
 
 
 @Component({
@@ -23,6 +27,8 @@ import * as moment from 'moment';
 export class OrdersPage implements OnInit, OnDestroy {
 
   availableItems: Item[];
+  availableOrders$;
+  availableOrdersKeys$;
   empty = true;
   group: Group;
   groupId: number;
@@ -37,6 +43,7 @@ export class OrdersPage implements OnInit, OnDestroy {
 
   private itemsSub: Subscription;
   private orderSub: Subscription;
+  private availableOrdersSub: Subscription;
 
   groupSub: Subscription;
 
@@ -44,7 +51,9 @@ export class OrdersPage implements OnInit, OnDestroy {
     private alertCtrl: AlertController,
     private loadingController: LoadingController,
     private navCtrl: NavController,
+    private ordersService: OrdersService,
     private route: ActivatedRoute,
+    private router: Router,
     private store: Store<AppState>,
   ) { }
 
@@ -54,43 +63,71 @@ export class OrdersPage implements OnInit, OnDestroy {
     if (this.orderSub) this.orderSub.unsubscribe();
     if (this.itemsSub) this.itemsSub.unsubscribe();
     if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.availableOrdersSub) this.availableOrdersSub.unsubscribe();
   }
 
   ionViewWillLeave() {
     this.store.dispatch(new fromOrdersActions.ResetOrderPending());
   }
 
+  //
   async initialize() {
     this.route.paramMap.subscribe(async paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/group');
         return;
       }
-      await this.presentLoading();
+
+
+
       this.groupid = paramMap.get('groupid');
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupItems({ groupid: this.groupid }));
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          this.group$ = groups.find(g => g.id == this.groupid);
-          if (this.group$.items) {
-            this.empty = !this.group$.items.length;
-            this.group$.items.forEach(item => {
-              this.ordered[item.id] = 0;
-            });
-          }
-          this.loadingCtrl.dismiss();
-        });
 
-      this.orderSub = this.store.select('orders')
-        .pipe(map(o => o.orderCreated))
-        .subscribe(v => {
-          this.orderPending = !v;
+      this.loadingCtrl = await setUpLoader(this.loadingController);
+      // await this.presentLoading();
+
+      // fetch available orders for this group - not stored in state as may change in the meantime
+
+      this.availableOrdersSub = this.ordersService.fetchGroupAvailableOrders(this.groupid)
+        .subscribe(data => {
+          console.log('ORDERS PAGE DATA => ', data);
+          this.availableOrders$ = data;
+          console.log('KEYS', Object.keys(this.availableOrders$));
+          this.availableOrdersKeys$ = Object.keys(data);
         });
 
 
+      // this.store.dispatch(new fromGroupsActions.FetchGroupItems({ groupid: this.groupid }));
+
+      // this.groupSub = this.store.select('groups')
+      //   .pipe(map(g => g.groups))
+      //   .subscribe(groups => {
+      //     this.group$ = groups.find(g => g.id == this.groupid);
+      //     if (this.group$.items) {
+      //       this.empty = !this.group$.items.length;
+      //       this.group$.items.forEach(item => {
+      //         this.ordered[item.id] = 0;
+      //       });
+      //     }
+      //     this.loadingCtrl.dismiss();
+      //   });
+
+      // this.orderSub = this.store.select('orders')
+      //   .pipe(map(o => o.orderCreated))
+      //   .subscribe(v => {
+      //     this.orderPending = !v;
+      //   });
+
+
+    });
+  }
+
+  onNavigateToOrder(orderid: string) {
+    console.log('onNavigateToOrder', orderid);
+    console.log('onNavigateToOrder sending order', this.availableOrders$[orderid]);
+    this.router.navigate(['/', 'orders', 'new', this.groupid, 'place-order', orderid], {
+      state: { order: this.availableOrders$[orderid] }
     });
   }
 
@@ -98,6 +135,7 @@ export class OrdersPage implements OnInit, OnDestroy {
     return moment(new Date(deadline)).format('Do MMM YYYY - hh:mm a');
   }
 
+  // TO BE TRANSFERED TO place-order page - START
   onAddToBasket(itemid: number, available: number) {
     if (this.ordered[itemid] < available) this.ordered[itemid] += 1;
   }
@@ -127,15 +165,7 @@ export class OrdersPage implements OnInit, OnDestroy {
   onRemoveFromBasket(itemid: number) {
     if (this.ordered[itemid] > 0) this.ordered[itemid] -= 1;
   }
+  // TO BE TRANSFERED TO place-order page - END
 
-  async presentLoading() {
-    this.loadingCtrl = await this.loadingController.create({
-      spinner: 'crescent',
-      translucent: true,
-      cssClass: 'loading-spinner',
-      backdropDismiss: false,
-    });
-    return this.loadingCtrl.present();
-  }
 
 }

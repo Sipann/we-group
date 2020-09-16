@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -26,6 +26,7 @@ export class GroupManagePage implements OnInit, OnDestroy {
   constructor(
     private navCtrl: NavController,
     private route: ActivatedRoute,
+    private router: Router,
     private store: Store<AppState>,
   ) { }
 
@@ -52,6 +53,11 @@ export class GroupManagePage implements OnInit, OnDestroy {
   }
 
   onCancel() { this.managing = ''; }
+
+  onNavigateToAvailableOrders() {
+    console.log('navigate to available orders');
+    this.router.navigate(['/', 'groups', 'manage', this.group.id, 'available-orders']);
+  }
 
   onSelect(managing: '' | 'info' | 'products' | 'summary' | 'users') {
     this.managing = managing;

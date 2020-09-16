@@ -1,9 +1,8 @@
 import { Group } from 'src/app/models/group.model';
 import { User } from 'src/app/models/user.model';
 import { Item } from 'src/app/models/item.model';
-import { GroupOrder } from 'src/app/models/group-order.model';
+
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
-// import { OrderSumup } from 'src/app/models/order-sumup.model';
 
 //
 
@@ -17,6 +16,73 @@ export const updateGroupItems = (groups, payload) => groups.map(g => {
   return g;
 });
 
+export const setAvailableOrders = (stateAvailableOrders: {}, payload) => {
+  console.log('UTILS setAvailableOrders payload', payload);
+  const availableOrders = { ...stateAvailableOrders };
+  if (availableOrders[payload.groupid]) {
+    availableOrders[payload.groupid].push(payload);
+  }
+  else {
+    availableOrders[payload.groupid] = [payload];
+  }
+  console.log('UTILS availableOrders', availableOrders);
+  return availableOrders;
+};
+
+const deepClone = obj => {
+  const result = {};
+  for (let prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      if (Array.isArray(obj[prop])) { result[prop] = obj[prop].map(item => deepClone(item)); }
+      else if (typeof (obj[prop]) === 'object') { result[prop] = deepClone(obj[prop]); }
+      else { result[prop] = obj[prop]; }
+    }
+  }
+  return result;
+};
+
+export const updateAvailableOrders2 = (stateAvailableOrders: {}, payload) => {
+  // console.log('UTILS stateAvailableOrders', stateAvailableOrders);
+  // console.log('UTILS updateAvailableOrders2 payload', payload);
+  const updatedAvailableOrders = deepClone(stateAvailableOrders);
+
+  // console.log('UTILS updatedAvailableOrders2 updatedAvailableOrders', updatedAvailableOrders);
+
+  const groupids = Object.keys(updatedAvailableOrders);
+  for (let groupid of groupids) {
+    if (groupid === payload.groupid) {
+      const orderids = Object.keys(updatedAvailableOrders[groupid]);
+      for (let orderid of orderids) {
+        if (orderid === payload.orderid) {
+          updatedAvailableOrders[groupid][orderid].items = [
+            ...updatedAvailableOrders[groupid][orderid].items,
+            payload.item
+          ];
+        }
+      }
+    }
+  }
+
+  console.log('UTILS updateAvailableOrders2 updatedItems', updatedAvailableOrders);
+  return updatedAvailableOrders;
+};
+
+// export const updateAvailableOrders3 = (stateAvailableOrders: {}, payload) => {
+//   const updatedAvailableOrders = deepClone(stateAvailableOrders);
+// };
+
+export const updateAvailableOrders = (stateAvailableOrders: {}, payload) => {
+  console.log('UTILS updateAvailableOrders payload', payload);
+  const updatedAvailableOrders = { ...stateAvailableOrders };
+  if (updatedAvailableOrders[payload.groupid]) {
+    updatedAvailableOrders[payload.groupid].push(payload);
+  }
+  else {
+    updatedAvailableOrders[payload.groupid] = [payload];
+  }
+  console.log('UTILS updatedAvailableOrders', updatedAvailableOrders);
+  return updatedAvailableOrders;
+};
 
 
 // UTILS
@@ -136,7 +202,7 @@ export const addOrdersPropToGroup = (
 };
 
 
-export const createGroup = (stateGroups: Group[], group: Group) => [...stateGroups, group];
+
 
 
 export const deleteItemFromGroup = (
@@ -191,3 +257,15 @@ export const updateGroup = (
   }
   return g;
 });
+
+
+
+///////////////////////////////////////////////////////
+// CALLED
+
+export const createGroup = (stateGroups: Group[], group: Group) => [...stateGroups, group];
+
+
+
+///////////////////////////////////////////////////////
+// EXTRACTED

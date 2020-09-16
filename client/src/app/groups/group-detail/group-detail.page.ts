@@ -79,9 +79,10 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   }
 
   onNavigateToPlaceOrder() {
-    this.router.navigate(['/', 'orders', 'new', this.group$.id], {
-      state: { ...this.group$ }
-    });
+    // this.router.navigate(['/', 'orders', 'new', this.group$.id], {
+    //   state: { ...this.group$ }
+    // });
+    this.router.navigate(['/', 'orders', 'new', this.group$.id]);
   }
 
   onNavigateToOrdersArchives() {
