@@ -5,9 +5,9 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, userRouter } from '../../router_new';
-import { isUserDeletable } from '../../models/utilsModels/isUserDeletable';
-import { getUserById } from '../../models/testsModels/getUserById';   //! move to utilsModels
+import { testsRouter, userRouter } from '../../src/router_new';
+import { isUserDeletable } from '../../src/models/utilsModels/isUserDeletable';
+import { getUserById } from '../../src/models/testsModels/getUserById';   //! move to utilsModels
 
 let server, agent;
 
@@ -32,10 +32,10 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserDeletable', () => ({
+jest.mock('../../src/models/utilsModels/isUserDeletable', () => ({
   isUserDeletable: jest.fn(),
 }));
-jest.mock('../../models/testsModels/getUserById', () => ({        //! moved
+jest.mock('../../src/models/testsModels/getUserById', () => ({        //! moved
   getUserById: jest.fn(),
 }));
 

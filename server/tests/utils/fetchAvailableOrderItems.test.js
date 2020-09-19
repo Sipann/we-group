@@ -5,7 +5,7 @@ const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const cors = require('@koa/cors');
 
-import { testsRouter } from '../../router_new';
+import { testsRouter } from '../../src/router_new';
 
 let server, agent;
 

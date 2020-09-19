@@ -5,10 +5,10 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { isUserGroupManager } from '../../models/utilsModels/isUserGroupManager';
-import { isUserIdValid } from '../../models/utilsModels/isUserIdValid';
-import { isGroupIdValid } from '../../models/utilsModels/isGroupIdValid';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { isUserGroupManager } from '../../src/models/utilsModels/isUserGroupManager';
+import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
+import { isGroupIdValid } from '../../src/models/utilsModels/isGroupIdValid';
 
 let server, agent;
 
@@ -33,13 +33,22 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
+// jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
+//   isUserGroupManager: jest.fn(),
+// }));
+// jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+//   isUserIdValid: jest.fn(),
+// }));
+// jest.mock('../../models/utilsModels/isGroupIdValid', () => ({
+//   isGroupIdValid: jest.fn(),
+// }));
+jest.mock('../../src/models/utilsModels/isUserGroupManager', () => ({
   isUserGroupManager: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isGroupIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isGroupIdValid', () => ({
   isGroupIdValid: jest.fn(),
 }));
 

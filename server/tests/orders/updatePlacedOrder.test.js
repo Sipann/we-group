@@ -5,9 +5,9 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, ordersRouter } from '../../router_new';
-import { isPlacedOrderEditable } from '../../models/utilsModels/isPlacedOrderEditable';
-import { getPlacedOrderById } from '../../models/testsModels/getPlacedOrderById';    //! moved
+import { testsRouter, ordersRouter } from '../../src/router_new';
+import { isPlacedOrderEditable } from '../../src/models/utilsModels/isPlacedOrderEditable';
+import { getPlacedOrderById } from '../../src/models/testsModels/getPlacedOrderById';    //! moved
 
 
 let server, agent;
@@ -33,10 +33,10 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isPlacedOrderEditable', () => ({
+jest.mock('../../src/models/utilsModels/isPlacedOrderEditable', () => ({
   isPlacedOrderEditable: jest.fn(),
 }));
-jest.mock('../../models/testsModels/getPlacedOrderById', () => ({
+jest.mock('../../src/models/testsModels/getPlacedOrderById', () => ({
   getPlacedOrderById: jest.fn(),
 }));
 

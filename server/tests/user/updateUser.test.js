@@ -5,8 +5,8 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, userRouter } from '../../router_new';
-import { isUserDataOwner } from '../../models/utilsModels/isUserDataOwner';
+import { testsRouter, userRouter } from '../../src/router_new';
+import { isUserDataOwner } from '../../src/models/utilsModels/isUserDataOwner';
 
 let server, agent;
 
@@ -31,7 +31,7 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserDataOwner', () => ({
+jest.mock('../../src/models/utilsModels/isUserDataOwner', () => ({
   isUserDataOwner: jest.fn(),
 }));
 

@@ -5,8 +5,8 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter } from '../../router_new';
-import { getLightGroupMembers } from '../../models/utilsModels/getLightGroupMembers';
+import { testsRouter } from '../../src/router_new';
+import { getLightGroupMembers } from '../../src/models/utilsModels/getLightGroupMembers';
 
 let server, agent;
 
@@ -37,7 +37,7 @@ const mockedGetLightGroupmembers = {
     { id: 'user5', name: 'Sisi' },
   ],
 };
-jest.mock('../../models/utilsModels/getLightGroupMembers');
+jest.mock('../../src/models/utilsModels/getLightGroupMembers');
 getLightGroupMembers.mockImplementation(() => mockedGetLightGroupmembers);
 
 

@@ -5,11 +5,11 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, ordersRouter } from '../../router_new';
-import { isAvailableOrderIdValid } from '../../models/utilsModels/isAvailableOrderIdValid';
-import { isUserGroupMember } from '../../models/utilsModels/isUserGroupMember';
-import { isUserIdValid } from '../../models/utilsModels/isUserIdValid';
-import { getGroupIdOfAvailableOrder } from '../../models/utilsModels/getGroupIdOfAvailableOrder';
+import { testsRouter, ordersRouter } from '../../src/router_new';
+import { isAvailableOrderIdValid } from '../../src/models/utilsModels/isAvailableOrderIdValid';
+import { isUserGroupMember } from '../../src/models/utilsModels/isUserGroupMember';
+import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
+import { getGroupIdOfAvailableOrder } from '../../src/models/utilsModels/getGroupIdOfAvailableOrder';
 
 let server, agent;
 
@@ -34,16 +34,16 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isAvailableOrderIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isAvailableOrderIdValid', () => ({
   isAvailableOrderIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isUserGroupMember', () => ({
+jest.mock('../../src/models/utilsModels/isUserGroupMember', () => ({
   isUserGroupMember: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/getGroupIdOfAvailableOrder', () => ({
+jest.mock('../../src/models/utilsModels/getGroupIdOfAvailableOrder', () => ({
   getGroupIdOfAvailableOrder: jest.fn(),
 }));
 

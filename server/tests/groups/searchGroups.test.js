@@ -6,8 +6,8 @@ import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import isEqual from 'lodash.isequal';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { isUserIdValid } from '../../models/utilsModels/isUserIdValid';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
 
 let server, agent;
 
@@ -32,7 +32,7 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
 

@@ -5,11 +5,11 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { isUserGroupManager } from '../../models/utilsModels/isUserGroupManager';
-import { getGroupIdOfAvailableOrder } from '../../models/utilsModels/getGroupIdOfAvailableOrder';
-import { isAvailableOrderEditable } from '../../models/utilsModels/isAvailableOrderEditable';
-import { fetchPlacedOrdersByAvailableOrder } from '../../models/utilsModels/fetchPlacedOrdersByAvailableOrder';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { isUserGroupManager } from '../../src/models/utilsModels/isUserGroupManager';
+import { getGroupIdOfAvailableOrder } from '../../src/models/utilsModels/getGroupIdOfAvailableOrder';
+import { isAvailableOrderEditable } from '../../src/models/utilsModels/isAvailableOrderEditable';
+import { fetchPlacedOrdersByAvailableOrder } from '../../src/models/utilsModels/fetchPlacedOrdersByAvailableOrder';
 
 let server, agent;
 
@@ -34,16 +34,16 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
+jest.mock('../../src/models/utilsModels/isUserGroupManager', () => ({
   isUserGroupManager: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/getGroupIdOfAvailableOrder', () => ({
+jest.mock('../../src/models/utilsModels/getGroupIdOfAvailableOrder', () => ({
   getGroupIdOfAvailableOrder: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isAvailableOrderEditable', () => ({
+jest.mock('../../src/models/utilsModels/isAvailableOrderEditable', () => ({
   isAvailableOrderEditable: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/fetchPlacedOrdersByAvailableOrder', () => ({
+jest.mock('../../src/models/utilsModels/fetchPlacedOrdersByAvailableOrder', () => ({
   fetchPlacedOrdersByAvailableOrder: jest.fn(),
 }));
 

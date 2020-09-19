@@ -5,10 +5,10 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { ordersRouter } from '../../router_new';
-import { isPlacedOrderIdValid } from '../../models/utilsModels/isPlacedOrderIdValid';
-import { isUserIdValid } from '../../models/utilsModels/isUserIdValid';
-import { doesUserOwnPlacedOrder } from '../../models/utilsModels/doesUserOwnPlacedOrder';
+import { ordersRouter } from '../../src/router_new';
+import { isPlacedOrderIdValid } from '../../src/models/utilsModels/isPlacedOrderIdValid';
+import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
+import { doesUserOwnPlacedOrder } from '../../src/models/utilsModels/doesUserOwnPlacedOrder';
 
 let server, agent;
 
@@ -32,13 +32,13 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isPlacedOrderIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isPlacedOrderIdValid', () => ({
   isPlacedOrderIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/doesUserOwnPlacedOrder', () => ({
+jest.mock('../../src/models/utilsModels/doesUserOwnPlacedOrder', () => ({
   doesUserOwnPlacedOrder: jest.fn(),
 }));
 
@@ -63,8 +63,8 @@ describe('fetchPlacedOrder', () => {
     const expected = {
       placed_order_id: '1',
       group_id: '1',
-      deadline_ts: '2020-06-03T20:25:34.440Z',
-      delivery_ts: '2020-06-05T20:25:34.440Z',
+      deadline_ts: '2020-09-18T00:00:00.000Z',
+      delivery_ts: '2020-09-20T00:00:00.000Z',
       delivery_status: 'done',
       confirmed_status: true,
       ordered_items: [

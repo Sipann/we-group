@@ -5,9 +5,9 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { isUserGroupManager } from '../../models/utilsModels/isUserGroupManager';
-import { isGroupDeletable } from '../../models/utilsModels/isGroupDeletable';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { isUserGroupManager } from '../../src/models/utilsModels/isUserGroupManager';
+import { isGroupDeletable } from '../../src/models/utilsModels/isGroupDeletable';
 
 let server, agent;
 
@@ -32,10 +32,10 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
+jest.mock('../../src/models/utilsModels/isUserGroupManager', () => ({
   isUserGroupManager: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isGroupDeletable', () => ({
+jest.mock('../../src/models/utilsModels/isGroupDeletable', () => ({
   isGroupDeletable: jest.fn(),
 }));
 
@@ -53,7 +53,7 @@ describe('deleteGroup', () => {
     isGroupDeletable.mockImplementation(() => ({ ok: true, payload: true }));
 
     const userid = 'user2';
-    const groupid = '244';        //! TO UPDATE WHEN MOCKED DATA ARE UPDATED
+    const groupid = '2';
 
     const response = await agent
       .delete(`/groups/${groupid}`)

@@ -5,12 +5,12 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, ordersRouter } from '../../router_new';
-import { isUserIdValid } from '../../models/utilsModels/isUserIdValid';
-import { isPlacedOrderIdValid } from '../../models/utilsModels/isPlacedOrderIdValid';
-import { doesUserOwnPlacedOrder } from '../../models/utilsModels/doesUserOwnPlacedOrder';
-import { isPlacedOrderEditable } from '../../models/utilsModels/isPlacedOrderEditable';
-import { fetchPlacedOrderItems } from '../../models/utilsModels/fetchPlacedOrderItems';
+import { testsRouter, ordersRouter } from '../../src/router_new';
+import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
+import { isPlacedOrderIdValid } from '../../src/models/utilsModels/isPlacedOrderIdValid';
+import { doesUserOwnPlacedOrder } from '../../src/models/utilsModels/doesUserOwnPlacedOrder';
+import { isPlacedOrderEditable } from '../../src/models/utilsModels/isPlacedOrderEditable';
+import { fetchPlacedOrderItems } from '../../src/models/utilsModels/fetchPlacedOrderItems';
 
 let server, agent;
 
@@ -35,19 +35,19 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isPlacedOrderIdValid', () => ({
+jest.mock('../../src/models/utilsModels/isPlacedOrderIdValid', () => ({
   isPlacedOrderIdValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/doesUserOwnPlacedOrder', () => ({
+jest.mock('../../src/models/utilsModels/doesUserOwnPlacedOrder', () => ({
   doesUserOwnPlacedOrder: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isPlacedOrderEditable', () => ({
+jest.mock('../../src/models/utilsModels/isPlacedOrderEditable', () => ({
   isPlacedOrderEditable: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/fetchPlacedOrderItems', () => ({
+jest.mock('../../src/models/utilsModels/fetchPlacedOrderItems', () => ({
   fetchPlacedOrderItems: jest.fn(),
 }));
 

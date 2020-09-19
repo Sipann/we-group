@@ -5,8 +5,8 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter } from '../../router_new';
-import { getAvailableOrderById } from '../../models/testsModels/getAvailableOrderById';  //! moved utilsModels
+import { testsRouter } from '../../src/router_new';
+import { getAvailableOrderById } from '../../src/models/testsModels/getAvailableOrderById';  //! moved utilsModels
 
 let server, agent;
 
@@ -30,7 +30,7 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/testsModels/getAvailableOrderById', () => ({   //! moved
+jest.mock('../../src/models/testsModels/getAvailableOrderById', () => ({   //! moved
   getAvailableOrderById: jest.fn(),
 }));
 

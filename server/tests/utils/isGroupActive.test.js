@@ -5,7 +5,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter } from '../../router_new';
+import { testsRouter } from '../../src/router_new';
 
 let server, agent;
 
@@ -48,7 +48,7 @@ describe('isGroupActive', () => {
   });
 
 
-  it('should return true is group is inactive / has no manager', async () => {
+  it('should return false is group is inactive / has no manager', async () => {
 
     // const groupid = '4'; //! TO UPDATE WHEN MOCK DATA CORRECTLY UPDATED => Assign "Bon Appetit" to Group4
     //!TO DELETE WHEN MOCK DATA CORRECTLY UPDATED - START

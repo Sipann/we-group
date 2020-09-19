@@ -5,10 +5,10 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { groupsRouter } from '../../router_new';
-import { isUserGroupMember } from '../../models/utilsModels/isUserGroupMember';
-import { fetchGroupAvailableOrders } from '../../models/utilsModels/fetchGroupAvailableOrders';
-import { fetchAvailableOrderItems } from '../../models/utilsModels/fetchAvailableOrderItems';
+import { groupsRouter } from '../../src/router_new';
+import { isUserGroupMember } from '../../src/models/utilsModels/isUserGroupMember';
+import { fetchGroupAvailableOrders } from '../../src/models/utilsModels/fetchGroupAvailableOrders';
+import { fetchAvailableOrderItems } from '../../src/models/utilsModels/fetchAvailableOrderItems';
 
 
 let server, agent;
@@ -33,13 +33,13 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserGroupMember', () => ({
+jest.mock('../../src/models/utilsModels/isUserGroupMember', () => ({
   isUserGroupMember: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/fetchGroupAvailableOrders', () => ({
+jest.mock('../../src/models/utilsModels/fetchGroupAvailableOrders', () => ({
   fetchGroupAvailableOrders: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/fetchAvailableOrderItems', () => ({
+jest.mock('../../src/models/utilsModels/fetchAvailableOrderItems', () => ({
   fetchAvailableOrderItems: jest.fn(),
 }));
 

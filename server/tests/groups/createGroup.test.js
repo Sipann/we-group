@@ -5,7 +5,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
+import { testsRouter, groupsRouter } from '../../src/router_new';
 
 let server, agent;
 

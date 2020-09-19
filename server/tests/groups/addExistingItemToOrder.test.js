@@ -5,10 +5,10 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { areAddAvailableItemArgsValid } from '../../models/utilsModels/areAddAvailableItemArgsValid';
-import { returnAddedItem } from '../../models/utilsModels/returnAddedItem';
-import { errorMessages } from '../../utils/errorMessages';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { areAddAvailableItemArgsValid } from '../../src/models/utilsModels/areAddAvailableItemArgsValid';
+import { returnAddedItem } from '../../src/models/utilsModels/returnAddedItem';
+import { errorMessages } from '../../src/utils/errorMessages';
 
 let server, agent;
 
@@ -33,10 +33,10 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/areAddAvailableItemArgsValid', () => ({
+jest.mock('../../src/models/utilsModels/areAddAvailableItemArgsValid', () => ({
   areAddAvailableItemArgsValid: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/returnAddedItem', () => ({
+jest.mock('../../src/models/utilsModels/returnAddedItem', () => ({
   returnAddedItem: jest.fn(),
 }));
 

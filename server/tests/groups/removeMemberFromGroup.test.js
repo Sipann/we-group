@@ -5,9 +5,9 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 
-import { testsRouter, groupsRouter } from '../../router_new';
-import { isUserGroupManager } from '../../models/utilsModels/isUserGroupManager';
-import { isUserRemovable } from '../../models/utilsModels/isUserRemovable';
+import { testsRouter, groupsRouter } from '../../src/router_new';
+import { isUserGroupManager } from '../../src/models/utilsModels/isUserGroupManager';
+import { isUserRemovable } from '../../src/models/utilsModels/isUserRemovable';
 
 let server, agent;
 
@@ -32,10 +32,10 @@ afterEach(async done => {
 });
 
 
-jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
+jest.mock('../../src/models/utilsModels/isUserGroupManager', () => ({
   isUserGroupManager: jest.fn(),
 }));
-jest.mock('../../models/utilsModels/isUserRemovable', () => ({
+jest.mock('../../src/models/utilsModels/isUserRemovable', () => ({
   isUserRemovable: jest.fn(),
 }));
 

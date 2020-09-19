@@ -6,7 +6,7 @@ import bodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import isEqual from 'lodash.isequal';
 
-import { testsRouter } from '../../router_new';
+import { testsRouter } from '../../src/router_new';
 
 
 let server, agent;
