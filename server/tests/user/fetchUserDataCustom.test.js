@@ -7,7 +7,7 @@ import cors from '@koa/cors';
 
 import { testsRouter, userRouter } from '../../src/router_new';
 import { isUserIdValid } from '../../src/models/utilsModels/isUserIdValid';
-import { fetchUserData } from '../../src/models/utilsModels/fetchUserData';
+import { fetchUserDataDetails } from '../../src/models/utilsModels/fetchUserDataDetails';
 import { fetchGroupsUserIsMemberOf } from '../../src/models/utilsModels/fetchGroupsUserIsMemberOf';
 import { fetchUserPlacedOrders } from '../../src/models/utilsModels/fetchUserPlacedOrders';
 
@@ -36,8 +36,8 @@ afterEach(async done => {
 jest.mock('../../src/models/utilsModels/isUserIdValid', () => ({
   isUserIdValid: jest.fn(),
 }));
-jest.mock('../../src/models/utilsModels/fetchUserData', () => ({
-  fetchUserData: jest.fn(),
+jest.mock('../../src/models/utilsModels/fetchUserDataDetails', () => ({
+  fetchUserDataDetails: jest.fn(),
 }));
 jest.mock('../../src/models/utilsModels/fetchGroupsUserIsMemberOf', () => ({
   fetchGroupsUserIsMemberOf: jest.fn(),
@@ -56,7 +56,7 @@ describe('fetchUserDataCustom', () => {
 
   it('should return userDetails, userGroups and userOrders of a user', async () => {
     isUserIdValid.mockImplementation(() => ({ ok: true, payload: true }));
-    fetchUserData.mockImplementation(() => ({ ok: true, payload: {} }));
+    fetchUserDataDetails.mockImplementation(() => ({ ok: true, payload: {} }));
     fetchGroupsUserIsMemberOf.mockImplementation(() => ({ ok: true, payload: [] }));
     fetchUserPlacedOrders.mockImplementation(() => ({ ok: true, payload: [] }));
 

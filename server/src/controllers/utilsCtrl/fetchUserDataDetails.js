@@ -1,13 +1,13 @@
 'use strict';
 
-import { DBFetchUserData } from '../../models/utilsModels';
+import { DBFetchUserDataDetails } from '../../models/utilsModels';
 import { handleErrorCtrl } from '../utils';
 
 
-export async function fetchUserData (ctx) {
+export async function fetchUserDataDetails (ctx) {
   try {
     const { userid } = ctx.params;
-    const response = await DBFetchUserData(userid);
+    const response = await DBFetchUserDataDetails(userid);
     if (response.ok) ctx.body = { ...response };
     else throw new Error(response.payload);
   } catch (error) {

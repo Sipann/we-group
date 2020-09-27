@@ -5,7 +5,7 @@ import { errorMessages } from '../../utils/errorMessages';
 import { handleErrorModel } from '../utils';
 
 
-export async function fetchUserData (userid) {
+export async function fetchUserDataDetails (userid) {
   try {
     if (!userid) throw new Error(errorMessages.notAllowed);
 

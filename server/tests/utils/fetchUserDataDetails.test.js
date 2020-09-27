@@ -30,7 +30,7 @@ afterEach(async done => {
 });
 
 
-describe('fetchUserData', () => {
+describe('fetchUserDataDetails', () => {
 
   // smoke test
   // it('should return true', () => {

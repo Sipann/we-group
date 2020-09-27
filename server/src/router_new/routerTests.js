@@ -36,7 +36,7 @@ import {
   CtrlFetchGroupAvailableOrders,
   CtrlFetchAvailableOrderItems,
   CtrlFetchGroupsUserIsMemberOf,
-  CtrlFetchUserData,
+  CtrlFetchUserDataDetails,
   CtrlFetchUserPlacedOrders,
   CtrlGetLightGroupMembers,
   CtrlIsAvailableOrderIdValid,
@@ -82,7 +82,7 @@ router.get('/available-item/:availableitemid', CtrlGetAvailableItemById);
 router.get('/first-available-order', CtrlGetFirstAvailableOrder);
 router.get('/available-order/:availableorderid', CtrlGetAvailableOrderById);
 router.get('/fetch-groups-user-is-member-of', CtrlFetchGroupsUserIsMemberOf);
-router.get('/fetch-user-data/:userid', CtrlFetchUserData);
+router.get('/fetch-user-data/:userid', CtrlFetchUserDataDetails);
 router.get('/user/:userid', CtrlGetUserById);
 router.get('/group/:groupid', CtrlGetGroupById);
 router.get('/groupsusers/:groupid/:userid', CtrlGetGroupsUsersRow);

@@ -1,5 +1,5 @@
 export { fetchGroupsUserIsMemberOf as DBFetchGroupsUserIsMemberOf } from '../utilsModels/fetchGroupsUserIsMemberOf';
-export { fetchUserData as DBFetchUserData } from './fetchUserData';
+export { fetchUserDataDetails as DBFetchUserDataDetails } from './fetchUserDataDetails';
 export { fetchUserPlacedOrders as DBFetchUserPlacedOrders } from './fetchUserPlacedOrders';
 export { getLightGroupMembers as DBGetLightGroupMembers } from './getLightGroupMembers';
 export { isAvailableOrderIdValid as DBIsAvailableOrderIdValid } from './isAvailableOrderIdValid';

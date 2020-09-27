@@ -1,7 +1,7 @@
 'use strict';
 
 export { fetchGroupsUserIsMemberOf as CtrlFetchGroupsUserIsMemberOf } from './fetchGroupsUserIsMemberOf';
-export { fetchUserData as CtrlFetchUserData } from './fetchUserData';
+export { fetchUserDataDetails as CtrlFetchUserDataDetails } from './fetchUserDataDetails';
 export { getLightGroupMembers as CtrlGetLightGroupMembers } from './getLightGroupMembers';
 export { isAvailableOrderIdValid as CtrlIsAvailableOrderIdValid } from './isAvailableOrderIdValid';
 export { isGroupIdValid as CtrlIsGroupIdValid } from './isGroupIdValid';

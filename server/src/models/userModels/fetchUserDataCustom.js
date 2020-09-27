@@ -5,7 +5,7 @@ import { handleErrorModel } from '../utils';
 import {
   DBIsUserIdValid,
   DBFetchGroupsUserIsMemberOf,
-  DBFetchUserData,
+  DBFetchUserDataDetails,
   DBFetchUserPlacedOrders,
 } from '../utilsModels';
 
@@ -15,7 +15,7 @@ export async function fetchUserDataCustom (userid) {
     const userIdIsValid = DBIsUserIdValid(userid);
     if (!userIdIsValid.payload) throw new Error(errorMessages.notAllowed);
 
-    const userDetailsResponse = await DBFetchUserData(userid);
+    const userDetailsResponse = await DBFetchUserDataDetails(userid);
     if (!userDetailsResponse.ok) throw new Error(userDetailsResponse.payload);
     const userDetails = userDetailsResponse.payload;
 
