@@ -7,21 +7,15 @@ import cors from '@koa/cors';
 
 import Mockdate from 'mockdate';
 
+import { test } from '../../src/config';
 import { testsRouter, groupsRouter } from '../../src/router_new';
 import { isUserGroupManager } from '../../src/models/utilsModels/isUserGroupManager';
 import { doesAvailableOrderExist } from '../../src/models/utilsModels/doesAvailableOrderExist';
 
-import {
-  twoWeeksLaterMinus4DDate,
-  twoWeeksLaterMinus3DDate,
-  threeWeeksLaterMinus3DDate,
-  threeWeeksLaterDate,
-} from '../../src/databaseSetup/mockData/mockAvailableOrders';
-
 let server, agent;
 
 beforeAll(() => {
-  Mockdate.set('2020-10-31');
+  Mockdate.set(test.TEST_MOCK_DATE);
 });
 
 afterAll(() => {
@@ -48,13 +42,6 @@ afterEach(async done => {
   return server && server.close(done);
 });
 
-
-// jest.mock('../../models/utilsModels/isUserGroupManager', () => ({
-//   isUserGroupManager: jest.fn(),
-// }));
-// jest.mock('../../models/utilsModels/doesAvailableOrderExist', () => ({
-//   doesAvailableOrderExist: jest.fn(),
-// }));
 jest.mock('../../src/models/utilsModels/isUserGroupManager', () => ({
   isUserGroupManager: jest.fn(),
 }));
@@ -66,165 +53,160 @@ jest.mock('../../src/models/utilsModels/doesAvailableOrderExist', () => ({
 describe('createNewGroupOrder', () => {
 
   // smoke test
-  it('should return true', () => {
-    expect(true).toBeTruthy();
+  // it('should return true', () => {
+  //   expect(true).toBeTruthy();
+  // });
+
+
+  it('should create a new available order', async () => {
+    isUserGroupManager.mockImplementation(() => ({ ok: true, payload: true }));
+    doesAvailableOrderExist.mockImplementation(() => ({ ok: true, payload: false }));
+
+    const groupid = '1';
+    const userid = 'user1';
+
+    const newAvailableOrder = {
+      deadlineTs: new Date('2020-11-08T18:00:00'),
+      deliveryTs: new Date('2020-11-09T12:00:00'),
+    };
+
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .set('userid', userid)
+      .send(newAvailableOrder);
+
+    const expected = {
+      deadline_ts: '2020-11-08T17:00:00.000Z',
+      delivery_ts: '2020-11-09T11:00:00.000Z',
+      delivery_status: null,
+      confirmed_status: null,
+      group_id: groupid,
+    };
+
+    // CHECK RESPONSE
+    expect(response.statusCode).toEqual(201);
+    expect(response.body.ok).toBeTruthy();
+    expect(new Date(response.body.payload.deadline_ts)).toEqual(new Date(expected.deadline_ts));
+    expect(new Date(response.body.payload.delivery_ts)).toEqual(new Date(expected.delivery_ts));
+    expect(response.body.payload.delivery_status).toBeNull();
+    expect(response.body.payload.confirmed_status).toBeNull();
+    expect(response.body.payload).toHaveProperty('group_id', expected.group_id);
+
+
+    // CHECK DB CONTENT
+    const contentDBResponse = await agent.get(`/tests/available-order/${response.body.payload.id}`);
+    expect(contentDBResponse.body.ok).toBeTruthy();
+    expect(contentDBResponse.body.payload).toHaveProperty('id', response.body.payload.id);
+    expect(new Date(contentDBResponse.body.payload.deadline_ts)).toEqual(new Date(expected.deadline_ts));
+    expect(new Date(contentDBResponse.body.payload.delivery_ts)).toEqual(new Date(expected.delivery_ts));
+    expect(contentDBResponse.body.payload.delivery_status).toBeNull();
+    expect(contentDBResponse.body.payload.confirmed_status).toBeNull();
+    expect(contentDBResponse.body.payload).toHaveProperty('group_id', expected.group_id);
+
+
+    // CLEANUP - REVERT ACTION
+    await agent.delete(`/tests/available-order/${response.body.payload.id}`);
+
   });
 
 
-  // it('should create a new available order', async () => {
-  //   isUserGroupManager.mockImplementation(() => ({ ok: true, payload: true }));
-  //   doesAvailableOrderExist.mockImplementation(() => ({ ok: true, payload: false }));
+  it('should not create a new "available order" for a group with same deadlineTs and same deliveryTs', async () => {
+    isUserGroupManager.mockImplementation(() => ({ ok: true, payload: true }));
+    doesAvailableOrderExist.mockImplementation(() => ({ ok: true, payload: true }));
 
-  //   const groupid = '1';
-  //   const userid = 'user1';
+    const groupid = '1';
+    const userid = 'user1';
 
-  //   const newAvailableOrder = {
-  //     deadlineTs: twoWeeksLaterMinus4DDate,
-  //     deliveryTs: twoWeeksLaterMinus3DDate,
-  //   };
+    const newAvailableOrder = {
+      deadlineTs: '2020-09-18 02:00:00+02',
+      deliveryTs: '2020-09-20 02:00:00+02',
+    };
 
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .set('userid', userid)
-  //     .send(newAvailableOrder);
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .set('userid', userid)
+      .send(newAvailableOrder);
 
-  //   const expected = {
-  //     deadline_ts: twoWeeksLaterMinus4DDate,
-  //     delivery_ts: twoWeeksLaterMinus3DDate,
-  //     delivery_status: null,
-  //     confirmed_status: null,
-  //     group_id: groupid,
-  //   };
-
-  //   // CHECK RESPONSE
-  //   expect(response.statusCode).toEqual(201);
-  //   expect(response.body.ok).toBeTruthy();
-  //   expect(new Date(response.body.payload.deadline_ts)).toEqual(expected.deadline_ts);
-  //   expect(new Date(response.body.payload.delivery_ts)).toEqual(expected.delivery_ts);
-  //   expect(response.body.payload.delivery_status).toBeNull();
-  //   expect(response.body.payload.confirmed_status).toBeNull();
-  //   expect(response.body.payload).toHaveProperty('group_id', expected.group_id);
+    expect(response.statusCode).toEqual(202);
+  });
 
 
-  //   // CHECK DB CONTENT
-  //   const contentDBResponse = await agent.get(`/tests/available-order/${response.body.payload.id}`);
-  //   expect(contentDBResponse.body.ok).toBeTruthy();
-  //   expect(contentDBResponse.body.payload).toHaveProperty('id', response.body.payload.id);
-  //   expect(new Date(contentDBResponse.body.payload.deadline_ts)).toEqual(expected.deadline_ts);
-  //   expect(new Date(contentDBResponse.body.payload.delivery_ts)).toEqual(expected.delivery_ts);
-  //   expect(contentDBResponse.body.payload.delivery_status).toBeNull();
-  //   expect(contentDBResponse.body.payload.confirmed_status).toBeNull();
-  //   expect(contentDBResponse.body.payload).toHaveProperty('group_id', expected.group_id);
+  it('should not create a new "available order" for a group if newAvailableOrder.deadlineTs is missing', async () => {
+
+    const groupid = '1';
+    const userid = 'user1';
+
+    const newAvailableOrder = {
+      deliveryTs: new Date('2020-12-10'),
+    };
+
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .set('userid', userid)
+      .send(newAvailableOrder);
+
+    expect(response.statusCode).toEqual(400);
+
+  });
 
 
-  //   // CLEANUP - REVERT ACTION
-  //   await agent.delete(`/tests/available-order/${response.body.payload.id}`);
+  it('should not create a new "available order" for a group if newAvailableOrder.deliveryTs is missing', async () => {
 
-  // });
+    const groupid = '1';
+    const userid = 'user1';
 
+    const newAvailableOrder = {
+      deadlineTs: new Date('2020-11-10'),
+    };
 
-  // it('should not create a new "available order" for a group with same deadlineTs and same deliveryTs', async () => {
-  //   isUserGroupManager.mockImplementation(() => ({ ok: true, payload: true }));
-  //   doesAvailableOrderExist.mockImplementation(() => ({ ok: true, payload: true }));
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .set('userid', userid)
+      .send(newAvailableOrder);
 
-  //   const groupid = '1';
-  //   const userid = 'user1';
+    expect(response.statusCode).toEqual(400);
 
-  //   const newAvailableOrder = {
-  //     deadlineTs: threeWeeksLaterMinus3DDate,
-  //     deliveryTs: threeWeeksLaterDate,
-  //   };
-
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .set('userid', userid)
-  //     .send(newAvailableOrder);
-
-  //   expect(response.statusCode).toEqual(202);
-  // });
+  });
 
 
+  it('should not create a new "available order" for a group if userid is missing', async () => {
 
+    const groupid = '1';
 
-  // it('should not create a new "available order" for a group if newAvailableOrder.deadlineTs is missing', async () => {
+    const newAvailableOrder = {
+      deadlineTs: new Date('2020-11-10'),
+      deliveryTs: new Date('2020-12-10'),
+    };
 
-  //   const groupid = '1';
-  //   const userid = 'user1';
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .send(newAvailableOrder);
 
-  //   const newAvailableOrder = {
-  //     deliveryTs: twoWeeksLaterMinus3DDate,
-  //   };
+    expect(response.statusCode).toEqual(401);
 
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .set('userid', userid)
-  //     .send(newAvailableOrder);
-
-  //   expect(response.statusCode).toEqual(400);
-
-  // });
-
-
-  // it('should not create a new "available order" for a group if newAvailableOrder.deliveryTs is missing', async () => {
-
-  //   const groupid = '1';
-  //   const userid = 'user1';
-
-  //   const newAvailableOrder = {
-  //     deadlineTs: twoWeeksLaterMinus4DDate,
-  //   };
-
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .set('userid', userid)
-  //     .send(newAvailableOrder);
-
-  //   expect(response.statusCode).toEqual(400);
-
-  // });
-
-
-  // it('should not create a new "available order" for a group if userid is missing', async () => {
-
-  //   const groupid = '1';
-
-  //   const newAvailableOrder = {
-  //     deadlineTs: twoWeeksLaterMinus4DDate,
-  //     deliveryTs: twoWeeksLaterMinus3DDate,
-  //   };
-
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .send(newAvailableOrder);
-
-  //   expect(response.statusCode).toEqual(401);
-
-  // });
+  });
 
 
 
-  // it('should not create a new "available order" for a group if current user is not Group Manager', async () => {
+  it('should not create a new "available order" for a group if current user is not Group Manager', async () => {
 
-  //   isUserGroupManager.mockImplementation(() => ({ ok: true, payload: false }));
+    isUserGroupManager.mockImplementation(() => ({ ok: true, payload: false }));
 
-  //   const groupid = '1';
-  //   const userid = 'user2';
+    const groupid = '1';
+    const userid = 'user2';
 
-  //   const newAvailableOrder = {
-  //     deadlineTs: twoWeeksLaterMinus4DDate,
-  //     deliveryTs: twoWeeksLaterMinus3DDate,
-  //   };
+    const newAvailableOrder = {
+      deadlineTs: new Date('2020-11-10'),
+      deliveryTs: new Date('2020-12-10'),
+    };
 
-  //   const response = await agent
-  //     .post(`/groups/available-order/${groupid}`)
-  //     .set('userid', userid)
-  //     .send(newAvailableOrder);
+    const response = await agent
+      .post(`/groups/available-order/${groupid}`)
+      .set('userid', userid)
+      .send(newAvailableOrder);
 
-  //   expect(response.statusCode).toEqual(401);
+    expect(response.statusCode).toEqual(401);
 
-  // });
-
-
-
+  });
 
 });
