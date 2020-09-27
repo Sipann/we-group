@@ -1,5 +1,6 @@
 'use strict';
 
+// import * as Router from 'koa-router';
 import Router from 'koa-router';
 const router = new Router({
   prefix: '/tests'
@@ -36,6 +37,7 @@ import {
   CtrlFetchAvailableOrderItems,
   CtrlFetchGroupsUserIsMemberOf,
   CtrlFetchUserData,
+  CtrlFetchUserPlacedOrders,
   CtrlGetLightGroupMembers,
   CtrlIsAvailableOrderIdValid,
   CtrlIsGroupIdValid,
@@ -88,6 +90,7 @@ router.get('/groupsusers/:groupid/:userid', CtrlGetGroupsUsersRow);
 router.get('/ordered-item/:placedorderid/:itemid', CtrlGetOrderedItem);
 router.get('/placed-orders/:placedorderid', CtrlGetPlacedOrderById)
 router.get('/get-group-by-name/:groupname', CtrlGetGroupByName);
+router.get('/fetch-user-placed-orders/:userid', CtrlFetchUserPlacedOrders);
 
 router.delete('/items/:itemid', CtrlDeleteItemById);
 // router.delete('/available-item/last-inserted', CtrlDeleteAvailableItemLastInserted);

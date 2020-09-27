@@ -22,3 +22,4 @@ export { isUserDeletable as CtrlIsUserDeletable } from './isUserDeletable';
 export { isUserRemovable as CtrlIsUserRemovable } from './isUserRemovable';
 
 export { getGroupByName as CtrlGetGroupByName } from './getGroupByName';
+export { fetchUserPlacedOrders as CtrlFetchUserPlacedOrders } from './fetchUserPlacedOrders';
