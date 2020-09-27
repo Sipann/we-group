@@ -3,7 +3,7 @@
 import { mockUsers } from './mockUsers';
 import { mockGroups } from './mockGroups';
 import { mockGroupsUsers } from './mockGroupsUsers';
-import { mockAvailableOrders } from './mockAvailableOrders1';
+import { mockAvailableOrders } from './mockAvailableOrders';
 import { mockItems } from './mockItems';
 import { mockAvailableItems } from './mockAvailableItems';
 import { mockPlacedOrders } from './mockPlacedOrders';
