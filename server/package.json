@@ -10,8 +10,8 @@
     "droptables": "node -r esm ./src/databaseSetup/dropTables.js",
     "droptablestest": "cross-env NODE_ENV=test node -r esm ./src/databaseSetup/dropTables.js",
     "mockdatatest": "cross-env NODE_ENV=test node -r esm ./src/databaseSetup/mockData/index.js",
-    "dev": "nodemon -r esm ./src/index.js",
-    "start": "node -r esm ./src/index.js",
+    "dev": "tsc-watch --onSuccess \"node ./built/index.js\"",
+    "start": "node -r esm ./built/index.js",
     "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --detectOpenHandles"
   },
   "keywords": [],
@@ -30,12 +30,16 @@
     "typescript": "^4.0.2"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.11.0",
     "@babel/preset-env": "^7.10.2",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/jest": "^26.0.14",
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-json": "^2.0.18",
     "@types/koa-logger": "^3.1.1",
     "@types/koa-router": "^7.4.1",
+    "@types/koa__cors": "^3.0.1",
     "@types/node": "^14.10.2",
     "@types/pg": "^7.14.5",
     "babel-jest": "^26.0.1",
@@ -43,12 +47,8 @@
     "jest": "^26.0.1",
     "mockdate": "^3.0.2",
     "nodemon": "^2.0.4",
-    "supertest": "^4.0.2"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ]
+    "supertest": "^4.0.2",
+    "ts-jest": "^26.3.0",
+    "tsc-watch": "^4.2.9"
   }
 }

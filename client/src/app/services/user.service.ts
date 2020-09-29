@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from 'src/app/models/user.model';
 import { Group } from 'src/app/models/group.model';
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
-
+import { UserDataOutput } from 'src/app/models/user-data-output';
 
 import { map, tap } from 'rxjs/operators';
 
@@ -31,15 +31,11 @@ export class UserService {
 
 
 
-  ////////////////////////////////////////
-  // CALLED
-
-
-  // with items for group manager
-  fetchUserData(uid: string): Observable<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }> {
-    const fullUrl = `${ this.baseUrl }/test/user`;
+  fetchUserData(uid: string): Observable<UserDataOutput> {
+    const fullUrl = `${ this.baseUrl }/user`;
     const headers = new HttpHeaders().append('userid', uid);
-    return this.httpClient.get<{ userDetails: User, userGroups: Group[], userOrders: GroupOrderDB[] }>(fullUrl, { headers });
+    const result = this.httpClient.get<UserDataOutput>(fullUrl, { headers });
+    return result;
   }
 
 

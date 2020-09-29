@@ -19,8 +19,6 @@ export class UserEffects {
     private userService: fromUserServices.UserService,
   ) { }
 
-  // CALLED
-
   updateUser$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromUser.UserActionsTypes.UpdateUserProfile),
@@ -33,25 +31,23 @@ export class UserEffects {
   );
 
 
-  loadUser1$ = createEffect(() => this.actions$.pipe(
+  loadUser$ = createEffect(() => this.actions$.pipe(
     ofType(fromUser.UserActionsTypes.LoadUserData),
     switchMap((action) => this.userService.fetchUserData(action.payload.userid)
       .pipe(
-        switchMap(userData => [
-          new fromUser.UserDataLoaded(userData.userDetails),
-          new fromGroups.GroupsLoaded(userData.userGroups),
-          new fromOrders.UserOrdersFetched(userData.userOrders),
-        ]),
+        mergeMap(userData => {
+          const { payload: { userDetails, userGroups, userOrders } } = userData;
+          return [
+            new fromUser.UserDataLoaded(userDetails),
+            new fromGroups.GroupsLoaded(userGroups),
+            new fromOrders.UserOrdersFetched(userOrders),
+          ];
+        }),
         catchError(err => {
           console.log('[User Effects] err', err.message);
           return of({ type: '[Fail] Load User Fail' })
         })
       ))
   ));
-
-
-
-
-
 
 };

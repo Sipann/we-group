@@ -12,7 +12,7 @@ import {
 
 export async function fetchUserDataCustom (userid) {
   try {
-    const userIdIsValid = DBIsUserIdValid(userid);
+    const userIdIsValid = await DBIsUserIdValid(userid);
     if (!userIdIsValid.payload) throw new Error(errorMessages.notAllowed);
 
     const userDetailsResponse = await DBFetchUserDataDetails(userid);
