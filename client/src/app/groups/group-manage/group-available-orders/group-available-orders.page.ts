@@ -9,7 +9,10 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/reducers';
 import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
+import { format } from 'date-fns';
+
 import { NewOrderModalComponent } from './new-order-modal/new-order-modal.component';
+import { GroupAvailableOrders } from 'src/app/models/group-order-available.model';
 
 import { setUpLoader } from '../../groups-utils';
 
@@ -41,6 +44,18 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
     if (this.availableOrdersSub) this.availableOrdersSub.unsubscribe();
   }
 
+  formatAvailableOrders(availableOrders: GroupAvailableOrders) {
+    const formatted = { ...availableOrders };
+    for (let orderId in availableOrders) {
+      formatted[orderId] = {
+        ...availableOrders[orderId],
+        deliveryTs: format(new Date(availableOrders[orderId].deliveryTs), 'MM/dd/yyyy'),
+        deadlineTs: format(new Date(availableOrders[orderId].deadlineTs), 'MM/dd/yyyy'),
+      }
+    }
+    return formatted;
+  }
+
   async initialize() {
     this.route.paramMap.subscribe(async paramMap => {
       if (!paramMap.has('groupid')) {
@@ -49,10 +64,7 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
       }
 
       this.groupid = paramMap.get('groupid');
-      // console.log('PARAM MAP groupid', paramMap.get('groupid'));
       this.store.dispatch(new fromGroupsActions.FetchGroupAvailableOrders({ groupid: this.groupid }));
-
-
 
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
@@ -60,8 +72,7 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
       this.availableOrdersSub = this.store.select('groups')
         .pipe(map(g => g.availableOrders))
         .subscribe(availableOrders => {
-          // console.log('available orders', availableOrders);
-          this.availableOrders$ = availableOrders[this.groupid];
+          this.availableOrders$ = this.formatAvailableOrders(availableOrders[this.groupid]);
         });
 
       if (this.loadingCtrl) {
@@ -72,7 +83,6 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
   }
 
   onCreateNewOrder() {
-    console.log('create new order');
     this.modalCtrl
       .create({
         component: NewOrderModalComponent,
@@ -91,7 +101,5 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
   onNavigateToAvailableOrder(orderid: string) {
     this.router.navigate(['/', 'groups', 'manage', this.groupid, 'available-orders', orderid]);
   }
-
-
 
 }

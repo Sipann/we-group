@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
-import { GroupOrderAvailable } from 'src/app/models/group-order-available.model';
+import { GroupOrderAvailable, GroupAvailableOrders } from 'src/app/models/group-order-available.model';
 import { Store, } from '@ngrx/store';
 import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
@@ -127,12 +127,13 @@ export class GroupService {
 
   // addItemToOrder(payload: { orderid: string, item }): Observable<??> {
   addItemToOrder(payload: { orderid: string, itemData }) {
-    console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
+    // console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
     // const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }/add`;
     const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }/add`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
     // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
-    return this.httpClient.post(fullUrl, payload.item, { headers });
+    // return this.httpClient.post(fullUrl, payload.item, { headers });
+    return this.httpClient.post(fullUrl, payload, { headers });
   }
 
 
@@ -141,14 +142,6 @@ export class GroupService {
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.post<Group>(fullUrl, null, { headers });
   }
-
-  // createGroup(newGroup: GroupInput): Observable<Group> {
-  //   const fullUrl = `${ this.baseUrl }/groups`;
-  //   const headers = new HttpHeaders().append('userid', this.user$.id);
-  //   return this.httpClient.post<Group>(fullUrl, newGroup, { headers });
-  // }
-
-
 
   createGroup(newGroup: GroupInput): Observable<Group> {
     const fullUrl = `${ this.baseUrl }/groups`;
@@ -161,22 +154,29 @@ export class GroupService {
   };
 
 
+  // createNewGroupOrder(payload: {
+  //   groupid: string,
+  //   newOrder: { deadlineTs: string, deliveryTs: string }
+  // }): Observable<GroupOrderAvailable> {
+  //   const fullUrl = `${ this.baseUrl }/groups/orders/new/${ payload.groupid }`;
+  //   const headers = new HttpHeaders().append('userid', this.user$.id);
+  //   return this.httpClient.post<GroupOrderAvailable>(fullUrl, payload.newOrder, { headers });
+  // }
+
   createNewGroupOrder(payload: {
     groupid: string,
     newOrder: { deadlineTs: string, deliveryTs: string }
   }): Observable<GroupOrderAvailable> {
-    const fullUrl = `${ this.baseUrl }/groups/orders/new/${ payload.groupid }`;
+    const fullUrl = `${ this.baseUrl }/groups/available-order/${ payload.groupid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.post<GroupOrderAvailable>(fullUrl, payload.newOrder, { headers });
   }
 
-  fetchAvailableOrders(payload: { groupid: string }): Observable<GroupOrderAvailable[]> {
-    const fullUrl = `${ this.baseUrl }/test/groups/orders/${ payload.groupid }`;
+  fetchAvailableOrders(payload: { groupid: string }): Observable<{ ok: boolean, payload: GroupAvailableOrders }> {
+    const fullUrl = `${ this.baseUrl }/groups/available-orders/${ payload.groupid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<GroupOrderAvailable[]>(fullUrl, { headers });
+    return this.httpClient.get<{ ok: boolean, payload: GroupAvailableOrders }>(fullUrl, { headers });
   }
-
-
 
   fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
     const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;

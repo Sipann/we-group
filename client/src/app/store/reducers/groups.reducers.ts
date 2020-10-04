@@ -139,7 +139,7 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         ...state,
         availableOrders: {
           ...state.availableOrders,
-          [action.payload.groupid]: action.payload.available,
+          [action.payload.groupid]: { ...action.payload.available },
         }
       };
 

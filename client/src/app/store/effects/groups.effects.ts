@@ -192,10 +192,12 @@ export class GroupsEffects {
       mergeMap(action => this.groupService.fetchAvailableOrders(action.payload)
         .pipe(
           map(response => {
-            console.log('EFFECTS response', response);
             // return new fromGroups.GroupAvailableItemsFetched(res);
-            const args = { groupid: action.payload.groupid, available: response };
-            return new fromGroups.GroupAvailableItemsFetched(args);
+            if (response.ok) {
+              const args = { groupid: action.payload.groupid, available: response.payload };
+              return new fromGroups.GroupAvailableItemsFetched(args);
+            }
+            throw new Error();
           }),
           catchError(err => {
             return of({ type: '[Groups] Fetch Group Available Items Fail', err })
