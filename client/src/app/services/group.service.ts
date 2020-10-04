@@ -9,6 +9,8 @@ import { environment } from '../../environments/environment';
 
 import { User } from '../models/user.model';
 import { Item } from '../models/item.model';
+import { AvailableItem } from '../models/available-item.model';
+import { Response } from '../models/common.model';
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
 import { GroupOrderAvailable, GroupAvailableOrders } from 'src/app/models/group-order-available.model';
 import { Store, } from '@ngrx/store';
@@ -37,28 +39,11 @@ export class GroupService {
       .subscribe(v => this.user$ = v);
   }
 
-
-
-
-  //
-
-
-
-
-
-  // addNewItem(payload: { orderid: string, item: ?? }): Observable<??> {
-  addNewItem(payload: { orderid: string, item }) {
-    console.log('SERVICE addNewItem orderid:', payload.orderid, 'item:', payload.item);
-    const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }`;
+  addNewItem(payload: { orderid: string, item: Item }): Observable<Response<AvailableItem>> {
+    const fullUrl = `${ this.baseUrl }/groups/available-order/new-item/${ payload.orderid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
-    return this.httpClient.post(fullUrl, payload.item, { headers });
+    return this.httpClient.post<Response<AvailableItem>>(fullUrl, payload.item, { headers });
   }
-
-
-
-
-
 
 
   deleteItem(itemid: string): Observable<string> {
@@ -126,15 +111,15 @@ export class GroupService {
   // CALLED
 
   // addItemToOrder(payload: { orderid: string, item }): Observable<??> {
-  addItemToOrder(payload: { orderid: string, itemData }) {
-    // console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
-    // const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }/add`;
-    const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }/add`;
-    const headers = new HttpHeaders().append('userid', this.user$.id);
-    // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
-    // return this.httpClient.post(fullUrl, payload.item, { headers });
-    return this.httpClient.post(fullUrl, payload, { headers });
-  }
+  // addItemToOrder(payload: { orderid: string, itemData }) {
+  //   // console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
+  //   // const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }/add`;
+  //   const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }/add`;
+  //   const headers = new HttpHeaders().append('userid', this.user$.id);
+  //   // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
+  //   // return this.httpClient.post(fullUrl, payload.item, { headers });
+  //   return this.httpClient.post(fullUrl, payload, { headers });
+  // }
 
 
   addMemberToGroup(groupid: string): Observable<Group> {

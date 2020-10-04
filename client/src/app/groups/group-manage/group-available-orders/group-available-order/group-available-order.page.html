@@ -12,8 +12,7 @@
   </ion-fab>
 
   <h1 *ngIf="(availableItems$ && availableItems$.length); else noAvailableItemsBlock">
-    AVAILABLE ITEMS PRODUCTS
-    <p *ngFor="let item of availableItems$">{{ item.itemname }} - {{ item.availableitemremainingqty }}</p>
+    <p *ngFor="let item of availableItems$">{{ item.item_name }} - {{ item.available_item_remaining_qty }}</p>
   </h1>
 
   <h1 *ngIf="(groupItems$ && groupItems$.length); else noGroupItemsBlock">

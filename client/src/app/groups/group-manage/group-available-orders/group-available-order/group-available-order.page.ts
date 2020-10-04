@@ -65,7 +65,6 @@ export class GroupAvailableOrderPage implements OnInit, OnDestroy {
       this.availableOrderSub = this.store.select('groups')
         .pipe(map(g => g.availableOrders))
         .subscribe(availableOrders => {
-          console.log('GROUP AVAILABLE ORDER', availableOrders[this.groupid][this.orderid]);
           this.availableOrder$ = availableOrders[this.groupid][this.orderid];
           this.availableItems$ = availableOrders[this.groupid][this.orderid].items;
         });
