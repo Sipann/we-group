@@ -153,16 +153,6 @@ export class GroupService {
       );
   };
 
-
-  // createNewGroupOrder(payload: {
-  //   groupid: string,
-  //   newOrder: { deadlineTs: string, deliveryTs: string }
-  // }): Observable<GroupOrderAvailable> {
-  //   const fullUrl = `${ this.baseUrl }/groups/orders/new/${ payload.groupid }`;
-  //   const headers = new HttpHeaders().append('userid', this.user$.id);
-  //   return this.httpClient.post<GroupOrderAvailable>(fullUrl, payload.newOrder, { headers });
-  // }
-
   createNewGroupOrder(payload: {
     groupid: string,
     newOrder: { deadlineTs: string, deliveryTs: string }
