@@ -75,9 +75,9 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
 
   onCancel() { this.cancelled.emit(); }
 
-  onDelete(userid: string) {
-    //TODO
-    console.log('delete user with id', userid);
+  onRemoveMemberFromGroup(userid: string, manager?: boolean) {
+    if (manager) return;
+    this.store.dispatch(new fromGroupsActions.RemoveMemberFromGroup({ groupid: this.groupid, removedUserid: userid }));
   }
 
 }

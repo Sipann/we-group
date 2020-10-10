@@ -266,6 +266,19 @@ export class GroupsEffects {
     )
   );
 
+  removeMemberFromGroup$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(fromGroups.GroupsActionsTypes.RemoveMemberFromGroup),
+      mergeMap(action => this.groupService.removeMemberFromGroup(action.payload)
+        .pipe(
+          map(() => {
+            return new fromGroups.MemberRemovedFromGroup({ ...action.payload })
+          }),
+          catchError(err => of({ type: '[Groups] Remove Member Fail' }))
+        ))
+    )
+  );
+
 
 
 

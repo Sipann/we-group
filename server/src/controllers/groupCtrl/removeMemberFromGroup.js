@@ -18,8 +18,12 @@ export async function removeMemberFromGroup (ctx) {
     const userIsGroupManager = await DBIsUserGroupManager(userid, groupid);
     if (!userIsGroupManager.ok || !userIsGroupManager.payload) throw new Error(errorMessages.notAllowed);
 
-    const userIsRemovable = await DBIsUserRemovable(userid, groupid);
+    const userIsRemovable = await DBIsUserRemovable(removedUserid, groupid);
     if (!userIsRemovable.ok || !userIsRemovable.payload) throw new Error(errorMessages.notAllowed);
+
+    const response = await DBRemoveMemberFromGroup(removedUserid, groupid);
+    if (response.ok) ctx.body = { ...response };
+    else throw new Error(response.payload);
 
   } catch (error) {
     handleErrorCtrl(ctx, error);

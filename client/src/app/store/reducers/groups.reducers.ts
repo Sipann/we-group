@@ -17,6 +17,7 @@ import {
   // updateAvailableOrders3,
   updateGroup,
   updateGroupItems,
+  updateMembersPropOfGroup,
 } from './groups-utils';
 
 import { Group } from 'src/app/models/group.model';
@@ -202,6 +203,12 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
       return {
         ...state,
         availableGroups: setAvailableGroups(state.groups, action.payload),
+      }
+
+    case fromGroupsActions.GroupsActionsTypes.MemberRemovedFromGroup:
+      return {
+        ...state,
+        groups: updateMembersPropOfGroup(state.groups, action.payload),
       }
 
     ////////////////////////////////////////////////

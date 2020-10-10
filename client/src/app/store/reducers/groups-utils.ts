@@ -180,7 +180,23 @@ export const addMembersPropToGroup = (
       }
     }
     return group;
-  })
+  });
+};
+
+export const updateMembersPropOfGroup = (
+  stateGroups: Group[],
+  payload: { groupid: string, removedUserid: string }
+) => {
+  return stateGroups.map(group => {
+    if (group.id === payload.groupid) {
+      const filteredMembers = group.members.filter(member => member.userid !== payload.removedUserid);
+      return {
+        ...group,
+        members: filteredMembers,
+      }
+    }
+    return group;
+  });
 };
 
 

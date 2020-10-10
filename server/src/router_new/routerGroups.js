@@ -27,7 +27,6 @@ import {
 
 router.delete('/available-order/:availableorderid', CtrlDeleteGroupAvailableOrder);
 router.delete('/remove-self/:groupid', CtrlRemoveSelfFromGroup);
-router.delete('/remove-member/:groupid', CtrlRemoveMemberFromGroup);
 router.delete('/:groupid', CtrlDeleteGroup);
 
 router.get('/members/:groupid', CtrlFetchGroupMembers);
@@ -44,5 +43,6 @@ router.post('/user/:groupid', CtrlAddUserToGroup);
 router.put('/', CtrlUpdateGroupInfos);
 router.put('/group-manager/:groupid', CtrlChangeGroupManager);
 router.put('/available-order/infos/:orderid', CtrlUpdateAvailableOrderInfos);
+router.put('/remove-member/:groupid', CtrlRemoveMemberFromGroup);
 
 export { router as groupsRouter };

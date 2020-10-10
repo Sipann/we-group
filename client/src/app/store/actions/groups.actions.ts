@@ -66,6 +66,9 @@ export enum GroupsActionsTypes {
 
   FetchGroupAvailableOrderItems = '[Groups] Fetch Group Available Order Items',
   GroupAvailableOrderItemsFetched = '[Groups] Group Available Order Items Fetched',
+
+  RemoveMemberFromGroup = '[Groups] Remove Member From Group',
+  MemberRemovedFromGroup = '[Groups] Member Removed From Group',
 };
 
 
@@ -313,6 +316,15 @@ export class UpdateGroup implements Action {
   constructor(public payload: Group) { }
 };
 
+export class RemoveMemberFromGroup implements Action {
+  readonly type = GroupsActionsTypes.RemoveMemberFromGroup;
+  constructor(public payload: { groupid: string, removedUserid: string }) { }
+}
+
+export class MemberRemovedFromGroup implements Action {
+  readonly type = GroupsActionsTypes.MemberRemovedFromGroup;
+  constructor(private payload: { groupid: string, removedUserid: string }) { }
+}
 
 
 ///////////////////////////////////////
@@ -360,5 +372,8 @@ export type GroupsActions = AddItem |
   AddItemToOrder |
   ItemAddedToOrder |
 
-  ResetCreateGroup
+  ResetCreateGroup |
+
+  RemoveMemberFromGroup |
+  MemberRemovedFromGroup
   ;

@@ -6,13 +6,15 @@ import { errorMessages } from '../../utils/errorMessages';
 import { handleErrorModel } from '../utils';
 
 
-export async function removeMemberFromGroup (userid, groupid) {
+export async function removeMemberFromGroup (removedUserid, groupid) {
   try {
-    if (!userid) throw new Error(errorMessages.notAllowed);
-    // TODO => make sure that other requests do not rely on users being group members to fetch previous orders for instance
+    if (!removedUserid) throw new Error(errorMessages.notAllowed);
+    const now = new Date();
     await pool.query(
-      `DELETE FROM groupsusers WHERE user_id = $1 AND group_id = $2;`,
-      [userid, groupid]
+      `UPDATE groupsusers
+          SET has_left = $1
+      WHERE user_id = $2 AND group_id = $3;`,
+      [now, removedUserid, groupid]
     );
 
     return { ok: true, payload: true };

@@ -146,6 +146,12 @@ export class GroupService {
       .pipe(map(groupsArr => groupsArr.map(group => Group.parse(group))));
   }
 
+  removeMemberFromGroup(payload: { groupid: string, removedUserid: string }): Observable<{ ok: boolean, payload: boolean }> {
+    const fullUrl = `${ this.baseUrl }/groups/remove-member/${ payload.groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.put<{ ok: boolean, payload: boolean }>(fullUrl, { removedUserid: payload.removedUserid }, { headers });
+  }
+
 
   //////////////////////////////////////////////////////
 

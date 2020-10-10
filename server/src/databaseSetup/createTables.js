@@ -31,7 +31,9 @@ export async function createTables () {
     await pool.query(`CREATE TABLE groupsusers (
       id BIGSERIAL PRIMARY KEY,
       group_id BIGINT REFERENCES groups (id),
-      user_id TEXT REFERENCES users (id)
+      user_id TEXT REFERENCES users (id),
+      joined TIMESTAMPTZ,
+      has_left TIMESTAMPTZ
     );`);
 
     await pool.query(`CREATE TABLE items(

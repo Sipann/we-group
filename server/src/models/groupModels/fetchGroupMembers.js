@@ -19,7 +19,10 @@ export async function fetchGroupMembers (userid, groupid) {
           users.id as userid,
           users.name as username
         FROM users
-        JOIN groupsusers ON users.id = groupsusers.user_id AND groupsusers.group_id = $1;`;
+        JOIN groupsusers
+          ON users.id = groupsusers.user_id
+          AND groupsusers.group_id = $1
+          AND groupsusers.has_left IS NULL;`;
       const response = await pool.query(queryStr, [groupid]);
 
       if (response.rows?.length) return { ok: true, payload: response.rows };
