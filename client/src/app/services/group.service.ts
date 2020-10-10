@@ -8,6 +8,7 @@ import { environment } from '../../environments/environment';
 
 
 import { User } from '../models/user.model';
+import { Member } from '../models/member.model';
 import { Item } from '../models/item.model';
 import { AvailableItem } from '../models/available-item.model';
 import { Response } from '../models/common.model';
@@ -71,17 +72,11 @@ export class GroupService {
   }
 
 
-  fetchMembers(groupid: string): Observable<User[]> {
+  fetchMembers(groupid: string): Observable<{ ok: boolean, payload: Member[] }> {
     const fullUrl = `${ this.baseUrl }/groups/members/${ groupid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
-    return this.httpClient.get<User[]>(fullUrl, { headers })
-      .pipe(map(usersArr => usersArr.map(user => User.parse(user))));
+    return this.httpClient.get<{ ok: boolean, payload: Member[] }>(fullUrl, { headers });
   }
-
-
-
-
-
 
   updateGroup(group: Group): Observable<Group> {
     const fullUrl = `${ this.baseUrl }/groups`;
@@ -106,21 +101,6 @@ export class GroupService {
     return this.httpClient.post<Item>(fullUrl, payload, { headers })
       .pipe(map(item => Item.parse(item)));
   }
-
-  //////////////////////////////////////////////////////
-  // CALLED
-
-  // addItemToOrder(payload: { orderid: string, item }): Observable<??> {
-  // addItemToOrder(payload: { orderid: string, itemData }) {
-  //   // console.log('SERVICE addItemToOrder orderid =>', payload.orderid, 'item =>', payload.item);
-  //   // const fullUrl = `${ this.baseUrl }/test/groups/orders/items/${ payload.orderid }/add`;
-  //   const fullUrl = `${ this.baseUrl }/groups/orders/items/${ payload.orderid }/add`;
-  //   const headers = new HttpHeaders().append('userid', this.user$.id);
-  //   // return this.httpClient.post<??>(fullUrl, payload.item, { headers });
-  //   // return this.httpClient.post(fullUrl, payload.item, { headers });
-  //   return this.httpClient.post(fullUrl, payload, { headers });
-  // }
-
 
   addMemberToGroup(groupid: string): Observable<Group> {
     const fullUrl = `${ this.baseUrl }/groups/user/${ groupid }`;

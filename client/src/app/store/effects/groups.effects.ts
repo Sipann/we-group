@@ -175,7 +175,6 @@ export class GroupsEffects {
       mergeMap(action => this.groupService.createNewGroupOrder(action.payload)
         .pipe(
           map(response => {
-            console.log('response', response);
             return new fromGroups.NewGroupOrderCreated(response);
           }),
           catchError(err => {
@@ -211,9 +210,11 @@ export class GroupsEffects {
       ofType(fromGroups.GroupsActionsTypes.FetchGroupMembers),
       mergeMap(action => this.groupService.fetchMembers(action.payload.groupid)
         .pipe(
-          map(members => {
-            const args = { groupid: action.payload.groupid, members };
-            return new fromGroups.GroupMembersFetched(args);
+          map(response => {
+            if (response.ok) {
+              const args = { groupid: action.payload.groupid, members: response.payload };
+              return new fromGroups.GroupMembersFetched(args);
+            }
           }),
           catchError(err => {
             return of({ type: '[Groups] Fetch Group Members Fail' })

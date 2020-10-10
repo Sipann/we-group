@@ -1,10 +1,8 @@
 import { Group } from 'src/app/models/group.model';
-import { User } from 'src/app/models/user.model';
+import { Member } from 'src/app/models/member.model';
 import { Item } from 'src/app/models/item.model';
 
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
-
-//
 
 export const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
 
@@ -168,12 +166,17 @@ export const addItemToGroup = (
 
 export const addMembersPropToGroup = (
   stateGroups: Group[],
-  payload: { members: User[], groupid: string }) => {
+  payload: { members: Member[], groupid: string }) => {
   return stateGroups.map(group => {
     if (group.id === payload.groupid) {
+      const filteredMembers = payload.members.map(
+        member => member.userid === group.manager_id
+          ? { ...member, manager: true }
+          : { ...member }
+      );
       return {
         ...group,
-        members: payload.members,
+        members: filteredMembers,
       }
     }
     return group;

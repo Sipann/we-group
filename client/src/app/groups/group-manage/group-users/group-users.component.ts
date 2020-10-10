@@ -29,7 +29,7 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
 
   private group$: Group;
   private groupid: string;
-  public groupMembers$: { name: string, id: string }[];
+  public groupMembers$: { username: string, userid: string, manager?: boolean }[];
   private groupSub: Subscription;
   private loadingCtrl: HTMLIonLoadingElement;
 

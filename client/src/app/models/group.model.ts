@@ -11,7 +11,7 @@ export class Group {
   image?: string;
   deadline?: string;
   items?: Item[];
-  members?: { name: string, id: string }[];
+  members?: { username: string, userid: string, manager?: boolean }[];
   order?: { byItem, byUser };
   orders?;    //!
 

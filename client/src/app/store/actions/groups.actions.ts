@@ -4,7 +4,7 @@ import { Group } from '../../models/group.model';
 import { GroupInput } from 'src/app/models/group-input.model';
 import { Item } from '../../models/item.model';
 import { GroupOrderAvailable } from 'src/app/models/group-order-available.model';
-import { User } from '../../models/user.model';
+import { Member } from '../../models/member.model';
 
 
 export enum GroupsActionsTypes {
@@ -258,7 +258,7 @@ export class GroupsLoaded implements Action {
 
 export class GroupMembersFetched implements Action {
   readonly type = GroupsActionsTypes.GroupMembersFetched;
-  constructor(private payload: { groupid: string, members: User[] }) { }
+  constructor(private payload: { groupid: string, members: Member[] }) { }
 };
 
 
