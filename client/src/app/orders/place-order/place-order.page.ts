@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { cloneDeep } from 'lodash';
 
 import { AlertController, NavController, LoadingController } from '@ionic/angular';
 
@@ -15,16 +16,16 @@ import * as fromOrdersActions from 'src/app/store/actions/orders.actions';
 })
 export class PlaceOrderPage implements OnInit {
 
-  private loadingCtrl: HTMLIonLoadingElement;
   public availableOrder;
   public availableOrderItems;
   public availableItems;
   private ordered: {} = {};
   private availableOrderid: string;
+  private groupid: string;
+  private availableOrderItemsState: { [key: string]: { available: number } } = {};
 
   constructor(
     private alertCtrl: AlertController,
-    private loadingController: LoadingController,
     private navCtrl: NavController,
     private route: ActivatedRoute,
     private router: Router,
@@ -34,26 +35,34 @@ export class PlaceOrderPage implements OnInit {
   ngOnInit() { this.initialize(); }
 
   async initialize() {
-
     this.route.paramMap.subscribe(async paramMap => {
-      if (!paramMap.has('orderid')) {
-        this.navCtrl.navigateBack('/orderid');
+      if (!paramMap.has('orderid') || !paramMap.has('groupid')) {
+        this.navCtrl.navigateBack('/groups');
         return;
       }
 
       if (this.router.getCurrentNavigation().extras.state) {
         const { order } = this.router.getCurrentNavigation().extras.state;
         if (!order) {
-          this.navCtrl.navigateBack('/group');
+          this.navCtrl.navigateBack('/groups');
           return;
         }
 
         this.availableOrderid = paramMap.get('orderid');
+        this.groupid = paramMap.get('groupid');
 
-        this.availableOrder = order;
-        console.log('this.availableOrder', this.availableOrder);
+        this.availableOrder = cloneDeep(order);
+
+        const summary = {};
+        this.availableOrder.items.forEach(item => {
+          if (item.available_item_remaining_qty > 0) {
+            summary[item.available_item_id] = { available: item.available_item_remaining_qty }
+          }
+        });
+        this.availableOrderItemsState = { ...summary };
+
         this.availableOrderItems = order.items.reduce((acc, curr) => {
-          if (curr.availableitemremainingqty > 0) {
+          if (curr.available_item_remaining_qty > 0) {
             return {
               available: [...acc.available, curr],
               soldout: [...acc.soldout],
@@ -68,63 +77,48 @@ export class PlaceOrderPage implements OnInit {
         }, { available: [], soldout: [] });
 
         this.availableOrderItems.available.forEach(item => {
-          this.ordered[item.availableitemid] = 0;
+          this.ordered[item.available_item_id] = 0;
         })
-        console.log('PLACE ORDER PAGE this.ordered', this.ordered);
 
-        console.log('PLACE ORDER PAGE this.availableOrderItems', this.availableOrderItems);
         this.availableItems = order.items.map(item => item.availableitemremainingqty > 0);
-        //TODO later? show me sold-out?
       }
-
-
     })
-
   }
 
-  onAddToBasket(availableitemid: string, availableitemremainingqty: number) {
-    if (this.ordered[availableitemid] < availableitemremainingqty) this.ordered[availableitemid] += 1;
-    // console.log('ADD TO BASKET, this.ordered => ', this.ordered);
+  onAddToBasket(availableItemid: string, availableItemRemainingQty: number) {
+    if (availableItemRemainingQty > 0) {
+      this.ordered[availableItemid] += 1;
+      this.availableOrderItemsState[availableItemid].available -= 1;
+    }
   }
 
-  onRemoveFromBasket(availableitemid: string) {
-    if (this.ordered[availableitemid] > 0) this.ordered[availableitemid] -= 1;
-    // console.log('REMOVE FROM BASKET, this.ordered => ', this.ordered);
+  onRemoveFromBasket(availableItemid: string) {
+    if (this.ordered[availableItemid] > 0) {
+      this.ordered[availableItemid] -= 1;
+      this.availableOrderItemsState[availableItemid].available += 1;
+    }
   }
 
-  onCancel() { }
+  onCancel() { this.navCtrl.navigateBack(`/groups/detail/${ this.groupid }`); } //? url
 
   async onOrder() {
-    console.log('ORDERING:', this.ordered);
     const orderedItems = [];
-    for (let availableitemid in this.ordered) {
-      if (this.ordered.hasOwnProperty(availableitemid) && this.ordered[availableitemid] > 0) {
-        const item = this.availableOrderItems.available.find(item => item.availableitemid === availableitemid);
-        const itemid = item.itemid;
+    for (let availableItemId in this.ordered) {
+      if (this.ordered.hasOwnProperty(availableItemId) && this.ordered[availableItemId] > 0) {
+        const item = this.availableOrder.items.find(item => item.available_item_id === availableItemId);
+        const itemid = item.available_item_id;
         orderedItems.push({
-          availableitemid,
+          availableItemId,
           itemid,
-          orderedQty: +this.ordered[availableitemid]
+          orderedQty: +this.ordered[availableItemId]
         });
       }
     }
     if (orderedItems.length) {
-      console.log('ORDERING => ', {
-        availableOrderid: this.availableOrderid,
-        items: orderedItems,
-      });
-      // {
-      // availableOrderid: "1"
-      // items: Array(2)
-      // 0: { availableitemid: "7", itemid: "14", orderedQty: 3 }
-      // 1: { availableitemid: "11", itemid: "18", orderedQty: 3 }
-      // }
-
       this.store.dispatch(new fromOrdersActions.PlaceOrder({
         availableOrderid: this.availableOrderid,
         items: orderedItems,
       }))
-      // this.store.dispatch(new fromOrdersActions.CreateOrder({ groupid: this.groupid, deadline: this.group$.deadline, orderedItems }));
     }
     else {
       const message = 'You have not selected any item';
@@ -135,5 +129,4 @@ export class PlaceOrderPage implements OnInit {
       }).then(alertEl => alertEl.present());
     }
   }
-
 }

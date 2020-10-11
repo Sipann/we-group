@@ -12,15 +12,10 @@ import * as fromOrdersServices from 'src/app/services/orders.service';
 @Injectable({ providedIn: 'root' })
 export class OrdersEffects {
 
-
   constructor(
     private actions$: Actions<fromOrders.OrdersActions>,
     private ordersService: fromOrdersServices.OrdersService,
   ) { }
-
-
-
-
 
   createOrder$ = createEffect(
     () => this.actions$.pipe(
@@ -38,8 +33,6 @@ export class OrdersEffects {
     )
   );
 
-
-
   updateOrder$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromOrders.OrdersActionsTypes.UpdateOrder),
@@ -54,8 +47,6 @@ export class OrdersEffects {
         ))
     )
   );
-
-  //
 
   fetchOrders$ = createEffect(
     () => this.actions$.pipe(
@@ -72,9 +63,6 @@ export class OrdersEffects {
     )
   );
 
-  //////////////////////////////////////////////////
-  // CALLED
-
   fetchUserOrders$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromOrders.OrdersActionsTypes.FetchUserOrders),
@@ -90,14 +78,12 @@ export class OrdersEffects {
     )
   );
 
-
   placeOrder$ = createEffect(
     () => this.actions$.pipe(
       ofType(fromOrders.OrdersActionsTypes.PlaceOrder),
       mergeMap(action => this.ordersService.placeOrder(action.payload)
         .pipe(
-          map(response => {         // GroupOrderDB model
-            console.log('EFFECTS placeOrder response', response);
+          map(response => {
             return new fromOrders.OrderPlaced(response);
           }),
           catchError(err => {

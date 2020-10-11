@@ -33,7 +33,7 @@ export class UserEffects {
 
   loadUser$ = createEffect(() => this.actions$.pipe(
     ofType(fromUser.UserActionsTypes.LoadUserData),
-    switchMap((action) => this.userService.fetchUserData(action.payload.userid)
+    mergeMap((action) => this.userService.fetchUserData(action.payload.userid)
       .pipe(
         mergeMap(userData => {
           const { payload: { userDetails, userGroups, userOrders } } = userData;

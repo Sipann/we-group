@@ -1,5 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
+import { GroupAvailableOrders } from 'src/app/models/group-order-available.model';
+import { format } from 'date-fns';
 
 
 export const handleError = (error: HttpErrorResponse) => {
@@ -27,3 +29,15 @@ export const handleError = (error: HttpErrorResponse) => {
   return throwError(
     'Something bad happened; please try again later.');
 };
+
+export function formatAvailableOrders(availableOrders: GroupAvailableOrders) {
+  const formatted = { ...availableOrders };
+  for (let orderId in availableOrders) {
+    formatted[orderId] = {
+      ...availableOrders[orderId],
+      deliveryTs: format(new Date(availableOrders[orderId].deliveryTs), 'MM/dd/yyyy'),
+      deadlineTs: format(new Date(availableOrders[orderId].deadlineTs), 'MM/dd/yyyy'),
+    }
+  }
+  return formatted;
+}

@@ -9,7 +9,7 @@ import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/reducers';
 import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
-import { format } from 'date-fns';
+import { formatAvailableOrders } from 'src/app/services/utils';
 
 import { NewOrderModalComponent } from './new-order-modal/new-order-modal.component';
 import { GroupAvailableOrders } from 'src/app/models/group-order-available.model';
@@ -44,17 +44,17 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
     if (this.availableOrdersSub) this.availableOrdersSub.unsubscribe();
   }
 
-  formatAvailableOrders(availableOrders: GroupAvailableOrders) {
-    const formatted = { ...availableOrders };
-    for (let orderId in availableOrders) {
-      formatted[orderId] = {
-        ...availableOrders[orderId],
-        deliveryTs: format(new Date(availableOrders[orderId].deliveryTs), 'MM/dd/yyyy'),
-        deadlineTs: format(new Date(availableOrders[orderId].deadlineTs), 'MM/dd/yyyy'),
-      }
-    }
-    return formatted;
-  }
+  // formatAvailableOrders(availableOrders: GroupAvailableOrders) {
+  //   const formatted = { ...availableOrders };
+  //   for (let orderId in availableOrders) {
+  //     formatted[orderId] = {
+  //       ...availableOrders[orderId],
+  //       deliveryTs: format(new Date(availableOrders[orderId].deliveryTs), 'MM/dd/yyyy'),
+  //       deadlineTs: format(new Date(availableOrders[orderId].deadlineTs), 'MM/dd/yyyy'),
+  //     }
+  //   }
+  //   return formatted;
+  // }
 
   async initialize() {
     this.route.paramMap.subscribe(async paramMap => {
@@ -72,7 +72,7 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
       this.availableOrdersSub = this.store.select('groups')
         .pipe(map(g => g.availableOrders))
         .subscribe(availableOrders => {
-          this.availableOrders$ = this.formatAvailableOrders(availableOrders[this.groupid]);
+          this.availableOrders$ = formatAvailableOrders(availableOrders[this.groupid]);
         });
 
       if (this.loadingCtrl) {

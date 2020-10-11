@@ -16,8 +16,6 @@ export const initialState: UserState = {
   updateIsComplete: false,
 };
 
-
-
 export const UserReducer = (state = initialState, action): UserState => {
   switch (action.type) {
     case fromUserActions.UserActionsTypes.UserLoaded:
@@ -35,8 +33,6 @@ export const UserReducer = (state = initialState, action): UserState => {
         updateIsComplete: false,
       };
 
-    /////////////////////////////////////////////////////////////
-    // CALLED
 
     case fromUserActions.UserActionsTypes.UserProfileUpdated:
       return {

@@ -46,6 +46,9 @@ export class GroupService {
     return this.httpClient.post<Response<AvailableItem>>(fullUrl, payload.item, { headers });
   }
 
+  addExistingItem(payload: { orderid: string, item: Item }) {
+
+  }
 
   deleteItem(itemid: string): Observable<string> {
     const fullUrl = `${ this.baseUrl }/groups/items/${ itemid }`;

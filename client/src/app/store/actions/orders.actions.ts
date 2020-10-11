@@ -20,10 +20,6 @@ export enum OrdersActionsTypes {
   OrderPlaced = '[Orders] Order Placed',
 };
 
-
-
-
-
 export class UpdateOrder implements Action {
   readonly type = OrdersActionsTypes.UpdateOrder;
   constructor(public payload: { orderid: number, itemid: number, orderedid: number, quantityChange: number }[]) { }
@@ -33,11 +29,6 @@ export class OrderUpdated implements Action {
   readonly type = OrdersActionsTypes.OrderUpdated;
   constructor(private payload) { }
 }
-
-
-
-
-
 
 export class CreateOrder implements Action {
   readonly type = OrdersActionsTypes.CreateOrder;
@@ -56,10 +47,6 @@ export class ResetOrderPending implements Action {
   readonly type = OrdersActionsTypes.ResetOrderPending;
 }
 
-
-//
-
-
 export class FetchOrders implements Action {
   readonly type = OrdersActionsTypes.FetchOrders;
   constructor(public payload: { groupid: string }) { }
@@ -70,12 +57,6 @@ export class OrdersFetched implements Action {
   constructor(private payload: OrderOutput[]) { }
 };
 
-
-///////////////////////////////////////////////////////:
-// CALLED
-
-
-
 export class FetchUserOrders implements Action {
   readonly type = OrdersActionsTypes.FetchUserOrders;
 };
@@ -84,7 +65,7 @@ export class PlaceOrder implements Action {
   readonly type = OrdersActionsTypes.PlaceOrder;
   constructor(public payload: {
     availableOrderid: string,
-    items: { availableitemid: string, itemid: string, orderedQty: number }[]
+    items: { availableItemId: string, itemid: string, orderedQty: number }[]
   }) { }
 };
 
@@ -92,8 +73,6 @@ export class OrderPlaced implements Action {
   readonly type = OrdersActionsTypes.OrderPlaced;
   constructor(private payload: GroupOrderDB[]) { }
 };
-
-
 
 export class UserOrdersFetched implements Action {
   readonly type = OrdersActionsTypes.UserOrdersFetched;

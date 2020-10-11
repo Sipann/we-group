@@ -14,6 +14,7 @@ import { AppState } from '../store/reducers/index';
 import { selectUserCurrent } from '../store/reducers/index';
 import { map, tap } from 'rxjs/operators';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,10 +32,6 @@ export class OrdersService {
       .subscribe(v => this.user$ = v);
   }
 
-
-
-
-
   createOrder(payload): Observable<{ date: string, orderid: number, items: Item[] }> {
     const { groupid, deadline, orderedItems } = payload;
     const body = {
@@ -46,7 +43,6 @@ export class OrdersService {
     return this.httpClient.post<{ date: string, orderid: number, items: Item[] }>(fullUrl, body, { headers });
   }
 
-
   updateOrder(payload: { orderid: number, itemid: number, orderedid: number, quantityChange: number }[]): Observable<{ id: number, quantity: number, item_id: number, order_id: number }[]> {
     const fullUrl = `${ this.baseUrl }/orders`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
@@ -56,10 +52,6 @@ export class OrdersService {
         tap(obj => console.log('updateOrder service response', obj))
       );
   }
-
-
-
-  //
 
   fetchOrders(groupid: string): Observable<OrderOutput[]> {
     const fullUrl = `${ this.baseUrl }/orders/${ groupid }`;
@@ -78,10 +70,6 @@ export class OrdersService {
     return this.httpClient.get(fullUrl, { headers });
   }
 
-  ///////////////////////////////////
-  // CALLED
-
-
   fetchUserOrders(): Observable<GroupOrderDB[]> {
     const fullUrl = `${ this.baseUrl }/orders/user`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
@@ -90,13 +78,11 @@ export class OrdersService {
 
   placeOrder(payload: {
     availableOrderid: string,
-    items: { availableitemid: string, itemid: string, orderedQty: number }[]
+    items: { availableItemId: string, itemid: string, orderedQty: number }[]
   }): Observable<GroupOrderDB[]> {
-    const fullUrl = `${ this.baseUrl }/test/orders/${ payload.availableOrderid }`;
+    const fullUrl = `${ this.baseUrl }/orders/${ payload.availableOrderid }`;
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.post<GroupOrderDB[]>(fullUrl, payload.items, { headers });
   }
-
-
 
 }

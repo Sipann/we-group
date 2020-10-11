@@ -54,28 +54,17 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
 
   switch (action.type) {
 
-
-
-
-
-
-
-
-
     case fromGroupsActions.GroupsActionsTypes.GroupItemsFetched:
       return {
         ...state,
         groups: updateGroupItems(state.groups, action.payload),
       };
 
-
     case fromGroupsActions.GroupsActionsTypes.ResetCreateGroup:
       return {
         ...state,
         groupCreated: false,
       };
-
-
 
     case fromGroupsActions.GroupsActionsTypes.SelectGroup:
       return {
@@ -84,21 +73,11 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         selectedGroup: selectGroup(state.groups, action.payload.groupid),
       };
 
-
     case fromGroupsActions.GroupsActionsTypes.GroupDeleted:
       return {
         ...state,
         groups: deleteGroup(state.groups, action.payload),
       };
-
-
-
-    //
-
-
-
-
-
 
     case fromGroupsActions.GroupsActionsTypes.ItemAdded:
       return {
@@ -113,17 +92,11 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: deleteItemFromGroup(state.groups, action.payload),
       };
 
-
-
-
-
     case fromGroupsActions.GroupsActionsTypes.ResetAddItemModal:
       return {
         ...state,
         itemAdded: false,
       };
-
-
 
     ////////////////////////////////////////////////
     // CALLED
@@ -144,7 +117,6 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         }
       };
 
-
     case fromGroupsActions.GroupsActionsTypes.GroupsLoaded:
       return {
         ...state,
@@ -157,15 +129,11 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         groups: addMembersPropToGroup(state.groups, action.payload),
       };
 
-
-
     case fromGroupsActions.GroupsActionsTypes.GroupOrdersFetched:
       return {
         ...state,
         groups: addOrdersPropToGroup(state.groups, action.payload),
       };
-
-
 
     case fromGroupsActions.GroupsActionsTypes.GroupUpdated:
       return {
@@ -210,10 +178,6 @@ export const GroupsReducer = (state = initialState, action): GroupsState => {
         ...state,
         groups: updateMembersPropOfGroup(state.groups, action.payload),
       }
-
-    ////////////////////////////////////////////////
-
-    // EXTRACTED
 
 
     default:

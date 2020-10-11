@@ -3,115 +3,26 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/groups/detail/{{ groupid }}"></ion-back-button>
     </ion-buttons>
-    <!-- <ion-title>{{ group$? group$.name : null }}</ion-title> -->
     <ion-title>AVAILABLE ORDERS PAGE</ion-title>
   </ion-toolbar>
 </ion-header>
 
-
-<!-- DISPLAY LIST OF AVAILABLE ORDERS
-ON CLICK => PLACE-ORDER PAGE (orderid) SEND ORDER IN STATE -->
-
 <ion-content *ngIf="availableOrders$">
   <h1>ION CONTENT</h1>
-  <!-- <ion-grid *ngIf="(availableOrders$ | async).length; else noOrdersBlock"> -->
-  <ion-grid *ngIf="availableOrdersKeys$.length; else noOrdersBlock">
-    <ion-row *ngFor="let key of availableOrdersKeys$">
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-card (click)="onNavigateToOrder(key)">
-          <ion-card-header>{{ availableOrders$[key].deliveryTs }}</ion-card-header>
-          <ion-card-content>{{ availableOrders$[key].deadlineTs }}</ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-row>
+    <ion-col size="12" size-sm="8" offset-sm="2">
+      <ion-list>
+        <ion-item
+          *ngFor="let availableOrder of availableOrders$ | keyvalue"
+          detail
+          (click)="onNavigateToAvailableOrder(availableOrder.key)">
+          <h3>{{ availableOrder.value.deliveryTs}}</h3>
+          <h4>{{ availableOrder.value.deadlineTs}}</h4>
+        </ion-item>
+      </ion-list>
+    </ion-col>
+  </ion-row>
   <ng-template #noOrdersBlock>
     NO ORDERS BLOCK
   </ng-template>
 </ion-content>
-
-
-
-
-
-
-
-<!-- <ion-content *ngIf="show"> -->
-<!-- <ion-content *ngIf="group$">
-
-  <ion-card>
-    <ion-card-content>
-      Deadline set to: {{ formatDate(group$.deadline) }}
-    </ion-card-content>
-  </ion-card>
-
-  <ion-grid *ngIf="empty">
-    <ion-row>
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-card>
-          <ion-card-header>
-            Oops, it seems this group has no offer at this time.
-          </ion-card-header>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-grid *ngIf="!empty">
-    <ion-row
-      *ngFor="let item of group$.items">
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-card [ngClass]="item.remaining_qty < 1 ? 'soldout' : ''">
-          <ion-card-content>
-            <ion-grid>
-              <ion-row>
-                <ion-col size="8">
-                  <h2>{{ item.name }}</h2>
-                </ion-col>
-                <ion-col size="4" class="ion-text-right">
-                  <ion-text *ngIf="item.remaining_qty < 1">Sold Out</ion-text>
-                  <ion-badge *ngIf="item.remaining_qty > 0">{{ ordered[item.id] }}</ion-badge>
-                </ion-col>
-              </ion-row>
-
-              <ion-row>
-                <ion-col size="8">
-                  <p>{{ item.description }}</p>
-                  <p>{{item.currency}} {{ item.price }}</p>
-                  <p>Available: {{ item.remaining_qty }}</p>
-                </ion-col>
-                <ion-col size="4" class="ion-text-right">
-                  <div>
-                    <ion-icon
-                      name="caret-up-outline"
-                      (click)="onAddToBasket(item.id, item.remaining_qty)"></ion-icon>
-                  </div>
-                  <div>
-                    <ion-icon
-                      name="caret-down-outline"
-                      (click)="onRemoveFromBasket(item.id)"></ion-icon>
-                  </div>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-
-    <ion-row *ngIf="orderPending">
-      <ion-col size="12" size-sm="6" offset-sm="3">
-        <ion-button
-          color="secondary"
-          type="button"
-          (click)="onCancel()">Cancel</ion-button>
-        <ion-button
-          color="primary"
-          type="button"
-          (click)="onOrder()">Order</ion-button>
-      </ion-col>
-    </ion-row>
-
-  </ion-grid>
-
-</ion-content> -->
