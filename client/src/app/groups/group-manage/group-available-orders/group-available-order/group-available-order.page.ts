@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers';
+import { AppState, selectManageAvailableOrderWithId } from 'src/app/store/reducers';
 
 import { NewAvailableItemComponent } from './new-available-item/new-available-item.component';
 import { AddAvailableItemComponent } from './add-available-item/add-available-item.component';
@@ -31,6 +31,7 @@ export class GroupAvailableOrderPage implements OnInit, OnDestroy {
 
   private availableOrderSub: Subscription;
   private groupItemsSub: Subscription;
+  private groupAvailableOrdersSub: Subscription;
 
   constructor(
     private loadingController: LoadingController,
@@ -60,41 +61,19 @@ export class GroupAvailableOrderPage implements OnInit, OnDestroy {
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
 
-
-
-      this.availableOrderSub = this.store.select('groups')
-        .pipe(map(g => g.availableOrders))
-        .subscribe(availableOrders => {
-          this.availableOrder$ = availableOrders[this.groupid][this.orderid];
-          this.availableItems$ = availableOrders[this.groupid][this.orderid].items;
-        });
-
-      this.groupItemsSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          const group = groups.find(g => g.id === this.groupid);
-          console.log('GROUP AVAILABLE ORDER group', group);
-          const map = {};
-          const result = [];
-          if (this.availableItems$) {
-            for (let item of this.availableItems$) { map[item.itemid] = true; }
-            for (let item of group.items) {
-              if (!map[item.id]) result.push(item);
-            }
-          }
-          this.groupItems$ = result;
-          console.log('this.groupItems$', this.groupItems$);
+      this.groupAvailableOrdersSub = this.store.select(selectManageAvailableOrderWithId, { groupid: paramMap.get('groupid'), orderid: paramMap.get('orderid') })
+        .subscribe((v) => {
+          console.log('GROUP AVAILABLE ORDER =>', v);
+          this.availableItems$ = v.items;
         });
 
       if (this.loadingCtrl) {
         this.loadingCtrl.dismiss();
         this.loadingCtrl = null;
       }
-
     });
 
   }
-
 
   onAddItemToOrder(itemid: string) {
     console.log('onAddItemToOrder itemid', itemid);

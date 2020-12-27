@@ -13,7 +13,8 @@ const routes: Routes = [
   //   loadChildren: () => import('./order-archive/order-archive.module').then(m => m.OrderArchivePageModule)
   // },
   {
-    path: 'group/:groupname',
+    // path: 'group/:groupname',
+    path: 'group/:groupid',
     loadChildren: () => import('./orders-group/orders-group.module').then(m => m.OrdersGroupPageModule)
   }
 ];

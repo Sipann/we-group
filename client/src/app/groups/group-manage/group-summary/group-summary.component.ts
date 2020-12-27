@@ -62,22 +62,24 @@ export class GroupSummaryComponent implements OnInit, OnDestroy {
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          this.group$ = groups.find(g => g.id == this.groupid);
-          if (this.group$.orders) {
-            this.ordersDates = Object.keys(this.group$.orders);
-            this.empty = !this.ordersDates.length;
-          }
+      // this.groupSub = this.store.select('groups')
+      //   .pipe(map(g => g.groups))
+      //   .subscribe(groups => {
+      //     this.group$ = groups.find(g => g.id == this.groupid);
+      //     console.log('this.group$ =>', this.group$);
+      //     if (this.group$.orders) {
+      //       console.log('this.group$.orders =>', this.group$.orders);
+      //       this.ordersDates = Object.keys(this.group$.orders);
+      //       this.empty = !this.ordersDates.length;
+      //     }
 
-          if (this.loadingCtrl) {
-            this.loadingCtrl.dismiss();
-            this.loadingCtrl = null;
-          }
-        })
+      //     if (this.loadingCtrl) {
+      //       this.loadingCtrl.dismiss();
+      //       this.loadingCtrl = null;
+      //     }
+      //   })
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupOrders({ groupid: this.groupid }));
+      // this.store.dispatch(new fromGroupsActions.FetchGroupOrders({ groupid: this.groupid }));
     })
   }
 

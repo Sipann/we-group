@@ -2,9 +2,13 @@
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-sm="6" offset-sm="3">
+        <ion-item>
+          <ion-text>{{ groupManager$ && groupManager$.username}}</ion-text>
+          <ion-text slot="end">Manager</ion-text>
+        </ion-item>
         <ion-item *ngFor="let user of groupMembers$">
           <ion-text>{{ user.username }}</ion-text>
-          <ion-button *ngIf="!user.manager" slot="end" (click)="onRemoveMemberFromGroup(user.userid)">
+          <ion-button slot="end" (click)="onRemoveMemberFromGroup(user.userid)">
             <ion-icon name="trash-outline"></ion-icon>
           </ion-button>
         </ion-item>

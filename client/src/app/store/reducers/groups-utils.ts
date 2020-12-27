@@ -1,8 +1,11 @@
 import { Group } from 'src/app/models/group.model';
+import { GroupType } from 'src/app/models/refactor/group.model';
 import { Member } from 'src/app/models/member.model';
 import { Item } from 'src/app/models/item.model';
 
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
+import { GroupOrderAvailable, GroupAvailableOrders } from 'src/app/models/group-order-available.model';
+
 
 export const deleteGroup = (groups, group) => groups.filter(g => g.id !== group.id);
 
@@ -82,6 +85,72 @@ export const updateAvailableOrders = (stateAvailableOrders: {}, payload) => {
   return updatedAvailableOrders;
 };
 
+export const updateStaticManageGroupData = (
+  groups: Group[],
+  payload: {
+    groupid: string,
+    staticData: { groupMembers: Member[], groupAvailableOrders: GroupAvailableOrders }
+  }
+) => {
+  return groups.map(group => {
+    // console.log('UTILS group.id =>', group.id, 'payload.groupid =>', payload.groupid);
+    if (group.id === payload.groupid) {
+      return ({
+        ...group,
+        members: { ...payload.staticData.groupMembers },
+        availableOrders: { ...payload.staticData.groupAvailableOrders },
+      });
+    }
+    return group;
+  });
+};
+
+export const loadStaticManageGroupData = (
+  payload: { groupid: string, groupcurrency: string, groupname: string, groupdescription: string, groupmanagerid: string, staticManageData: { groupMembers: any, groupAvailableOrders: any } }[]
+): GroupType[] => {
+  const updatedGroups = payload.map((group) => {
+    const { groupid, groupcurrency, groupname, groupdescription, groupmanagerid }: Partial<GroupType> = group;
+    const { groupMembers: groupmembers, groupAvailableOrders: groupavailableorders } = group.staticManageData;
+    return {
+      groupid,
+      groupcurrency,
+      groupname,
+      groupdescription,
+      groupmanagerid,
+      groupmembers,
+      groupavailableorders,
+    }
+  });
+  // console.log('updatedGroups =>', updatedGroups);
+  return updatedGroups;
+}
+
+export const updateStaticManageGroupData2 = (
+  groups: GroupType[],
+  payload: {
+    groupid: string,
+    staticManageData: {
+      groupMembers: Member[],
+      groupAvailableOrders: GroupAvailableOrders
+    }
+  }
+) => {
+  console.log('INITIAL groups =>', groups);
+  console.log('INITIAL payload =>', payload);
+  const updatedGroups = groups.map(group => {
+    // console.log('UTILS group.id =>', group.id, 'payload.groupid =>', payload.groupid);
+    if (group.groupid === payload.groupid) {
+      return ({
+        ...group,
+        members: { ...payload.staticManageData.groupMembers },
+        availableOrders: { ...payload.staticManageData.groupAvailableOrders },
+      });
+    }
+    return group;
+  });
+  console.log('updatedGroups =>', updatedGroups);
+  return updatedGroups;
+};
 
 // UTILS
 

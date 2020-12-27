@@ -39,10 +39,10 @@ export class NewOrderModalComponent implements OnInit {
     if (new Date(deliveryTs) > new Date(deadlineTs)) {
       this.loadingCtrl = await setUpLoader(this.loadingController);
 
-      this.store.dispatch(new fromGroupsActions.CreateNewGroupOrder({
-        groupid: this.groupid,
-        newOrder: { deadlineTs, deliveryTs }
-      }));
+      // this.store.dispatch(new fromGroupsActions.CreateNewGroupOrder({
+      //   groupid: this.groupid,
+      //   newOrder: { deadlineTs, deliveryTs }
+      // }));
 
       //TODO dismiss loadingCtrl when state is updated
       this.loadingCtrl.dismiss();

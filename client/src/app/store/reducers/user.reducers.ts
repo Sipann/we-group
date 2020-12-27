@@ -1,9 +1,11 @@
 import * as fromUserActions from '../actions/user.actions';
 import { User } from 'src/app/models/user.model';
-
+import { UserType } from 'src/app/models/refactor/user.model';
 
 export interface UserState {
-  currentUser: User,
+  // currentUser: User,
+  currentUser: UserType,
+
   loaded: boolean,
   loading: boolean,
   updateIsComplete: boolean,
@@ -24,9 +26,6 @@ export const UserReducer = (state = initialState, action): UserState => {
         currentUser: action.payload,
       };
 
-
-    //
-
     case fromUserActions.UserActionsTypes.ResetUpdateStatus:
       return {
         ...state,
@@ -34,7 +33,8 @@ export const UserReducer = (state = initialState, action): UserState => {
       };
 
 
-    case fromUserActions.UserActionsTypes.UserProfileUpdated:
+    // case fromUserActions.UserActionsTypes.UserProfileUpdated:
+    case fromUserActions.UserActionsTypes.UPDATE_USER_PROFILE_SUCCESS:
       return {
         ...state,
         currentUser: action.payload,
@@ -42,13 +42,13 @@ export const UserReducer = (state = initialState, action): UserState => {
       };
 
 
-    case fromUserActions.UserActionsTypes.UserDataLoaded:
+    // case fromUserActions.UserActionsTypes.UserDataLoaded:
+    case fromUserActions.UserActionsTypes.LOAD_USER_DATA_SUCCESS:
+      // console.log('REDUCER UserDataLoaded =>', action.payload);
       return {
         ...state,
         currentUser: action.payload,
       };
-
-
 
     default:
       return state;

@@ -46,14 +46,14 @@ export class AddAvailableItemComponent implements OnInit {
       }
     })
 
-    this.store.dispatch(new fromGroupsActions.AddItemToOrder({
-      groupid: this.groupid,
-      orderid: this.orderid,
-      itemData: {
-        itemid: this.itemid,
-        initialQty: this.form.value['item-initial-qty'],
-      }
-    }));
+    // // this.store.dispatch(new fromGroupsActions.AddItemToOrder({
+    //   groupid: this.groupid,
+    //   orderid: this.orderid,
+    //   itemData: {
+    //     itemid: this.itemid,
+    //     initialQty: this.form.value['item-initial-qty'],
+    //   }
+    // }));
 
     this.loadingCtrl.dismiss();
   }

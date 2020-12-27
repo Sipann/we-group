@@ -42,19 +42,20 @@ export class OrdersListPage implements OnInit, OnDestroy {
   }
 
   async initialize() {
+    console.log('orders-list page');
 
-    this.store.dispatch(new fromOrdersActions.FetchUserOrders());
+    // this.store.dispatch(new fromOrdersActions.FetchUserOrders());
 
     this.loadingCtrl = await setUpLoader(this.loadingController);
     this.loadingCtrl.present();
 
-    this.ordersSub = this.store.select('orders')
-      .pipe(map(o => o.list))
-      .subscribe(orders => {
-        console.log('FROM COMPONENT: orders', orders);
-        if (this.loadingCtrl) this.loadingCtrl.dismiss();
-        this.orders$ = orders;
-      });
+    // this.ordersSub = this.store.select('orders')
+    //   .pipe(map(o => o.list))
+    //   .subscribe(orders => {
+    //     console.log('FROM COMPONENT: orders', orders);
+    //     if (this.loadingCtrl) this.loadingCtrl.dismiss();
+    //     this.orders$ = orders;
+    //   });
   }
 
   formatDate(deadline) {

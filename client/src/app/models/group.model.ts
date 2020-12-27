@@ -1,4 +1,5 @@
 import { Item } from './item.model';
+import { GroupAvailableOrders } from 'src/app/models/group-order-available.model';
 
 export class Group {
   // id?: number;
@@ -14,6 +15,7 @@ export class Group {
   members?: { username: string, userid: string, manager?: boolean }[];
   order?: { byItem, byUser };
   orders?;    //!
+  availableOrders?: GroupAvailableOrders;
 
   static parse(data) {
     const group = Object.assign(new Group(), data);

@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers';
+import { AppState, selectGroupWithId } from 'src/app/store/reducers';
 import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
 import { formatAvailableOrders } from 'src/app/services/utils';
@@ -28,6 +28,7 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
   private groupid: string;
 
   private availableOrdersSub: Subscription;
+  private groupAvailableOrdersSub: Subscription;
 
   constructor(
     private loadingController: LoadingController,
@@ -42,19 +43,8 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.availableOrdersSub) this.availableOrdersSub.unsubscribe();
+    if (this.groupAvailableOrdersSub) this.groupAvailableOrdersSub.unsubscribe();
   }
-
-  // formatAvailableOrders(availableOrders: GroupAvailableOrders) {
-  //   const formatted = { ...availableOrders };
-  //   for (let orderId in availableOrders) {
-  //     formatted[orderId] = {
-  //       ...availableOrders[orderId],
-  //       deliveryTs: format(new Date(availableOrders[orderId].deliveryTs), 'MM/dd/yyyy'),
-  //       deadlineTs: format(new Date(availableOrders[orderId].deadlineTs), 'MM/dd/yyyy'),
-  //     }
-  //   }
-  //   return formatted;
-  // }
 
   async initialize() {
     this.route.paramMap.subscribe(async paramMap => {
@@ -64,16 +54,23 @@ export class GroupAvailableOrdersPage implements OnInit, OnDestroy {
       }
 
       this.groupid = paramMap.get('groupid');
-      this.store.dispatch(new fromGroupsActions.FetchGroupAvailableOrders({ groupid: this.groupid }));
+      // this.store.dispatch(new fromGroupsActions.FetchGroupAvailableOrders({ groupid: this.groupid }));
 
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
 
-      this.availableOrdersSub = this.store.select('groups')
-        .pipe(map(g => g.availableOrders))
-        .subscribe(availableOrders => {
-          this.availableOrders$ = formatAvailableOrders(availableOrders[this.groupid]);
+      this.groupAvailableOrdersSub = this.store.select(selectGroupWithId, { id: paramMap.get('groupid') })
+        .subscribe(v => {
+          console.log('GROUP AVAILABLE ORDERS V =>', v);
+          console.log('availableOrders =>', v.groupavailableorders)
+          this.availableOrders$ = v.groupavailableorders;
         });
+
+      // this.availableOrdersSub = this.store.select('groups')
+      //   .pipe(map(g => g.availableOrders))
+      //   .subscribe(availableOrders => {
+      //     this.availableOrders$ = formatAvailableOrders(availableOrders[this.groupid]);
+      //   });
 
       if (this.loadingCtrl) {
         this.loadingCtrl.dismiss();

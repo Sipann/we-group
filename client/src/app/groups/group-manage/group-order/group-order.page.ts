@@ -54,15 +54,15 @@ export class GroupOrderPage implements OnInit, OnDestroy {
       this.groupid = paramMap.get('groupid');
       this.date = paramMap.get('date');
 
-      this.orderSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          const group = groups.find(g => g.id === this.groupid);
-          if (group && group.orders) {
-            this.groupname$ = group.name;
-            this.order$ = group.orders[this.date];
-          }
-        })
+      // this.orderSub = this.store.select('groups')
+      //   .pipe(map(g => g.groups))
+      //   .subscribe(groups => {
+      //     const group = groups.find(g => g.id === this.groupid);
+      //     if (group && group.orders) {
+      //       this.groupname$ = group.name;
+      //       this.order$ = group.orders[this.date];
+      //     }
+      //   })
     });
   }
 

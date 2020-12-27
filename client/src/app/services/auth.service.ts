@@ -40,6 +40,7 @@ export class AuthService {
     this.afAuth.authState.subscribe(user => {
       if (user) {
         this._user = user;
+        // console.log('auth.service user =>', user);
         this.store.dispatch(new fromUserActions.LoadUserData({ userid: user.uid }));
         this.router.navigate(['groups']);
       }

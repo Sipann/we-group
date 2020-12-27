@@ -48,11 +48,11 @@ export class NewAvailableItemComponent implements OnInit {
     this.loadingCtrl.present();
 
     // console.log('NEW ITEM', { orderid: this.orderid, item: newItem });
-    this.store.dispatch(new fromGroupsActions.AddNewItem({
-      groupid: this.groupid,
-      orderid: this.orderid,
-      item: newItem
-    }));
+    // this.store.dispatch(new fromGroupsActions.AddNewItem({
+    //   groupid: this.groupid,
+    //   orderid: this.orderid,
+    //   item: newItem
+    // }));
 
     this.loadingCtrl.dismiss(); //!
 

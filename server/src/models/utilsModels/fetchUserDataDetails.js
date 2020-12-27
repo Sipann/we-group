@@ -9,7 +9,17 @@ export async function fetchUserDataDetails (userid) {
   try {
     if (!userid) throw new Error(errorMessages.notAllowed);
 
-    const queryStr = `SELECT * FROM users WHERE id = $1;`;
+    // const queryStr = `SELECT * FROM users WHERE id = $1;`;
+    const queryStr = `
+      SELECT
+        id AS userId,
+        name AS userName,
+        email as userEmail,
+        phone as userPhone,
+        preferred_contact_mode as userPreferredContactMode
+      FROM users
+        WHERE id = $1;
+    `;
     const response = await pool.query(queryStr, [userid]);
 
     if (response.rows?.length) return { ok: true, payload: response.rows[0] }

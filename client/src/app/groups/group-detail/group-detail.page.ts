@@ -4,10 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 import { Group } from '../../models/group.model';
+import { GroupType } from 'src/app/models/refactor/group.model';
 
 import { map } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../store/reducers/index';
+import { AppState, selectGroupWithId, selectGroupDetailsData } from 'src/app/store/reducers/index';
 
 import { setUpLoader } from '../groups-utils';
 
@@ -20,12 +21,11 @@ import { setUpLoader } from '../groups-utils';
 export class GroupDetailPage implements OnInit, OnDestroy {
 
   private currentUserIsManager = false;
-  private group$: Group;
+  private group$: GroupType;
   private loadingCtrl: HTMLIonLoadingElement;
   public orderIsAllowed = false;
 
-  private authSub: Subscription;
-  private groupSub: Subscription;
+  private groupDetailsSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -38,8 +38,7 @@ export class GroupDetailPage implements OnInit, OnDestroy {
   ngOnInit() { this.initialize(); }
 
   ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.groupDetailsSub) this.groupDetailsSub.unsubscribe();
   }
 
   async initialize() {
@@ -52,41 +51,34 @@ export class GroupDetailPage implements OnInit, OnDestroy {
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(g => g.selectedGroup))
-        .subscribe(selectedGroupData => {
-          this.group$ = selectedGroupData;
-          if (this.group$) {
-            this.orderIsAllowed = this.group$.deadline && new Date(this.group$.deadline) >= new Date();
-            this.authSub = this.store.select('user')
-              .pipe(map(u => u.currentUser))
-              .subscribe(currentUserData => {
-                this.currentUserIsManager = currentUserData && currentUserData.id === selectedGroupData.manager_id;
-              });
-          }
-
-          if (this.loadingCtrl) this.loadingCtrl.dismiss();
+      this.groupDetailsSub = this.store.select(selectGroupDetailsData, { groupid: paramMap.get('groupid') })
+        .subscribe(v => {
+          // console.log('V =>', v);
+          const { currentUser, group } = v;
+          this.currentUserIsManager = currentUser && group && currentUser.userid === group.groupmanagerid;
+          this.group$ = group;
         });
+
+      if (this.loadingCtrl) this.loadingCtrl.dismiss();
     });
   }
 
   onNavigateToManageGroup() {
     if (this.currentUserIsManager) {
-      this.router.navigate(['/', 'groups', 'manage', this.group$.id], {
-        state: { ...this.group$ }
-      });
+      // this.router.navigate(['/', 'groups', 'manage', this.group$.groupid], {
+      //   state: { ...this.group$ }
+      // });
+      this.router.navigate(['/', 'groups', 'manage', this.group$.groupid]);
     }
   }
 
   onNavigateToPlaceOrder() {
-    // this.router.navigate(['/', 'orders', 'new', this.group$.id], {
-    //   state: { ...this.group$ }
-    // });
-    this.router.navigate(['/', 'orders', 'new', this.group$.id]);
+    this.router.navigate(['/', 'orders', 'new', this.group$.groupid]);
   }
 
   onNavigateToOrdersArchives() {
-    this.router.navigate(['/', 'orders', 'group', this.group$.name]);
+    // this.router.navigate(['/', 'orders', 'group', this.group$.groupname]);
+    this.router.navigate(['/', 'orders', 'group', this.group$.groupid]);
   }
 
 }

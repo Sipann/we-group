@@ -10,3 +10,9 @@ export class UserDataOutput {
     userOrders: GroupOrderDB[]
   }
 }
+
+export type UserDataStaticOutput = {
+  userDetails: User,
+  userGroups: Group[],
+  userOrders: GroupOrderDB[],
+};

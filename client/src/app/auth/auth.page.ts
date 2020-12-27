@@ -10,8 +10,8 @@ import { AuthService } from '../services/auth.service';
 })
 export class AuthPage implements OnInit {
 
-  isLoading = false;
-  isLogin = true;
+  public isLoading = false;
+  public isLogin = true;
 
   constructor(
     private alertCtrl: AlertController,

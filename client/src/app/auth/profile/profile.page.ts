@@ -1,22 +1,34 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { AlertController, LoadingController, ToastController, IonItemSliding } from '@ionic/angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AlertController,
+  IonItemSliding,
+  LoadingController,
+  ToastController,
+} from '@ionic/angular';
 import { NgForm } from '@angular/forms';
 import { SegmentChangeEventDetail } from '@ionic/core';
+
+import { AuthService } from 'src/app/services/auth.service';
 
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { AuthService } from 'src/app/services/auth.service';
-
 import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/store/reducers';
 import * as fromUserActions from 'src/app/store/actions/user.actions';
+import { selectProfileData } from 'src/app/store/reducers/index';
 
-import { setUpLoader, setUpToast } from '../../groups/groups-utils';
+import { setUpLoader, setUpToast } from 'src/app/groups/groups-utils';
 
 import { Group } from 'src/app/models/group.model';
-import { User } from 'src/app/models/user.model';
+import { UserType } from 'src/app/models/refactor/user.model';
+import { GroupType } from 'src/app/models/refactor/group.model';
 
+
+enum ProfileScreen {
+  USER_DATA = 'userdata',
+  USER_GROUPS = 'usergroups',
+}
 
 @Component({
   selector: 'app-profile',
@@ -26,22 +38,20 @@ import { User } from 'src/app/models/user.model';
 export class ProfilePage implements OnInit, OnDestroy {
 
   @ViewChild('f', { static: false }) form: NgForm;
+  public user$: UserType;
+  public groups$: GroupType[];
 
-  public display: string = 'userdata';
-  public user: User;
-  public userEmail: string;
-  public userGroups: Group[];
-  public userName: string;
-  public userPhone: string;
-  public userPreferredMode: string;
+  public get ProfileScreen() {
+    return ProfileScreen;
+  }
 
+  // public display: string = 'userdata';
+  private display: string = ProfileScreen.USER_DATA;
   private loadingCtrl: HTMLIonLoadingElement;
   private loadingCtrlUpdate: HTMLIonLoadingElement;
 
-  private groupsSub: Subscription;
-  private userSub: Subscription;
+  private profileDataSub: Subscription;
   private userUpdateCompleteSub: Subscription;
-
 
   constructor(
     private alertCtrl: AlertController,
@@ -50,22 +60,22 @@ export class ProfilePage implements OnInit, OnDestroy {
     private toastController: ToastController,
     private store: Store<AppState>,
   ) {
-    this.userUpdateCompleteSub = this.store.select('user')
-      .pipe(map(u => u.updateIsComplete))
-      .subscribe(v => {
-        if (v) {
-          if (this.loadingCtrlUpdate) this.loadingCtrlUpdate.dismiss();
-          setUpToast(this.toastController, 'Your profile has been updated!');
-          this.store.dispatch(new fromUserActions.ResetUpdateStatus());
-        }
-      })
+    // TODO
+    // this.userUpdateCompleteSub = this.store.select('user')
+    //   .pipe(map(u => u.updateIsComplete))
+    //   .subscribe(v => {
+    //     if (v) {
+    //       if (this.loadingCtrlUpdate) this.loadingCtrlUpdate.dismiss();
+    //       setUpToast(this.toastController, 'Your profile has been updated!');
+    //       this.store.dispatch(new fromUserActions.ResetUpdateStatus());
+    //     }
+    //   })
   }
 
   ngOnInit() { this.initialize(); }
 
   ngOnDestroy() {
-    if (this.groupsSub) this.groupsSub.unsubscribe();
-    if (this.userSub) this.userSub.unsubscribe();
+    if (this.profileDataSub) this.profileDataSub.unsubscribe();
     if (this.userUpdateCompleteSub) this.userUpdateCompleteSub.unsubscribe();
   }
 
@@ -73,24 +83,14 @@ export class ProfilePage implements OnInit, OnDestroy {
     this.loadingCtrl = await setUpLoader(this.loadingController);
     this.loadingCtrl.present();
 
-    this.userSub = this.store.select('user')
-      .pipe(map(user => user.currentUser))
-      .subscribe(currentUserData => {
-        this.user = currentUserData;
-        this.userName = currentUserData.name;
-        this.userEmail = currentUserData.email;
-        this.userPhone = currentUserData.phone;
-        this.userPreferredMode = currentUserData.preferred_contact_mode;
-
-        this.groupsSub = this.store.select('groups')
-          .pipe(map(groups => groups.groups))
-          .subscribe(groupsData => {
-            this.userGroups = groupsData;
-          });
-
+    this.profileDataSub = this.store.select(selectProfileData)
+      .subscribe((v) => {
+        // console.log('profileDataSub v =>', v)
+        const { currentUser, groups } = v;
+        this.user$ = currentUser;
+        this.groups$ = groups;
         if (this.loadingCtrl) this.loadingCtrl.dismiss();
       });
-
   }
 
   async onSubmitChanges() {
@@ -101,11 +101,11 @@ export class ProfilePage implements OnInit, OnDestroy {
     }
     if (this.form.valid) {
       const updatedUser = {
-        ...this.user,
-        name: this.form.value['user-name'],
-        email: this.form.value['user-email'],
-        phone: this.form.value['user-phone'],
-        preferred_contact_mode: this.form.value['user-preferred-mode']
+        ...this.user$,
+        username: this.form.value['user-name'],
+        useremail: this.form.value['user-email'],
+        userphone: this.form.value['user-phone'],
+        userpreferredcontactmode: this.form.value['user-preferred-mode']
       };
 
       this.loadingCtrlUpdate = await setUpLoader(this.loadingController);
@@ -129,15 +129,17 @@ export class ProfilePage implements OnInit, OnDestroy {
       .then(alertEl => alertEl.present());
   }
 
-  onLeaveGroup(group: Group, slidingEl: IonItemSliding) {
-    if (group.manager_id === this.user.id) {
+  onLeaveGroup(group: GroupType, slidingEl: IonItemSliding) {
+    // if (group.manager_id === this.user.id) {
+    // if (group.manager_id === this.user$.userid) {
+    if (group.groupmanagerid === this.user$.userid) {
       const header = 'Oops';
       const message = 'You are the manager of the group. To delete it, please go to the "Manage Group" panel.';
       this.showAlert(header, message);
     }
     else {
       //TODO
-      console.log('leaving group with id', group.id);
+      console.log('leaving group with id', group.groupid);
     }
     slidingEl.close();
   }

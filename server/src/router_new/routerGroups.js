@@ -22,6 +22,7 @@ import {
   CtrlDeleteGroup,
   CtrlRemoveSelfFromGroup,
   CtrlRemoveMemberFromGroup,
+  CtrlFetchStaticManageGroupData,
 } from '../controllers/groupCtrl';
 
 
@@ -32,6 +33,7 @@ router.delete('/:groupid', CtrlDeleteGroup);
 router.get('/members/:groupid', CtrlFetchGroupMembers);
 router.get('/search', CtrlSearchGroups);
 router.get('/available-orders/:groupid', CtrlFetchGroupFullAvailableOrders);
+router.get('/manage/:groupid', CtrlFetchStaticManageGroupData);
 
 router.post('/', CtrlCreateGroup);
 router.post('/available-order/existing-item/:orderid', CtrlAddExistingItemToAvailableOrder);

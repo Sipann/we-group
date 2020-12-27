@@ -47,7 +47,8 @@ export class GroupService {
   }
 
   addExistingItem(payload: { orderid: string, item: Item }) {
-
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.post<Response<AvailableItem>>('', payload.item, { headers });
   }
 
   deleteItem(itemid: string): Observable<string> {
@@ -55,8 +56,6 @@ export class GroupService {
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.delete<string>(fullUrl, { headers });
   }
-
-
 
   // route not targeted
   // fetchAvailableItems(payload: { orderid: string }): Observable<> {
@@ -137,7 +136,10 @@ export class GroupService {
   }
 
   fetchGroupOrders(groupid: string): Observable<GroupOrderDB[]> {
-    const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
+    // orders/placed/all /: availableorderid
+    // const fullUrl = `${ this.baseUrl }/orders/group/${ groupid }`;
+    // const fullUrl = `${ this.baseUrl }orders/placed/all/${ availableorderid }`;
+    const fullUrl = '';
     const headers = new HttpHeaders().append('userid', this.user$.id);
     return this.httpClient.get<GroupOrderDB[]>(fullUrl, { headers });
   }
@@ -155,10 +157,13 @@ export class GroupService {
     return this.httpClient.put<{ ok: boolean, payload: boolean }>(fullUrl, { removedUserid: payload.removedUserid }, { headers });
   }
 
-
-  //////////////////////////////////////////////////////
-
-
+  fetchStaticManageGroupData(
+    payload: { groupid: string }
+  ): Observable<Response<{ groupMembers: Member[], groupAvailableOrders: GroupAvailableOrders }>> {
+    const fullUrl = `${ this.baseUrl }/groups/manage/${ payload.groupid }`;
+    const headers = new HttpHeaders().append('userid', this.user$.id);
+    return this.httpClient.get<Response<{ groupMembers: Member[], groupAvailableOrders: GroupAvailableOrders }>>(fullUrl, { headers });
+  }
 
 
   // EXTRACTED

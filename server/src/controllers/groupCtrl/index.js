@@ -17,3 +17,5 @@ export { removeMemberFromGroup as CtrlRemoveMemberFromGroup } from './removeMemb
 
 export { updateAvailableOrderInfos as CtrlUpdateAvailableOrderInfos } from './updateAvailableOrderInfos';
 export { deleteGroupAvailableOrder as CtrlDeleteGroupAvailableOrder } from './deleteGroupAvailableOrder';
+
+export { fetchStaticManageGroupData as CtrlFetchStaticManageGroupData } from './fetchStaticManageGroupData';

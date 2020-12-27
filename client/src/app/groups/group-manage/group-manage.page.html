@@ -3,13 +3,14 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/groups/detail/{{ groupid }}"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ group ? group.name : null }}</ion-title>
+    <ion-title>{{ group$? group$.groupname : null }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="group">
+<ion-content *ngIf="group$">
   <ion-grid>
 
+    <!-- [ngClass]="managing && managing.length && managing !== 'products' ? 'inactive' : 'active'" -->
     <ion-row>
       <ion-col size="12">
         <ion-card
@@ -20,7 +21,7 @@
             <ion-card-title>Available Items</ion-card-title>
           </ion-card-header>
           <ion-card-content class="ion-text-center">
-            Update available items and deadline for the {{ group.name }} group.
+            Update available items and deadline for the {{ group$.groupname }} group.
           </ion-card-content>
         </ion-card>
       </ion-col>
@@ -45,7 +46,7 @@
     <ion-row>
       <ion-col size="6">
         <ion-card
-          [ngClass]="managing && managing.length && managing !== 'users' ? 'inactive' : 'active'"
+          [ngClass]="managing !== ManagingScreen.USERS ? 'inactive' : 'active'"
           color="secondary"
           (click)="onSelect('users')">
           <ion-card-header>

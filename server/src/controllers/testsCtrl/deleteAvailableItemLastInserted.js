@@ -6,7 +6,7 @@ import { errorMessages } from '../../utils/errorMessages';
 
 export async function deleteAvailableItemLastInserted (ctx) {
   try {
-    console.log('ENTERING CTRL DELETE LAST AVAILABLE ITEM INSERTED');
+    // console.log('ENTERING CTRL DELETE LAST AVAILABLE ITEM INSERTED');
 
     await DBDeleteAvailableItemLastInserted();
     ctx.body = { ok: true };

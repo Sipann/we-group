@@ -4,7 +4,7 @@ import { NavController, LoadingController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers'; import { map } from 'rxjs/operators';
+import { AppState, selectPlacedOrdersForCurrentGroup } from 'src/app/store/reducers'; import { map } from 'rxjs/operators';
 
 import { setUpLoader } from 'src/app/groups/groups-utils';
 
@@ -18,8 +18,10 @@ export class OrdersGroupPage implements OnInit, OnDestroy {
 
   private loadingCtrl: HTMLIonLoadingElement;
   private ordersSub: Subscription;
-  public orders$;
+  public placedOrders$;
   public displayedOrder = null;
+
+  public groupid: string;
 
   constructor(
     private loadingController: LoadingController,
@@ -35,30 +37,27 @@ export class OrdersGroupPage implements OnInit, OnDestroy {
   }
 
   async initialize() {
-
+    console.log('orders-group page');
     this.route.paramMap.subscribe(async paramMap => {
-      if (!paramMap.has('groupname')) {
+      if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/group');
         return;
       }
 
       this.loadingCtrl = await setUpLoader(this.loadingController);
-      const groupname = paramMap.get('groupname');
+      this.groupid = paramMap.get('groupid');
 
+      this.ordersSub = this.store.select(selectPlacedOrdersForCurrentGroup, { groupid: paramMap.get('groupid') }).subscribe((v) => {
+        console.log('Orders Sub v =>', v);
+        this.placedOrders$ = v;
 
-      this.ordersSub = this.store.select('orders')
-        .pipe(map(o => o.list))
-        .subscribe(orders => {
-          this.orders$ = orders[groupname];
-
-          if (this.loadingCtrl) this.loadingCtrl.dismiss();
-        });
-
+        if (this.loadingCtrl) this.loadingCtrl.dismiss();
+      })
     })
   }
 
   checkOrderDetails(deadline: string) {
-    this.displayedOrder = this.orders$[deadline];
+    this.displayedOrder = this.placedOrders$[deadline];
   }
 
   getOrderTotal(items) {

@@ -66,7 +66,7 @@ export class OrdersPage implements OnInit, OnDestroy {
   }
 
   ionViewWillLeave() {
-    this.store.dispatch(new fromOrdersActions.ResetOrderPending());
+    // this.store.dispatch(new fromOrdersActions.ResetOrderPending());
   }
 
   //
@@ -86,9 +86,8 @@ export class OrdersPage implements OnInit, OnDestroy {
       this.availableOrdersSub = this.groupsService.fetchAvailableOrders({ groupid: this.groupid })
         .subscribe(data => {
           this.availableOrders$ = formatAvailableOrders(data.payload);
-          console.log('ORDERS this.availableOrders$ =>', this.availableOrders$);
         });
-      //     this.loadingCtrl.dismiss();
+      // this.loadingCtrl.dismiss();
     });
   }
 

@@ -115,10 +115,10 @@ export class PlaceOrderPage implements OnInit {
       }
     }
     if (orderedItems.length) {
-      this.store.dispatch(new fromOrdersActions.PlaceOrder({
-        availableOrderid: this.availableOrderid,
-        items: orderedItems,
-      }))
+      // this.store.dispatch(new fromOrdersActions.PlaceOrder({
+      //   availableOrderid: this.availableOrderid,
+      //   items: orderedItems,
+      // }))
     }
     else {
       const message = 'You have not selected any item';

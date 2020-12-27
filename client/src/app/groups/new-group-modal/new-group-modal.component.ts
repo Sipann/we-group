@@ -32,15 +32,15 @@ export class NewGroupModalComponent implements OnInit {
     private modalCtrl: ModalController,
     private store: Store<AppState>
   ) {
-    this.createGroupSub = this.store.select('groups')
-      .pipe(map(s => s.groupCreated))
-      .subscribe(v => {
-        if (v) {
-          // this.created.emit(true);  // useful?
-          this.form.reset();
-          this.modalCtrl.dismiss();
-        }
-      })
+    // this.createGroupSub = this.store.select('groups')
+    //   .pipe(map(s => s.groupCreated))
+    //   .subscribe(v => {
+    //     if (v) {
+    //       // this.created.emit(true);  // useful?
+    //       this.form.reset();
+    //       this.modalCtrl.dismiss();
+    //     }
+    //   })
   }
 
   ngOnInit() { }
@@ -57,7 +57,7 @@ export class NewGroupModalComponent implements OnInit {
       description: this.form.value['group-description'],
       currency: this.form.value['group-currency']
     };
-    this.store.dispatch(new fromGroupsActions.CreateGroup(group));
+    // this.store.dispatch(new fromGroupsActions.CreateGroup(group));
   }
 
   onResetNewGroupForm() { this.form.reset(); }

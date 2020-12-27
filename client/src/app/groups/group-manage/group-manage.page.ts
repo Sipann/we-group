@@ -6,10 +6,20 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers';
+import { AppState, selectGroupWithId } from 'src/app/store/reducers';
+import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
 
 import { Group } from 'src/app/models/group.model';
+import { GroupType } from 'src/app/models/refactor/group.model';
 
+
+enum ManagingScreen {
+  NONE = 'none',
+  INFO = 'info',
+  PRODUCTS = 'products',
+  SUMMARY = 'summary',
+  USERS = 'users',
+}
 
 @Component({
   selector: 'app-group-manage',
@@ -19,9 +29,15 @@ import { Group } from 'src/app/models/group.model';
 export class GroupManagePage implements OnInit, OnDestroy {
 
   public group: Group;
+  public group$: GroupType;
   public groupid: string;
-  private groupSub: Subscription;
-  public managing: '' | 'info' | 'products' | 'summary' | 'users';
+  private groupManageSub: Subscription;
+  // public managing: '' | 'info' | 'products' | 'summary' | 'users';
+  public managing: ManagingScreen = ManagingScreen.NONE;
+
+  public get ManagingScreen() {
+    return ManagingScreen;
+  }
 
   constructor(
     private navCtrl: NavController,
@@ -32,6 +48,8 @@ export class GroupManagePage implements OnInit, OnDestroy {
 
 
   ngOnInit() {
+    // console.log('LAND ON manage page');
+
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has('groupid')) {
         this.navCtrl.navigateBack('/groups');
@@ -40,26 +58,29 @@ export class GroupManagePage implements OnInit, OnDestroy {
 
       this.groupid = paramMap.get('groupid');
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(groups => groups.groups))
-        .subscribe(groups => {
-          this.group = groups.find(group => group.id === this.groupid);
-        });
+      // this.store.dispatch(new fromGroupsActions.FetchStaticManageGroupData({ groupid: this.groupid }));
+      this.groupManageSub = this.store.select(selectGroupWithId, { id: paramMap.get('groupid') }).subscribe((v) => {
+        console.log('Group Manage v =>', v);
+        this.group$ = v;
+      });
     });
   }
 
   ngOnDestroy() {
-    if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.groupManageSub) this.groupManageSub.unsubscribe();
   }
 
-  onCancel() { this.managing = ''; }
+  // onCancel() { this.managing = ''; }
+  onCancel() { this.managing = ManagingScreen.NONE; }
 
   onNavigateToAvailableOrders() {
-    console.log('navigate to available orders');
-    this.router.navigate(['/', 'groups', 'manage', this.group.id, 'available-orders']);
+    this.router.navigate(['/', 'groups', 'manage', this.group$.groupid, 'available-orders']);
   }
 
-  onSelect(managing: '' | 'info' | 'products' | 'summary' | 'users') {
+  // onSelect(managing: '' | 'info' | 'products' | 'summary' | 'users') {
+  //   this.managing = managing;
+  // }
+  onSelect(managing: ManagingScreen) {
     this.managing = managing;
   }
 

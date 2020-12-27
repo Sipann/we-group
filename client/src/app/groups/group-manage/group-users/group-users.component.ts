@@ -6,11 +6,10 @@ import { LoadingController, NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/store/reducers';
-import * as fromGroupsActions from 'src/app/store/actions/groups.actions';
+import { AppState, selectGroupWithId } from 'src/app/store/reducers';
+import { fromGroupsActions } from 'src/app/store/actions';
 
 import { setUpLoader } from '../../groups-utils';
 
@@ -27,10 +26,12 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
   @Output() cancelled = new EventEmitter();
   @ViewChild('f', { static: true }) form: NgForm;
 
-  private group$: Group;
+  public groupMembers$: { username: string, userid: string, manager?: boolean }[]; // TODO
+  public groupManager$: { username: string, userid: string, manager?: boolean };  // TODO
+  public managerId$: string;
   private groupid: string;
-  public groupMembers$: { username: string, userid: string, manager?: boolean }[];
   private groupSub: Subscription;
+  private groupMembersSub: Subscription;
   private loadingCtrl: HTMLIonLoadingElement;
 
   constructor(
@@ -44,6 +45,7 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.groupSub) this.groupSub.unsubscribe();
+    if (this.groupMembersSub) this.groupMembersSub.unsubscribe();
   }
 
   async initialize() {
@@ -57,19 +59,17 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
       this.loadingCtrl = await setUpLoader(this.loadingController);
       this.loadingCtrl.present();
 
-      this.store.dispatch(new fromGroupsActions.FetchGroupMembers({ groupid: this.groupid }));
+      this.groupMembersSub = this.store.select(selectGroupWithId, { id: paramMap.get('groupid') })
+        .subscribe((v) => {
+          const managerId = v.groupmanagerid;
+          this.groupMembers$ = [...v.groupmembers].filter(member => member.userid !== managerId);
+          this.groupManager$ = v.groupmembers.find(member => member.userid === managerId);
+        })
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          this.group$ = groups.find(g => g.id == this.groupid);
-          this.groupMembers$ = this.group$.members;
-
-          if (this.loadingCtrl) {
-            this.loadingCtrl.dismiss();
-            this.loadingCtrl = null;
-          }
-        });
+      if (this.loadingCtrl) {
+        this.loadingCtrl.dismiss();
+        this.loadingCtrl = null;
+      }
     });
   }
 
@@ -77,7 +77,7 @@ export class GroupUsersComponent implements OnInit, OnDestroy {
 
   onRemoveMemberFromGroup(userid: string, manager?: boolean) {
     if (manager) return;
-    this.store.dispatch(new fromGroupsActions.RemoveMemberFromGroup({ groupid: this.groupid, removedUserid: userid }));
+    // this.store.dispatch(new fromGroupsActions.RemoveMemberFromGroup({ groupid: this.groupid, removedUserid: userid }));
   }
 
 }

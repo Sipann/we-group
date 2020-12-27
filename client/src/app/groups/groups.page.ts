@@ -1,19 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
-import { Store, select } from '@ngrx/store';
-import { AppState } from '../store/reducers/index';
+import { Store } from '@ngrx/store';
+import { AppState, selectGroupsList } from '../store/reducers/index';
 import * as fromGroupsActions from '../store/actions/groups.actions';
-import { GroupsState } from '../store/reducers/groups.reducers';
-import { UserState } from '../store/reducers/user.reducers';
 
 import { NewGroupModalComponent } from './new-group-modal/new-group-modal.component';
 
-import { Group } from '../models/group.model';
-import { User } from '../models/user.model';
+import { GroupType } from 'src/app/models/refactor/group.model';
 
 
 @Component({
@@ -23,25 +19,25 @@ import { User } from '../models/user.model';
 })
 export class GroupsPage implements OnInit {
 
-  groups$: Observable<Group[]>;
-  user$: Observable<User>;
+  public groups$: GroupType[] = [];
+  private groupsDataSub: Subscription;
 
   constructor(
     private modalCtrl: ModalController,
     private store: Store<AppState>,
-  ) {
-    this.groups$ = store.pipe(
-      select('groups'),
-      map((groupsState: GroupsState) => groupsState.groups)
-    );
+  ) { }
 
-    this.user$ = store.pipe(
-      select('user'),
-      map((userState: UserState) => userState.currentUser)
-    );
+  ngOnInit() {
+    this.groupsDataSub = this.store.select(selectGroupsList)
+      .subscribe((v) => {
+        // console.log('GROUPS V =>', v);
+        this.groups$ = v
+      });
   }
 
-  ngOnInit() { }
+  ngOnDestroy() {
+    if (this.groupsDataSub) this.groupsDataSub.unsubscribe();
+  }
 
   onLaunchCreateGroupModal() {
     this.modalCtrl
@@ -54,15 +50,16 @@ export class GroupsPage implements OnInit {
         return modalEl.onDidDismiss();
       })
       .then(_ => {
-        this.store.dispatch(new fromGroupsActions.ResetCreateGroup());
+        // this.store.dispatch(new fromGroupsActions.ResetCreateGroup());
       });
   }
 
   onNavigateToGroup(groupid: number) {
-    this.store.dispatch(new fromGroupsActions.SelectGroup({ groupid }));
+    // this.store.dispatch(new fromGroupsActions.SelectGroup({ groupid }));
   }
 
   tempBgThumbnail(i: number): string {
-    return `assets/bgThumbnail/${ i % 7 }.png`;  // 7 => number of available bg images in assets/bgThumbnail
+    // 7 => number of available bg images in assets/bgThumbnail
+    return `assets/bgThumbnail/${ i % 7 }.png`;
   }
 }

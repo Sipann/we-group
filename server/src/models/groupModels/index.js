@@ -12,3 +12,4 @@ export { removeMemberFromGroup as DBRemoveMemberFromGroup } from './removeMember
 export { searchGroups as DBSearchGroups } from './searchGroups';
 export { updateAvailableOrderInfos as DBUpdateAvailableOrderInfos } from './updateAvailableOrderInfos';
 export { updateGroupInfos as DBUpdateGroupInfos } from './updateGroupInfos';
+export { fetchStaticManageGroupData as DBFetchStaticManageGroupData } from './fetchStaticManageGroupData';

@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
-import { AppState } from '../../../store/reducers/index';
+import { AppState, selectGroupWithId } from '../../../store/reducers/index';
 import * as fromGroupsActions from '../../../store/actions/groups.actions';
 
 import { Group } from 'src/app/models/group.model';
@@ -26,11 +26,12 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
 
   private group$: Group;
   private groupid: string;
-  public groupDesc: string;
-  public groupName: string;
+  public groupDesc: string = '';
+  public groupName: string = '';
   public groupManager: string;
 
   private groupSub: Subscription;
+  private groupInfosSub: Subscription;
   private routeSub: Subscription;
 
   public submitBtnLabel = 'SAVE CHANGES';
@@ -47,6 +48,7 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.groupSub) this.groupSub.unsubscribe();
     if (this.routeSub) this.routeSub.unsubscribe();
+    if (this.groupInfosSub) this.groupInfosSub.unsubscribe();
   }
 
   async initialize() {
@@ -57,15 +59,13 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
       }
       this.groupid = paramMap.get('groupid');
 
-      this.groupSub = this.store.select('groups')
-        .pipe(map(g => g.groups))
-        .subscribe(groups => {
-          this.group$ = groups.find(g => g.id === this.groupid);
-          this.groupName = this.group$.name;
-          this.groupDesc = this.group$.description;
-          this.groupManager = this.group$.manager_id;
+      this.groupInfosSub = this.store.select(selectGroupWithId, { id: paramMap.get('groupid') })
+        .subscribe((v) => {
+          // console.log('GROUP INFOS V =>', v);
+          this.groupName = v.groupname;
+          this.groupDesc = v.groupdescription;
           this.form.form.markAsPristine();
-        });
+        })
     });
   }
 
@@ -95,10 +95,10 @@ export class GroupInfosComponent implements OnInit, OnDestroy {
   onUpdateGroup() {
     const newGroup = {
       ...this.group$,
-      name: this.form.value['group-name'],
-      description: this.form.value['group-description']
+      groupname: this.form.value['group-name'],
+      groupdescription: this.form.value['group-description']
     };
-    this.store.dispatch(new fromGroupsActions.UpdateGroup(newGroup));
+    // this.store.dispatch(new fromGroupsActions.UpdateGroup(newGroup));
   }
 
 

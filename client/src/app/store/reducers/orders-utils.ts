@@ -1,4 +1,134 @@
 import { GroupOrderDB } from 'src/app/models/group-order-db.model';
+import { PlacedOrder } from 'src/app/models/refactor/placedorder.model';
+
+const pipeFns2 = (...fns) => {
+  return function piped(v) {
+    for (let fn of fns) {
+      v = fn(v);
+    }
+    return v;
+  }
+};
+
+//////////////////////////////////////////////////
+
+const reduceArrayByPropReverse = (discriminant) => {
+  console.log('ENTERING reduceArrayByPropReverse');
+  return function subReduce(array) {
+    try {
+      return array.reduce((acc, curr) => {
+        const currentDiscriminant = curr[discriminant];
+        if (!currentDiscriminant) throw new Error('this discriminant does not exist on the object');
+        if (acc[currentDiscriminant]) { acc[currentDiscriminant].push({ ...curr }); }
+        else { acc[currentDiscriminant] = [{ ...curr }]; }
+        return acc;
+      }, {});
+    } catch (error) {
+      console.log('ERROR =>', error.message);
+      return {};
+    }
+  }
+}
+
+const reduceArrayByValueReverse = (discriminant) => {
+  return function subReduce(array) {
+    try {
+      return array.reduce((acc, curr) => ({
+        ...acc,
+        [discriminant]: (curr[discriminant] + acc[discriminant]),
+      }))
+    } catch (error) {
+      console.log('ERROR =>', error.message);
+      return [];
+    }
+  }
+}
+
+const aggregateByReverse = (discriminant) => {
+  return function subReduce(array) {
+    if (array.length > 1) {
+      return reduceArrayByValueReverse(discriminant)(array);
+    }
+    return array;
+  }
+}
+
+const applyToObjectReverse = (discriminant) => {
+  return function fnToApply(fn) {
+    return function subReduce(obj) {
+      const result = {};
+      for (let prop in obj) {
+        const item = obj[prop];
+        if (Array.isArray(item)) {
+          result[prop] = fn(discriminant)(item);
+        }
+        else if (typeof item === 'object') {
+          result[prop] = applyToObjectReverse(discriminant)(fn)(item);
+        }
+      }
+      return result;
+    }
+  }
+};
+
+const group = (obj) => {
+  console.log('ENTERING group');
+  const result = {};
+  for (let prop in obj) {
+    let item = obj[prop];
+    if (Array.isArray(item) && item.length > 1) {
+      const aggregate = { ...item[0] };
+      for (let i = 1; i < item.length; i++) {
+        aggregate.ordereditemsquantity += item[i].ordereditemsquantity;
+      }
+      console.log('aggregate =>', aggregate);
+      result[prop] = [{ ...aggregate }];
+    }
+    else if (Array.isArray(item) && item.length === 1) {
+      result[prop] = item;
+    }
+    else if (typeof item === 'object') {
+      // keeps unfolding
+      result[prop] = group(item);
+    }
+  }
+  return result;
+}
+
+const byGroupid = reduceArrayByPropReverse('groupid');
+const byPlacedOrderid = applyToObjectReverse('placedorderid')(reduceArrayByPropReverse);
+const byItemid = applyToObjectReverse('itemid')(reduceArrayByPropReverse);
+// const groupIdenticalItems = applyToObjectReverse('ordereditemsquantity')(aggregateByReverse);
+
+// const groupIdenticalItems2 = group(byItemid);
+
+
+export const storePlacedOrders = (placedOrders) => {
+  const result = pipeFns2(byGroupid, byPlacedOrderid, byItemid, group)(placedOrders);
+  console.log('UTILS result =>', result);
+  return result;
+}
+
+
+export const reducePlacedOrdersByGroupId = (placedOrders: PlacedOrder[]) => {
+  return placedOrders.reduce((acc, curr) => {
+    const currentGroupid = curr.groupid;
+    if (acc[currentGroupid]) { acc[currentGroupid].push({ ...curr }); }
+    else { acc[currentGroupid] = [{ ...curr }]; }
+    return acc;
+  }, {});
+};
+
+export const reducePlacedOrdersByPlacedOrderId = (placedOrders: PlacedOrder[]) => {
+  return placedOrders.reduce((acc, curr) => {
+    const currentPlacedOrder = curr.placedorderid;
+    if (acc[currentPlacedOrder]) { acc[currentPlacedOrder].push({ ...curr }); }
+    else { acc[currentPlacedOrder] = [{ ...curr }]; }
+    return acc;
+  }, {});
+}
+
+
 
 
 const reduceByGroup = arr => {

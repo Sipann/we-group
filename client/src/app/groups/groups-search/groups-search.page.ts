@@ -54,17 +54,17 @@ export class GroupsSearchPage implements OnInit, OnDestroy {
 
   async initialize() {
 
-    this.store.dispatch(new fromGroupsActions.FetchOtherGroups());
+    // this.store.dispatch(new fromGroupsActions.FetchOtherGroups());
 
     this.loadingCtrl = await setUpLoader(this.loadingController);
     this.loadingCtrl.present();
 
-    this.otherGroupsSub = this.store.select('groups')
-      .pipe(map(g => g.availableGroups))
-      .subscribe(availableGroups => {
-        this.availableGroups$ = availableGroups;
-        if (this.loadingCtrl) this.loadingCtrl.dismiss();
-      })
+    // this.otherGroupsSub = this.store.select('groups')
+    //   .pipe(map(g => g.availableGroups))
+    //   .subscribe(availableGroups => {
+    //     this.availableGroups$ = availableGroups;
+    //     if (this.loadingCtrl) this.loadingCtrl.dismiss();
+    //   })
   }
 
   ngOnDestroy() {
@@ -100,7 +100,7 @@ export class GroupsSearchPage implements OnInit, OnDestroy {
 
   onJoinGroup(group: Group, slidingEl: IonItemSliding) {
 
-    this.store.dispatch(new fromGroupsActions.AddMemberToGroup({ groupid: group.id }));
+    // this.store.dispatch(new fromGroupsActions.AddMemberToGroup({ groupid: group.id }));
 
     // this.addUserSub = this.apiClientService.addUserToGroup(group.id)
     //   .subscribe(data => {

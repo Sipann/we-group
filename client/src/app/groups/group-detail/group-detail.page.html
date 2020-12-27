@@ -3,7 +3,7 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/groups"></ion-back-button>
     </ion-buttons>
-    <ion-title class="ion-text-center">{{ group$ && group$.name }}</ion-title>
+    <ion-title class="ion-text-center">{{ group$ && group$.groupname }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -11,7 +11,7 @@
   <ion-grid>
     <ion-row>
       <ion-col size="12" size-md="8" offset-md="2">
-        <h2 class="ion-text-center">{{ group$.description }}</h2>
+        <h2 class="ion-text-center">{{ group$.groupdescription }}</h2>
       </ion-col>
     </ion-row>
     <ion-row>

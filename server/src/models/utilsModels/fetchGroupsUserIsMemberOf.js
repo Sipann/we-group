@@ -12,12 +12,23 @@ export async function fetchGroupsUserIsMemberOf (userid) {
     if (!userid) throw new Error(errorMessages.notAllowed);
 
 
+    // const queryStr = `
+    //   SELECT
+    //     groups.id as id,
+    //     groups.name as name,
+    //     groups.description as description,
+    //     groups.manager_id as manager_id
+    //   FROM groups
+    //   INNER JOIN groupsusers
+    //     ON groups.id = groupsusers.group_id
+    //     AND groupsusers.user_id = $1;
+    // `;
     const queryStr = `
       SELECT
-        groups.id as id,
-        groups.name as name,
-        groups.description as description,
-        groups.manager_id as manager_id
+        groups.id as groupid,
+        groups.name as groupname,
+        groups.description as groupdescription,
+        groups.manager_id as groupmanagerid
       FROM groups
       INNER JOIN groupsusers
         ON groups.id = groupsusers.group_id
